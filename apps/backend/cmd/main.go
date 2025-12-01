@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/joho/godotenv"
+	"github.com/pasarsuara/backend/internal/ai"
 	"github.com/pasarsuara/backend/internal/api"
 	"github.com/pasarsuara/backend/internal/config"
 )
@@ -26,15 +27,35 @@ func main() {
 	log.Println("🚀 PasarSuara Backend starting...")
 	log.Printf("🔌 Port: %s", cfg.Port)
 
+	// Check API keys
+	if cfg.KolosalAPIKey == "" {
+		log.Println("⚠️ KOLOSAL_API_KEY not set - intent extraction will fail")
+	} else {
+		log.Println("✅ Kolosal API configured")
+	}
+
+	if cfg.GeminiAPIKey == "" {
+		log.Println("⚠️ GEMINI_API_KEY not set - audio transcription will fail")
+	} else {
+		log.Println("✅ Gemini API configured")
+	}
+
+	// Create Intent Engine
+	intentEngine := ai.NewIntentEngine(
+		cfg.GeminiAPIKey,
+		cfg.KolosalAPIKey,
+		cfg.KolosalBaseURL,
+	)
+
 	// Create router
-	router := api.NewRouter()
+	router := api.NewRouter(intentEngine)
 
 	// Create server
 	server := &http.Server{
 		Addr:         ":" + cfg.Port,
 		Handler:      router,
 		ReadTimeout:  15 * time.Second,
-		WriteTimeout: 15 * time.Second,
+		WriteTimeout: 60 * time.Second, // Longer for AI processing
 		IdleTimeout:  60 * time.Second,
 	}
 

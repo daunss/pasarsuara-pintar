@@ -6,9 +6,10 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/cors"
+	"github.com/pasarsuara/backend/internal/ai"
 )
 
-func NewRouter() http.Handler {
+func NewRouter(intentEngine *ai.IntentEngine) http.Handler {
 	r := chi.NewRouter()
 
 	// Middleware
@@ -30,7 +31,7 @@ func NewRouter() http.Handler {
 	})
 
 	// Internal webhooks (from WA Gateway)
-	webhook := NewWhatsAppWebhook()
+	webhook := NewWhatsAppWebhook(intentEngine)
 	r.Post("/internal/webhook/whatsapp", webhook.Handle)
 
 	// Public API routes
@@ -46,6 +47,11 @@ func NewRouter() http.Handler {
 
 		// Catalog generation
 		r.Post("/catalog/generate", handleGenerateCatalog)
+
+		// Intent test endpoint (for debugging)
+		r.Post("/intent/test", func(w http.ResponseWriter, req *http.Request) {
+			webhook.Handle(w, req)
+		})
 	})
 
 	return r
