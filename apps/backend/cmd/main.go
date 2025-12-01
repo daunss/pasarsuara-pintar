@@ -10,9 +10,11 @@ import (
 	"time"
 
 	"github.com/joho/godotenv"
+	"github.com/pasarsuara/backend/internal/agents"
 	"github.com/pasarsuara/backend/internal/ai"
 	"github.com/pasarsuara/backend/internal/api"
 	"github.com/pasarsuara/backend/internal/config"
+	"github.com/pasarsuara/backend/internal/database"
 )
 
 func main() {
@@ -27,10 +29,21 @@ func main() {
 	log.Println("🚀 PasarSuara Backend starting...")
 	log.Printf("🔌 Port: %s", cfg.Port)
 
+	// Initialize database client
+	var db *database.SupabaseClient
+	if cfg.SupabaseURL != "" && cfg.SupabaseKey != "" {
+		db = database.NewSupabaseClient(cfg.SupabaseURL, cfg.SupabaseKey)
+		log.Println("✅ Supabase database configured")
+	} else {
+		log.Println("⚠️ Supabase not configured - using demo mode")
+	}
+
 	// Check API keys
+	var kolosalClient *ai.KolosalClient
 	if cfg.KolosalAPIKey == "" {
 		log.Println("⚠️ KOLOSAL_API_KEY not set - intent extraction will fail")
 	} else {
+		kolosalClient = ai.NewKolosalClient(cfg.KolosalAPIKey, cfg.KolosalBaseURL)
 		log.Println("✅ Kolosal API configured")
 	}
 
@@ -47,8 +60,11 @@ func main() {
 		cfg.KolosalBaseURL,
 	)
 
+	// Create Agent Orchestrator
+	orchestrator := agents.NewAgentOrchestrator(db, intentEngine, kolosalClient)
+
 	// Create router
-	router := api.NewRouter(intentEngine)
+	router := api.NewRouter(orchestrator)
 
 	// Create server
 	server := &http.Server{
@@ -62,6 +78,12 @@ func main() {
 	// Start server in goroutine
 	go func() {
 		log.Printf("✅ Server listening on http://localhost:%s", cfg.Port)
+		log.Println("")
+		log.Println("📋 Available endpoints:")
+		log.Println("   POST /internal/webhook/whatsapp - WA Gateway webhook")
+		log.Println("   POST /api/intent/test - Test intent extraction")
+		log.Println("   GET  /health - Health check")
+		log.Println("")
 		if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 			log.Fatalf("❌ Server error: %v", err)
 		}

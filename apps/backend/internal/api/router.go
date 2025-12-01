@@ -6,10 +6,10 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/cors"
-	"github.com/pasarsuara/backend/internal/ai"
+	"github.com/pasarsuara/backend/internal/agents"
 )
 
-func NewRouter(intentEngine *ai.IntentEngine) http.Handler {
+func NewRouter(orchestrator *agents.AgentOrchestrator) http.Handler {
 	r := chi.NewRouter()
 
 	// Middleware
@@ -31,7 +31,7 @@ func NewRouter(intentEngine *ai.IntentEngine) http.Handler {
 	})
 
 	// Internal webhooks (from WA Gateway)
-	webhook := NewWhatsAppWebhook(intentEngine)
+	webhook := NewWhatsAppWebhook(orchestrator)
 	r.Post("/internal/webhook/whatsapp", webhook.Handle)
 
 	// Public API routes
@@ -48,16 +48,14 @@ func NewRouter(intentEngine *ai.IntentEngine) http.Handler {
 		// Catalog generation
 		r.Post("/catalog/generate", handleGenerateCatalog)
 
-		// Intent test endpoint (for debugging)
-		r.Post("/intent/test", func(w http.ResponseWriter, req *http.Request) {
-			webhook.Handle(w, req)
-		})
+		// Intent/Agent test endpoint (for debugging)
+		r.Post("/intent/test", webhook.Handle)
 	})
 
 	return r
 }
 
-// Placeholder handlers - will be implemented in later phases
+// Placeholder handlers - will be implemented in Phase 5
 func handleDashboardStats(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.Write([]byte(`{"message": "Dashboard stats - coming soon"}`))

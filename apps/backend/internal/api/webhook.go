@@ -5,12 +5,12 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/pasarsuara/backend/internal/ai"
+	"github.com/pasarsuara/backend/internal/agents"
 )
 
 // WhatsAppWebhook handles incoming messages from WA Gateway
 type WhatsAppWebhook struct {
-	intentEngine *ai.IntentEngine
+	orchestrator *agents.AgentOrchestrator
 }
 
 // WebhookPayload matches the payload from WA Gateway
@@ -31,15 +31,15 @@ type MessagePayload struct {
 }
 
 type WebhookResponse struct {
-	Success bool       `json:"success"`
-	Message string     `json:"message"`
-	Reply   string     `json:"reply,omitempty"`
-	Intent  *ai.Intent `json:"intent,omitempty"`
+	Success     bool                  `json:"success"`
+	Message     string                `json:"message"`
+	Reply       string                `json:"reply,omitempty"`
+	AgentResult *agents.AgentResponse `json:"agent_result,omitempty"`
 }
 
-func NewWhatsAppWebhook(intentEngine *ai.IntentEngine) *WhatsAppWebhook {
+func NewWhatsAppWebhook(orchestrator *agents.AgentOrchestrator) *WhatsAppWebhook {
 	return &WhatsAppWebhook{
-		intentEngine: intentEngine,
+		orchestrator: orchestrator,
 	}
 }
 
@@ -53,7 +53,6 @@ func (w *WhatsAppWebhook) Handle(rw http.ResponseWriter, r *http.Request) {
 
 	log.Printf("📨 Webhook received: %s from %s", payload.Type, payload.From)
 
-	// Process based on message type
 	var response WebhookResponse
 	response.Success = true
 
@@ -64,43 +63,20 @@ func (w *WhatsAppWebhook) Handle(rw http.ResponseWriter, r *http.Request) {
 		text := payload.Payload.Text
 		log.Printf("💬 Processing text: %s", text)
 
-		// Extract intent using Kolosal
-		intent, err := w.intentEngine.ProcessText(ctx, text)
-		if err != nil {
-			log.Printf("⚠️ Intent extraction failed: %v", err)
-			response.Message = "Message received but intent extraction failed"
-			response.Reply = "Maaf, ada kendala teknis. Coba lagi ya!"
-		} else {
-			response.Message = "Intent extracted successfully"
-			response.Intent = intent
-			response.Reply = w.intentEngine.GenerateResponse(intent)
-		}
+		// Process through Agent Orchestrator
+		agentResult := w.orchestrator.ProcessMessage(ctx, payload.From, text)
+		response.AgentResult = agentResult
+		response.Reply = agentResult.Message
+		response.Message = "Processed by Agent Orchestrator"
 
 	case "audio":
 		log.Printf("🎤 Audio message: %d seconds, voice: %v",
 			payload.Payload.Duration, payload.Payload.IsVoice)
 
-		// Check if we have audio data
-		if len(payload.Payload.AudioData) > 0 {
-			mimeType := payload.Payload.MimeType
-			if mimeType == "" {
-				mimeType = "audio/ogg" // Default for WhatsApp voice notes
-			}
-
-			intent, err := w.intentEngine.ProcessAudio(ctx, payload.Payload.AudioData, mimeType)
-			if err != nil {
-				log.Printf("⚠️ Audio processing failed: %v", err)
-				response.Message = "Audio received but processing failed"
-				response.Reply = "Maaf, voice note belum bisa diproses. Coba kirim pesan teks ya!"
-			} else {
-				response.Message = "Audio processed successfully"
-				response.Intent = intent
-				response.Reply = w.intentEngine.GenerateResponse(intent)
-			}
-		} else {
-			response.Message = "Audio message received"
-			response.Reply = "Voice note diterima! Untuk saat ini, coba kirim pesan teks dulu ya."
-		}
+		// TODO: Implement audio processing with Gemini STT
+		// For now, ask user to send text
+		response.Message = "Audio received"
+		response.Reply = "🎤 Voice note diterima!\n\nUntuk saat ini, mohon kirim pesan teks dulu ya. Fitur voice akan segera aktif!"
 
 	default:
 		response.Success = false
