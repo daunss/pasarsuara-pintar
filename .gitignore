@@ -1,0 +1,67 @@
+# ===========================================
+# PasarSuara Pintar - Git Ignore
+# ===========================================
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Dependencies
+node_modules/
+vendor/
+
+# Build outputs
+dist/
+build/
+.next/
+out/
+
+# Go
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+go.work
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# WhatsApp Session (sensitive!)
+apps/wa-gateway/session/
+session/
+
+# Docker
+.docker/
+
+# Testing
+coverage/
+*.cover
+*.coverage
+
+# Temporary
+tmp/
+temp/
+*.tmp
+
+# Internal docs (jangan di-push)
+konsep.md
+projek.md
+
+# Kiro settings
+.kiro/
