@@ -1,0 +1,61 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: ../../apps/backend
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    env_file: ../../.env
+    depends_on:
+      - db
+    networks:
+      - pasarsuara
+
+  wa-gateway:
+    build:
+      context: ../../apps/wa-gateway
+      dockerfile: Dockerfile
+    ports:
+      - "8081:8081"
+    volumes:
+      - wa-session:/root/session
+    env_file: ../../.env
+    depends_on:
+      - backend
+    networks:
+      - pasarsuara
+
+  web:
+    build:
+      context: ../../apps/web
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    env_file: ../../.env
+    depends_on:
+      - backend
+    networks:
+      - pasarsuara
+
+  db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: pasarsuara
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - pasarsuara
+
+volumes:
+  pgdata:
+  wa-session:
+
+networks:
+  pasarsuara:
+    driver: bridge
