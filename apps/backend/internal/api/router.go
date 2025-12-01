@@ -9,7 +9,7 @@ import (
 	"github.com/pasarsuara/backend/internal/agents"
 )
 
-func NewRouter(orchestrator *agents.AgentOrchestrator) http.Handler {
+func NewRouter(orchestrator *agents.AgentOrchestrator, catalogHandler *CatalogHandler) http.Handler {
 	r := chi.NewRouter()
 
 	// Middleware
@@ -45,8 +45,11 @@ func NewRouter(orchestrator *agents.AgentOrchestrator) http.Handler {
 		// Negotiations endpoints
 		r.Get("/negotiations", handleGetNegotiations)
 
-		// Catalog generation
-		r.Post("/catalog/generate", handleGenerateCatalog)
+		// Catalog & Promo generation
+		r.Get("/catalog", catalogHandler.HandleGenerateCatalog)
+		r.Post("/catalog/generate", catalogHandler.HandleGenerateCatalog)
+		r.Post("/promo/generate", catalogHandler.HandleGeneratePromo)
+		r.Post("/promo/bundle", catalogHandler.HandleGenerateBundle)
 
 		// Intent/Agent test endpoint (for debugging)
 		r.Post("/intent/test", webhook.Handle)
@@ -55,23 +58,34 @@ func NewRouter(orchestrator *agents.AgentOrchestrator) http.Handler {
 	return r
 }
 
-// Placeholder handlers - will be implemented in Phase 5
+// Placeholder handlers - will connect to real data
 func handleDashboardStats(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
-	w.Write([]byte(`{"message": "Dashboard stats - coming soon"}`))
+	w.Write([]byte(`{
+		"today_sales": 300000,
+		"today_purchases": 295000,
+		"today_expenses": 44000,
+		"gross_profit": -39000,
+		"transaction_count": 4
+	}`))
 }
 
 func handleGetInventory(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
-	w.Write([]byte(`{"message": "Inventory list - coming soon"}`))
+	w.Write([]byte(`{
+		"items": [
+			{"product_name": "Beras Premium", "stock_qty": 25, "unit": "kg"},
+			{"product_name": "Minyak Goreng", "stock_qty": 10, "unit": "liter"},
+			{"product_name": "Telur Ayam", "stock_qty": 50, "unit": "butir"}
+		]
+	}`))
 }
 
 func handleGetNegotiations(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
-	w.Write([]byte(`{"message": "Negotiations list - coming soon"}`))
-}
-
-func handleGenerateCatalog(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
-	w.Write([]byte(`{"message": "Catalog generation - coming soon"}`))
+	w.Write([]byte(`{
+		"negotiations": [
+			{"product": "Beras Premium", "status": "SUCCESS", "final_price": 11800}
+		]
+	}`))
 }

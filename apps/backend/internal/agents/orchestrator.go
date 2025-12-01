@@ -14,6 +14,7 @@ type AgentOrchestrator struct {
 	db           *database.SupabaseClient
 	finance      *FinanceAgent
 	negotiation  *NegotiationOrchestrator
+	promo        *PromoAgent
 	intentEngine *ai.IntentEngine
 }
 
@@ -26,13 +27,19 @@ type AgentResponse struct {
 	Negotiation *NegotiationResult    `json:"negotiation,omitempty"`
 }
 
-func NewAgentOrchestrator(db *database.SupabaseClient, intentEngine *ai.IntentEngine, kolosal *ai.KolosalClient) *AgentOrchestrator {
+func NewAgentOrchestrator(db *database.SupabaseClient, intentEngine *ai.IntentEngine, kolosal *ai.KolosalClient, kolosalKey, kolosalURL, geminiKey string) *AgentOrchestrator {
 	return &AgentOrchestrator{
 		db:           db,
 		finance:      NewFinanceAgent(db),
 		negotiation:  NewNegotiationOrchestrator(db, kolosal),
+		promo:        NewPromoAgent(db, kolosalKey, kolosalURL, geminiKey),
 		intentEngine: intentEngine,
 	}
+}
+
+// GetPromoAgent returns the promo agent for external use
+func (o *AgentOrchestrator) GetPromoAgent() *PromoAgent {
+	return o.promo
 }
 
 // ProcessMessage handles incoming message and routes to appropriate agent
@@ -98,7 +105,7 @@ func (o *AgentOrchestrator) ProcessMessage(ctx context.Context, userPhone, text 
 		response.Message = o.handleMarketIntel(ctx, intent)
 
 	case "REQUEST_PROMO":
-		response.Message = "🎨 Fitur pembuatan promosi akan segera hadir!\n\nUntuk sementara, Anda bisa:\n• Catat penjualan\n• Pesan barang\n• Cek stok"
+		response.Message = o.handlePromoRequest(ctx, userID, intent)
 
 	case "GREETING":
 		response.Message = o.getGreetingResponse(userPhone)
@@ -208,6 +215,38 @@ func (o *AgentOrchestrator) handleMarketIntel(ctx context.Context, intent *ai.In
 	}
 
 	return "📊 Mau cek harga apa?\n\nContoh: \"harga beras berapa\" atau \"tren cabai\""
+}
+
+func (o *AgentOrchestrator) handlePromoRequest(ctx context.Context, userID string, intent *ai.Intent) string {
+	product := getStringEntity(intent.Entities, "product")
+
+	if product == "" {
+		// Generate catalog promo
+		catalog, err := o.promo.GenerateCatalog(ctx, userID)
+		if err != nil {
+			return "🎨 Gagal membuat katalog. Coba lagi nanti ya!"
+		}
+
+		response := "🎨 Katalog Produk Anda:\n\n"
+		for i, item := range catalog {
+			response += fmt.Sprintf("%d. %s - Rp %.0f/%s\n", i+1, item.ProductName, item.Price, item.Unit)
+			if item.PromoText != "" {
+				response += fmt.Sprintf("   📢 %s\n", item.PromoText)
+			}
+			response += "\n"
+		}
+		response += "💡 Mau buat promosi untuk produk tertentu? Bilang aja: \"buatkan promosi nasi goreng\""
+		return response
+	}
+
+	// Generate promo for specific product
+	promo, err := o.promo.GeneratePromo(ctx, product, 0, "")
+	if err != nil {
+		return fmt.Sprintf("🎨 Gagal membuat promosi untuk %s. Coba lagi!", product)
+	}
+
+	return fmt.Sprintf("🎨 Promosi untuk %s:\n\n%s\n\n📋 Copy teks di atas untuk share ke WhatsApp atau marketplace!",
+		product, o.promo.FormatForWhatsApp(promo))
 }
 
 func (o *AgentOrchestrator) getGreetingResponse(phone string) string {

@@ -61,10 +61,13 @@ func main() {
 	)
 
 	// Create Agent Orchestrator
-	orchestrator := agents.NewAgentOrchestrator(db, intentEngine, kolosalClient)
+	orchestrator := agents.NewAgentOrchestrator(db, intentEngine, kolosalClient, cfg.KolosalAPIKey, cfg.KolosalBaseURL, cfg.GeminiAPIKey)
+
+	// Create Catalog Handler
+	catalogHandler := api.NewCatalogHandler(orchestrator.GetPromoAgent())
 
 	// Create router
-	router := api.NewRouter(orchestrator)
+	router := api.NewRouter(orchestrator, catalogHandler)
 
 	// Create server
 	server := &http.Server{
