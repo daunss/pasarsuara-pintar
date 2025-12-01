@@ -1,0 +1,20 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+echo "🔍 Running pre-commit checks..."
+
+# Go format check
+echo "📝 Checking Go formatting..."
+cd apps/backend && go fmt ./... && cd ../..
+cd apps/wa-gateway && go fmt ./... && cd ../..
+
+# Go build check
+echo "🔨 Building Go services..."
+cd apps/backend && go build ./... && cd ../..
+cd apps/wa-gateway && go build ./... && cd ../..
+
+# Run Go tests
+echo "🧪 Running Go tests..."
+cd apps/backend && go test ./... && cd ../..
+
+echo "✅ Pre-commit checks passed!"
