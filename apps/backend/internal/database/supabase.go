@@ -153,7 +153,9 @@ func (s *SupabaseClient) GetUserByPhone(ctx context.Context, phone string) (*Use
 // GetInventoryByProduct finds inventory by product name for a user
 func (s *SupabaseClient) GetInventoryByProduct(ctx context.Context, userID, productName string) (*Inventory, error) {
 	var items []Inventory
-	endpoint := fmt.Sprintf("inventory?user_id=eq.%s&product_name=ilike.%%%s%%", userID, productName)
+	// Use case-insensitive partial match with proper URL encoding
+	// %25 = %, so %25%s%25 becomes %productName%
+	endpoint := fmt.Sprintf("inventory?user_id=eq.%s&product_name=ilike.%%25%s%%25&select=*", userID, productName)
 	err := s.request(ctx, "GET", endpoint, nil, &items)
 	if err != nil {
 		return nil, err

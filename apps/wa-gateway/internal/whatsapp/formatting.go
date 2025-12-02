@@ -65,9 +65,10 @@ func (c *Client) SendListMessage(ctx context.Context, jid string, title, descrip
 	var listSections []*waE2E.ListMessage_Section
 	for _, section := range sections {
 		var rows []*waE2E.ListMessage_Row
-		for _, item := range section.Items {
+		for i, item := range section.Items {
+			rowID := fmt.Sprintf("row_%d", i)
 			rows = append(rows, &waE2E.ListMessage_Row{
-				RowID:       &item.ID,
+				RowID:       &rowID,
 				Title:       &item.Title,
 				Description: &item.Description,
 			})
