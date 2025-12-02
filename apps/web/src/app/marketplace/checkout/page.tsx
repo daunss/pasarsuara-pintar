@@ -1,12 +1,13 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useCart } from '@/lib/cart'
 import { useAuth } from '@/lib/auth'
 import { ProtectedRoute } from '@/components/ProtectedRoute'
 import { supabase } from '@/lib/supabase'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
+import Script from 'next/script'
 
 function CheckoutContent() {
   const { user } = useAuth()
@@ -42,6 +43,8 @@ function CheckoutContent() {
       }, {} as Record<string, typeof items>)
 
       // Create orders for each seller
+      const orderIds: string[] = []
+      
       for (const [sellerId, sellerItems] of Object.entries(itemsBySeller)) {
         const subtotal = sellerItems.reduce((sum, item) => sum + item.price * item.quantity, 0)
         const deliveryFee = 0 // TODO: Calculate delivery fee
@@ -58,6 +61,7 @@ function CheckoutContent() {
             seller_id: sellerId,
             order_number: orderNumber,
             status: 'PENDING',
+            payment_status: 'PENDING',
             subtotal: subtotal,
             delivery_fee: deliveryFee,
             total_amount: totalAmount,
@@ -91,19 +95,73 @@ function CheckoutContent() {
           .insert([{
             order_id: order.id,
             status: 'PENDING',
-            notes: 'Order created',
+            notes: 'Order created, waiting for payment',
             created_by: user.id
           }])
+
+        orderIds.push(order.order_number)
+      }
+
+      // Get user profile for payment
+      const { data: profile } = await supabase
+        .from('users')
+        .select('full_name, phone')
+        .eq('id', user.id)
+        .single()
+
+      // Create payment with Midtrans
+      const paymentResponse = await fetch('/api/payment/create', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          orderId: orderIds[0], // Use first order ID as main reference
+          amount: totalAmount,
+          customerDetails: {
+            first_name: profile?.full_name || 'Customer',
+            email: user.email || 'customer@example.com',
+            phone: profile?.phone || '08123456789'
+          },
+          itemDetails: items.map(item => ({
+            id: item.listingId,
+            name: item.title,
+            price: item.price,
+            quantity: item.quantity
+          }))
+        })
+      })
+
+      const paymentData = await paymentResponse.json()
+
+      if (!paymentData.success) {
+        throw new Error(paymentData.error || 'Failed to create payment')
       }
 
       // Clear cart
       clearCart()
 
-      alert('Pesanan berhasil dibuat!')
-      router.push('/orders')
+      // Open Midtrans Snap popup
+      // @ts-ignore
+      window.snap.pay(paymentData.token, {
+        onSuccess: function(result: any) {
+          console.log('Payment success:', result)
+          router.push(`/orders/${orderIds[0]}?status=success`)
+        },
+        onPending: function(result: any) {
+          console.log('Payment pending:', result)
+          router.push(`/orders/${orderIds[0]}?status=pending`)
+        },
+        onError: function(result: any) {
+          console.log('Payment error:', result)
+          router.push(`/orders/${orderIds[0]}?status=error`)
+        },
+        onClose: function() {
+          console.log('Payment popup closed')
+          router.push('/orders')
+        }
+      })
     } catch (error) {
       console.error('Error creating order:', error)
-      alert('Gagal membuat pesanan')
+      alert('Gagal membuat pesanan: ' + (error as Error).message)
     } finally {
       setLoading(false)
     }
@@ -240,8 +298,15 @@ function CheckoutContent() {
 
 export default function CheckoutPage() {
   return (
-    <ProtectedRoute>
-      <CheckoutContent />
-    </ProtectedRoute>
+    <>
+      <Script
+        src="https://app.sandbox.midtrans.com/snap/snap.js"
+        data-client-key={process.env.NEXT_PUBLIC_MIDTRANS_CLIENT_KEY}
+        strategy="lazyOnload"
+      />
+      <ProtectedRoute>
+        <CheckoutContent />
+      </ProtectedRoute>
+    </>
   )
 }

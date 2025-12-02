@@ -10,6 +10,8 @@ type Order = {
   id: string
   order_number: string
   status: string
+  payment_status: string
+  payment_method: string | null
   total_amount: number
   created_at: string
   seller: {
@@ -165,9 +167,20 @@ function OrdersContent() {
                       <div className="font-semibold">{order.order_number}</div>
                       <div className="text-sm text-gray-600">{formatDate(order.created_at)}</div>
                     </div>
-                    <span className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusBadge(order.status)}`}>
-                      {order.status}
-                    </span>
+                    <div className="flex gap-2">
+                      <span className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusBadge(order.status)}`}>
+                        {order.status}
+                      </span>
+                      {order.payment_status && (
+                        <span className={`px-3 py-1 rounded-full text-sm font-medium ${
+                          order.payment_status === 'PAID' ? 'bg-green-100 text-green-800' :
+                          order.payment_status === 'PENDING' ? 'bg-yellow-100 text-yellow-800' :
+                          'bg-red-100 text-red-800'
+                        }`}>
+                          💳 {order.payment_status}
+                        </span>
+                      )}
+                    </div>
                   </div>
                   <div className="text-right">
                     <div className="text-sm text-gray-600">Total</div>
