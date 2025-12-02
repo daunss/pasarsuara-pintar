@@ -166,6 +166,26 @@ function CheckoutContent() {
         .eq('id', user.id)
         .single()
 
+      // Prepare item details for Midtrans (must include delivery fee)
+      const midtransItems = [
+        ...items.map(item => ({
+          id: item.listingId,
+          name: item.title,
+          price: item.price,
+          quantity: item.quantity
+        }))
+      ]
+
+      // Add delivery fee as separate item if not zero
+      if (deliveryFee > 0) {
+        midtransItems.push({
+          id: 'delivery-fee',
+          name: `Ongkir - ${selectedShipping.provider_name}`,
+          price: deliveryFee,
+          quantity: 1
+        })
+      }
+
       // Create payment with Midtrans
       const paymentResponse = await fetch('/api/payment/create', {
         method: 'POST',
@@ -178,12 +198,7 @@ function CheckoutContent() {
             email: user.email || 'customer@example.com',
             phone: profile?.phone || '08123456789'
           },
-          itemDetails: items.map(item => ({
-            id: item.listingId,
-            name: item.title,
-            price: item.price,
-            quantity: item.quantity
-          }))
+          itemDetails: midtransItems
         })
       })
 
