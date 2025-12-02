@@ -59,9 +59,10 @@ tmp/
 temp/
 *.tmp
 
-# Internal docs (jangan di-push)
+# Internal docs 
 konsep.md
 projek.md
+PROJECT2.md
 
 # Kiro settings
 .kiro/

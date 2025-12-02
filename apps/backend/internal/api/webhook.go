@@ -73,10 +73,24 @@ func (w *WhatsAppWebhook) Handle(rw http.ResponseWriter, r *http.Request) {
 		log.Printf("🎤 Audio message: %d seconds, voice: %v",
 			payload.Payload.Duration, payload.Payload.IsVoice)
 
-		// TODO: Implement audio processing with Gemini STT
-		// For now, ask user to send text
-		response.Message = "Audio received"
-		response.Reply = "🎤 Voice note diterima!\n\nUntuk saat ini, mohon kirim pesan teks dulu ya. Fitur voice akan segera aktif!"
+		// Check if we have audio data
+		if len(payload.Payload.AudioData) > 0 {
+			mimeType := payload.Payload.MimeType
+			if mimeType == "" {
+				mimeType = "audio/ogg" // Default for WhatsApp voice notes
+			}
+
+			log.Printf("🎙️ Processing audio: %d bytes, %s", len(payload.Payload.AudioData), mimeType)
+
+			// Process through Agent Orchestrator (will use Gemini STT + Kolosal)
+			agentResult := w.orchestrator.ProcessAudio(ctx, payload.From, payload.Payload.AudioData, mimeType)
+			response.AgentResult = agentResult
+			response.Reply = agentResult.Message
+			response.Message = "Audio processed successfully"
+		} else {
+			response.Message = "Audio received but no data"
+			response.Reply = "🎤 Voice note diterima tapi data kosong. Coba kirim lagi ya!"
+		}
 
 	default:
 		response.Success = false

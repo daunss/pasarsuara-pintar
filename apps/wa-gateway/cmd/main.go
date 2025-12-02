@@ -36,8 +36,8 @@ func main() {
 		log.Fatalf("❌ Failed to create WhatsApp client: %v", err)
 	}
 
-	// Create message handler
-	msgHandler := handler.NewMessageHandler(cfg.BackendURL)
+	// Create message handler with waClient for replies
+	msgHandler := handler.NewMessageHandler(cfg.BackendURL, waClient)
 	waClient.SetMessageHandler(msgHandler.Handle)
 
 	// Connect to WhatsApp

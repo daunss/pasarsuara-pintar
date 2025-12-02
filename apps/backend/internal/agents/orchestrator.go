@@ -42,6 +42,26 @@ func (o *AgentOrchestrator) GetPromoAgent() *PromoAgent {
 	return o.promo
 }
 
+// ProcessAudio handles incoming audio message
+func (o *AgentOrchestrator) ProcessAudio(ctx context.Context, userPhone string, audioData []byte, mimeType string) *AgentResponse {
+	log.Printf("🎯 Orchestrator processing audio from %s: %d bytes", userPhone, len(audioData))
+
+	// Step 1: Transcribe audio to text using Gemini
+	transcript, err := o.intentEngine.ProcessAudio(ctx, audioData, mimeType)
+	if err != nil {
+		log.Printf("❌ Audio transcription failed: %v", err)
+		return &AgentResponse{
+			Success: false,
+			Message: "Maaf, voice note tidak bisa diproses. Coba kirim pesan teks ya! 🙏",
+		}
+	}
+
+	log.Printf("📝 Transcript: %s", transcript.RawText)
+
+	// Step 2: Process the transcript as text
+	return o.processIntent(ctx, userPhone, transcript)
+}
+
 // ProcessMessage handles incoming message and routes to appropriate agent
 func (o *AgentOrchestrator) ProcessMessage(ctx context.Context, userPhone, text string) *AgentResponse {
 	log.Printf("🎯 Orchestrator processing message from %s: %s", userPhone, text)
@@ -56,10 +76,15 @@ func (o *AgentOrchestrator) ProcessMessage(ctx context.Context, userPhone, text 
 		}
 	}
 
-	// Step 2: Get or create user
+	return o.processIntent(ctx, userPhone, intent)
+}
+
+// processIntent handles intent routing to agents
+func (o *AgentOrchestrator) processIntent(ctx context.Context, userPhone string, intent *ai.Intent) *AgentResponse {
+	// Get or create user
 	userID := o.getUserID(ctx, userPhone)
 
-	// Step 3: Route to appropriate agent based on intent
+	// Route to appropriate agent based on intent
 	response := &AgentResponse{
 		Success: true,
 		Intent:  intent,
