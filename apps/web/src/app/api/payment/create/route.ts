@@ -1,17 +1,27 @@
 import { NextRequest, NextResponse } from 'next/server'
 import midtransClient from 'midtrans-client'
 
-// Initialize Midtrans Snap
-const snap = new midtransClient.Snap({
-  isProduction: false, // Set to true for production
-  serverKey: process.env.MIDTRANS_SERVER_KEY || '',
-  clientKey: process.env.NEXT_PUBLIC_MIDTRANS_CLIENT_KEY || ''
-})
+// Function to get Midtrans Snap client (lazy initialization)
+function getSnapClient() {
+  return new midtransClient.Snap({
+    isProduction: process.env.MIDTRANS_IS_PRODUCTION === 'true',
+    serverKey: process.env.MIDTRANS_SERVER_KEY || '',
+    clientKey: process.env.NEXT_PUBLIC_MIDTRANS_CLIENT_KEY || ''
+  })
+}
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
     const { orderId, amount, customerDetails, itemDetails } = body
+
+    // Debug: Log environment variables (remove in production)
+    console.log('Midtrans Config:', {
+      isProduction: process.env.MIDTRANS_IS_PRODUCTION,
+      hasServerKey: !!process.env.MIDTRANS_SERVER_KEY,
+      serverKeyPrefix: process.env.MIDTRANS_SERVER_KEY?.substring(0, 10),
+      hasClientKey: !!process.env.NEXT_PUBLIC_MIDTRANS_CLIENT_KEY
+    })
 
     // Create transaction parameter
     const parameter = {
@@ -29,6 +39,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Create transaction
+    const snap = getSnapClient()
     const transaction = await snap.createTransaction(parameter)
 
     return NextResponse.json({

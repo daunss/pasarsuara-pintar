@@ -14,10 +14,50 @@ function CheckoutContent() {
   const { items, getTotalAmount, clearCart } = useCart()
   const router = useRouter()
   const [loading, setLoading] = useState(false)
+  const [loadingShipping, setLoadingShipping] = useState(false)
+  const [shippingOptions, setShippingOptions] = useState<any[]>([])
+  const [selectedShipping, setSelectedShipping] = useState<any>(null)
   const [formData, setFormData] = useState({
     delivery_address: '',
+    delivery_city: 'Jakarta',
+    recipient_name: '',
+    recipient_phone: '',
     delivery_notes: ''
   })
+
+  useEffect(() => {
+    if (formData.delivery_city) {
+      fetchShippingOptions()
+    }
+  }, [formData.delivery_city])
+
+  const fetchShippingOptions = async () => {
+    setLoadingShipping(true)
+    try {
+      const response = await fetch('/api/shipping/calculate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          origin: 'Jakarta', // TODO: Get from seller location
+          destination: formData.delivery_city,
+          weight: 1 // TODO: Calculate from cart items
+        })
+      })
+
+      const data = await response.json()
+      if (data.success) {
+        setShippingOptions(data.options)
+        // Auto-select cheapest option
+        if (data.options.length > 0) {
+          setSelectedShipping(data.options[0])
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching shipping:', error)
+    } finally {
+      setLoadingShipping(false)
+    }
+  }
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('id-ID', {
@@ -29,7 +69,10 @@ function CheckoutContent() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!user || items.length === 0) return
+    if (!user || items.length === 0 || !selectedShipping) {
+      alert('Mohon pilih metode pengiriman')
+      return
+    }
 
     setLoading(true)
     try {
@@ -47,7 +90,7 @@ function CheckoutContent() {
       
       for (const [sellerId, sellerItems] of Object.entries(itemsBySeller)) {
         const subtotal = sellerItems.reduce((sum, item) => sum + item.price * item.quantity, 0)
-        const deliveryFee = 0 // TODO: Calculate delivery fee
+        const deliveryFee = selectedShipping.cost
         const totalAmount = subtotal + deliveryFee
 
         // Generate order number
@@ -65,13 +108,27 @@ function CheckoutContent() {
             subtotal: subtotal,
             delivery_fee: deliveryFee,
             total_amount: totalAmount,
-            delivery_address: formData.delivery_address,
+            delivery_address: `${formData.delivery_address}, ${formData.delivery_city}`,
             delivery_notes: formData.delivery_notes
           }])
           .select()
           .single()
 
         if (orderError) throw orderError
+
+        // Create delivery record
+        await supabase
+          .from('deliveries')
+          .insert([{
+            order_id: order.id,
+            provider_id: selectedShipping.provider_id,
+            delivery_address: `${formData.delivery_address}, ${formData.delivery_city}`,
+            recipient_name: formData.recipient_name || profile?.full_name || 'Customer',
+            recipient_phone: formData.recipient_phone || profile?.phone || '08123456789',
+            delivery_notes: formData.delivery_notes,
+            delivery_fee: deliveryFee,
+            status: 'PENDING'
+          }])
 
         // Create order items
         const orderItems = sellerItems.map(item => ({
@@ -172,7 +229,7 @@ function CheckoutContent() {
     return null
   }
 
-  const deliveryFee = 0 // TODO: Calculate based on location
+  const deliveryFee = selectedShipping?.cost || 0
   const totalAmount = getTotalAmount() + deliveryFee
 
   return (
@@ -205,14 +262,59 @@ function CheckoutContent() {
                 
                 <div className="space-y-4">
                   <div>
-                    <label className="block text-sm font-medium mb-2">Alamat Pengiriman *</label>
+                    <label className="block text-sm font-medium mb-2">Nama Penerima *</label>
+                    <input
+                      type="text"
+                      required
+                      value={formData.recipient_name}
+                      onChange={(e) => setFormData({ ...formData, recipient_name: e.target.value })}
+                      className="w-full px-4 py-3 border rounded-lg"
+                      placeholder="Nama lengkap penerima"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium mb-2">No. Telepon Penerima *</label>
+                    <input
+                      type="tel"
+                      required
+                      value={formData.recipient_phone}
+                      onChange={(e) => setFormData({ ...formData, recipient_phone: e.target.value })}
+                      className="w-full px-4 py-3 border rounded-lg"
+                      placeholder="08123456789"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium mb-2">Kota Tujuan *</label>
+                    <select
+                      required
+                      value={formData.delivery_city}
+                      onChange={(e) => setFormData({ ...formData, delivery_city: e.target.value })}
+                      className="w-full px-4 py-3 border rounded-lg"
+                    >
+                      <option value="Jakarta">Jakarta</option>
+                      <option value="Bogor">Bogor</option>
+                      <option value="Depok">Depok</option>
+                      <option value="Tangerang">Tangerang</option>
+                      <option value="Bekasi">Bekasi</option>
+                      <option value="Bandung">Bandung</option>
+                      <option value="Surabaya">Surabaya</option>
+                      <option value="Semarang">Semarang</option>
+                      <option value="Yogyakarta">Yogyakarta</option>
+                      <option value="Medan">Medan</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium mb-2">Alamat Lengkap *</label>
                     <textarea
                       required
                       value={formData.delivery_address}
                       onChange={(e) => setFormData({ ...formData, delivery_address: e.target.value })}
                       className="w-full px-4 py-3 border rounded-lg"
                       rows={3}
-                      placeholder="Jl. Contoh No. 123, Kelurahan, Kecamatan, Kota"
+                      placeholder="Jl. Contoh No. 123, Kelurahan, Kecamatan"
                     />
                   </div>
 
@@ -227,6 +329,55 @@ function CheckoutContent() {
                     />
                   </div>
                 </div>
+              </div>
+
+              {/* Shipping Method */}
+              <div className="bg-white rounded-lg shadow p-6">
+                <h2 className="text-xl font-bold mb-4">Metode Pengiriman</h2>
+                
+                {loadingShipping ? (
+                  <div className="text-center py-4">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-600 mx-auto"></div>
+                    <p className="mt-2 text-sm text-gray-600">Memuat opsi pengiriman...</p>
+                  </div>
+                ) : shippingOptions.length === 0 ? (
+                  <p className="text-gray-600">Pilih kota tujuan untuk melihat opsi pengiriman</p>
+                ) : (
+                  <div className="space-y-3">
+                    {shippingOptions.map((option) => (
+                      <label
+                        key={option.provider_id}
+                        className={`flex items-center justify-between p-4 border-2 rounded-lg cursor-pointer transition ${
+                          selectedShipping?.provider_id === option.provider_id
+                            ? 'border-green-600 bg-green-50'
+                            : 'border-gray-200 hover:border-green-300'
+                        }`}
+                      >
+                        <div className="flex items-center gap-3">
+                          <input
+                            type="radio"
+                            name="shipping"
+                            checked={selectedShipping?.provider_id === option.provider_id}
+                            onChange={() => setSelectedShipping(option)}
+                            className="w-4 h-4 text-green-600"
+                          />
+                          <div>
+                            <div className="font-semibold">{option.provider_name}</div>
+                            <div className="text-sm text-gray-600">{option.description}</div>
+                            {option.estimated_days > 0 && (
+                              <div className="text-xs text-gray-500 mt-1">
+                                Estimasi: {option.estimated_days} hari
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                        <div className="font-bold text-green-600">
+                          {option.cost === 0 ? 'Gratis' : formatCurrency(option.cost)}
+                        </div>
+                      </label>
+                    ))}
+                  </div>
+                )}
               </div>
 
               {/* Order Items */}
