@@ -59,13 +59,16 @@ tmp/
 temp/
 *.tmp
 
-# Internal docs 
+# Kiro settings (local IDE config)
+.kiro/
+
+# Old/deprecated docs (already removed)
 konsep.md
 projek.md
-PROJECT2.md
 test-features.md
-TESTING-GUIDE.md
-NEXT-STEPS.md
 
-# Kiro settings
-.kiro/
+# ===========================================
+# HACKATHON NOTE:
+# Documentation files (*.md) are INCLUDED
+# to showcase project completeness!
+# ===========================================

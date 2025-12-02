@@ -6,10 +6,13 @@
 
 **Status:** Phase 2 Complete (95%) | Ready for Pilot Testing
 
+🏆 **[HACKATHON SUBMISSION](HACKATHON.md)** - Complete hackathon documentation
+
 ---
 
 ## 📚 Documentation
 
+- **[HACKATHON.md](HACKATHON.md)** - 🏆 Hackathon submission (START HERE!)
 - **[PROJECT2.md](PROJECT2.md)** - Complete roadmap & milestones
 - **[CONTRIBUTING.md](CONTRIBUTING.md)** - How to contribute
 - **[docs/](docs/)** - Detailed documentation
