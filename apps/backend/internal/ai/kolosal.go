@@ -59,6 +59,7 @@ Available intents:
 - RECORD_SALE: User recording a sale transaction (e.g., "tadi laku nasi 10 porsi", "payu bakso 5 mangkok")
 - RECORD_EXPENSE: User recording an expense (e.g., "beli gas 2 tabung", "bayar listrik")
 - REQUEST_PROMO: User wants promotional content (e.g., "buatkan promosi", "mau bikin iklan")
+- REQUEST_REPORT: User wants financial report (e.g., "laporan hari ini", "laporan minggu ini", "laporan bulan ini")
 - ASK_MARKET: User asking about market/price info (e.g., "harga cabai berapa", "tren harga beras")
 - CHECK_STOCK: User checking inventory (e.g., "stok beras berapa", "sisa telur ada berapa")
 - GREETING: Simple greeting (e.g., "halo", "selamat pagi")

@@ -14,6 +14,7 @@ import (
 	"github.com/pasarsuara/backend/internal/ai"
 	"github.com/pasarsuara/backend/internal/api"
 	"github.com/pasarsuara/backend/internal/config"
+	appcontext "github.com/pasarsuara/backend/internal/context"
 	"github.com/pasarsuara/backend/internal/database"
 )
 
@@ -60,8 +61,12 @@ func main() {
 		cfg.KolosalBaseURL,
 	)
 
+	// Create Conversation Manager (30 min TTL)
+	contextMgr := appcontext.NewConversationManager(30 * time.Minute)
+	log.Println("✅ Conversation Manager initialized")
+
 	// Create Agent Orchestrator
-	orchestrator := agents.NewAgentOrchestrator(db, intentEngine, kolosalClient, cfg.KolosalAPIKey, cfg.KolosalBaseURL, cfg.GeminiAPIKey)
+	orchestrator := agents.NewAgentOrchestrator(db, intentEngine, kolosalClient, cfg.KolosalAPIKey, cfg.KolosalBaseURL, cfg.GeminiAPIKey, contextMgr)
 
 	// Create Catalog Handler
 	catalogHandler := api.NewCatalogHandler(orchestrator.GetPromoAgent())

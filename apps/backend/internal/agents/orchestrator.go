@@ -4,8 +4,10 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"strings"
 
 	"github.com/pasarsuara/backend/internal/ai"
+	appcontext "github.com/pasarsuara/backend/internal/context"
 	"github.com/pasarsuara/backend/internal/database"
 )
 
@@ -15,7 +17,9 @@ type AgentOrchestrator struct {
 	finance      *FinanceAgent
 	negotiation  *NegotiationOrchestrator
 	promo        *PromoAgent
+	inventory    *InventoryAgent
 	intentEngine *ai.IntentEngine
+	contextMgr   *appcontext.ConversationManager
 }
 
 // AgentResponse represents the response from agent processing
@@ -27,13 +31,15 @@ type AgentResponse struct {
 	Negotiation *NegotiationResult    `json:"negotiation,omitempty"`
 }
 
-func NewAgentOrchestrator(db *database.SupabaseClient, intentEngine *ai.IntentEngine, kolosal *ai.KolosalClient, kolosalKey, kolosalURL, geminiKey string) *AgentOrchestrator {
+func NewAgentOrchestrator(db *database.SupabaseClient, intentEngine *ai.IntentEngine, kolosal *ai.KolosalClient, kolosalKey, kolosalURL, geminiKey string, contextMgr *appcontext.ConversationManager) *AgentOrchestrator {
 	return &AgentOrchestrator{
 		db:           db,
 		finance:      NewFinanceAgent(db),
 		negotiation:  NewNegotiationOrchestrator(db, kolosal),
 		promo:        NewPromoAgent(db, kolosalKey, kolosalURL, geminiKey),
+		inventory:    NewInventoryAgent(db),
 		intentEngine: intentEngine,
+		contextMgr:   contextMgr,
 	}
 }
 
@@ -84,6 +90,34 @@ func (o *AgentOrchestrator) processIntent(ctx context.Context, userPhone string,
 	// Get or create user
 	userID := o.getUserID(ctx, userPhone)
 
+	// Get conversation context
+	if o.contextMgr != nil {
+		lastEntities := o.contextMgr.GetLastEntities(userPhone)
+
+		// Fill missing entities from context
+		if intent.Entities["product"] == nil || intent.Entities["product"] == "" {
+			if lastProduct, ok := lastEntities["product"]; ok {
+				intent.Entities["product"] = lastProduct
+				log.Printf("🔄 Using product from context: %v", lastProduct)
+			}
+		}
+		if intent.Entities["qty"] == nil || getFloatEntity(intent.Entities, "qty") == 0 {
+			if lastQty, ok := lastEntities["qty"]; ok {
+				intent.Entities["qty"] = lastQty
+				log.Printf("🔄 Using qty from context: %v", lastQty)
+			}
+		}
+		if intent.Entities["price"] == nil || getFloatEntity(intent.Entities, "price") == 0 {
+			if lastPrice, ok := lastEntities["price"]; ok {
+				intent.Entities["price"] = lastPrice
+				log.Printf("🔄 Using price from context: %v", lastPrice)
+			}
+		}
+
+		// Store current message in context
+		o.contextMgr.AddMessage(userPhone, "user", intent.RawText, intent.Action, intent.Entities)
+	}
+
 	// Route to appropriate agent based on intent
 	response := &AgentResponse{
 		Success: true,
@@ -99,6 +133,17 @@ func (o *AgentOrchestrator) processIntent(ctx context.Context, userPhone string,
 		} else {
 			response.Transaction = tx
 			response.Message = o.formatSaleResponse(tx)
+
+			// Auto-update inventory
+			if o.inventory != nil {
+				alert, err := o.inventory.UpdateStockAfterSale(ctx, userID, intent)
+				if err != nil {
+					log.Printf("⚠️ Failed to update inventory: %v", err)
+				} else if alert != nil {
+					// Append stock alert to response
+					response.Message += "\n\n" + o.inventory.FormatStockAlert(alert)
+				}
+			}
 		}
 
 	case "RECORD_EXPENSE":
@@ -119,6 +164,14 @@ func (o *AgentOrchestrator) processIntent(ctx context.Context, userPhone string,
 			tx, _ := o.finance.RecordPurchase(ctx, userID, intent, negResult.FinalPrice)
 			response.Transaction = tx
 			response.Message = o.formatNegotiationSuccess(negResult)
+
+			// Auto-update inventory
+			if o.inventory != nil {
+				err := o.inventory.UpdateStockAfterPurchase(ctx, userID, intent, negResult.Quantity)
+				if err != nil {
+					log.Printf("⚠️ Failed to update inventory: %v", err)
+				}
+			}
 		} else {
 			response.Message = o.formatNegotiationFailed(negResult)
 		}
@@ -132,11 +185,19 @@ func (o *AgentOrchestrator) processIntent(ctx context.Context, userPhone string,
 	case "REQUEST_PROMO":
 		response.Message = o.handlePromoRequest(ctx, userID, intent)
 
+	case "REQUEST_REPORT":
+		response.Message = o.handleReportRequest(ctx, userID, intent)
+
 	case "GREETING":
 		response.Message = o.getGreetingResponse(userPhone)
 
 	default:
 		response.Message = o.intentEngine.GenerateResponse(intent)
+	}
+
+	// Store assistant response in context
+	if o.contextMgr != nil {
+		o.contextMgr.AddMessage(userPhone, "assistant", response.Message, intent.Action, nil)
 	}
 
 	return response
@@ -280,6 +341,53 @@ func (o *AgentOrchestrator) getGreetingResponse(phone string) string {
 		"• 📝 Catat penjualan: \"laku nasi 10 porsi\"\n" +
 		"• 🛒 Pesan barang: \"cari beras 25 kg\"\n" +
 		"• 📊 Cek harga: \"harga cabai berapa\"\n" +
-		"• 📦 Cek stok: \"stok telur berapa\"\n\n" +
+		"• 📦 Cek stok: \"stok telur berapa\"\n" +
+		"• 📋 Laporan: \"laporan hari ini\"\n\n" +
 		"Ada yang bisa saya bantu? 😊")
+}
+
+func (o *AgentOrchestrator) handleReportRequest(ctx context.Context, userID string, intent *ai.Intent) string {
+	reportAgent := NewReportAgent(o.db)
+
+	// Determine report type from entities or text
+	period := getStringEntity(intent.Entities, "period")
+	if period == "" {
+		// Check raw text for keywords
+		rawText := strings.ToLower(intent.RawText)
+		if strings.Contains(rawText, "minggu") {
+			period = "weekly"
+		} else if strings.Contains(rawText, "bulan") {
+			period = "monthly"
+		} else {
+			period = "daily"
+		}
+	}
+
+	var report *DailyReport
+	var err error
+	var formatted string
+
+	switch period {
+	case "weekly":
+		report, err = reportAgent.GenerateWeeklyReport(ctx, userID)
+		if err == nil {
+			formatted = reportAgent.FormatWeeklyReport(report)
+		}
+	case "monthly":
+		report, err = reportAgent.GenerateMonthlyReport(ctx, userID)
+		if err == nil {
+			formatted = reportAgent.FormatMonthlyReport(report)
+		}
+	default:
+		report, err = reportAgent.GenerateDailyReport(ctx, userID)
+		if err == nil {
+			formatted = reportAgent.FormatDailyReport(report)
+		}
+	}
+
+	if err != nil {
+		return "Maaf, gagal membuat laporan. Coba lagi ya!"
+	}
+
+	return formatted
 }
