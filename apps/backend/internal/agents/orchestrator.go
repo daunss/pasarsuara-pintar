@@ -118,6 +118,23 @@ func (o *AgentOrchestrator) processIntent(ctx context.Context, userPhone string,
 		o.contextMgr.AddMessage(userPhone, "user", intent.RawText, intent.Action, intent.Entities)
 	}
 
+	// Check for ambiguity AFTER filling from context
+	ambiguityCheck := CheckAmbiguity(intent)
+	if ambiguityCheck.HasAmbiguity {
+		log.Printf("❓ Ambiguity detected: missing %v", ambiguityCheck.Missing)
+
+		// Store partial intent in context for next message
+		if o.contextMgr != nil {
+			o.contextMgr.AddMessage(userPhone, "system", "waiting_for_clarification", intent.Action, intent.Entities)
+		}
+
+		return &AgentResponse{
+			Success: false,
+			Intent:  intent,
+			Message: FormatAmbiguityResponse(ambiguityCheck),
+		}
+	}
+
 	// Route to appropriate agent based on intent
 	response := &AgentResponse{
 		Success: true,
@@ -228,11 +245,16 @@ func (o *AgentOrchestrator) formatSaleResponse(tx *database.Transaction) string 
 }
 
 func (o *AgentOrchestrator) formatExpenseResponse(tx *database.Transaction) string {
+	// Auto-categorize expense
+	category := CategorizeExpense(tx.ProductName)
+	categoryInfo := FormatCategoryInfo(category)
+
 	return fmt.Sprintf("💸 Pengeluaran tercatat!\n\n"+
 		"📝 Item: %s\n"+
-		"💰 Biaya: Rp %.0f\n\n"+
+		"💰 Biaya: Rp %.0f\n"+
+		"🏷️ Kategori: %s\n\n"+
 		"Pengeluaran sudah dicatat di buku kas.",
-		tx.ProductName, tx.TotalAmount)
+		tx.ProductName, tx.TotalAmount, categoryInfo)
 }
 
 func (o *AgentOrchestrator) formatNegotiationSuccess(neg *NegotiationResult) string {
