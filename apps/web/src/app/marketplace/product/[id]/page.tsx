@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '@/lib/supabase'
 import { useAuth } from '@/lib/auth'
+import { useCart } from '@/lib/cart'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 
@@ -29,6 +30,7 @@ type ProductListing = {
 
 export default function ProductDetailPage({ params }: { params: { id: string } }) {
   const { user } = useAuth()
+  const { addItem } = useCart()
   const router = useRouter()
   const [listing, setListing] = useState<ProductListing | null>(null)
   const [loading, setLoading] = useState(true)
@@ -65,16 +67,31 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
     }
   }
 
-  const handleOrder = async () => {
+  const handleAddToCart = () => {
+    if (!listing || !listing.seller) return
+
+    addItem({
+      listingId: listing.id,
+      title: listing.title,
+      price: listing.price,
+      unit: listing.unit,
+      quantity: quantity,
+      sellerId: listing.seller_id,
+      sellerName: listing.seller.business_name,
+      maxStock: listing.stock_qty
+    })
+
+    alert('Produk ditambahkan ke keranjang!')
+  }
+
+  const handleBuyNow = () => {
     if (!user) {
       router.push('/login')
       return
     }
 
-    if (!listing) return
-
-    // TODO: Implement cart or direct order
-    alert(`Order ${quantity} ${listing.unit} ${listing.title} - Total: ${formatCurrency(listing.price * quantity)}`)
+    handleAddToCart()
+    router.push('/marketplace/cart')
   }
 
   const formatCurrency = (amount: number) => {
@@ -243,17 +260,26 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
               </div>
 
               {/* Action Buttons */}
-              <div className="flex gap-3">
+              <div className="space-y-3">
                 <button
-                  onClick={handleOrder}
+                  onClick={handleBuyNow}
                   disabled={listing.stock_qty === 0}
-                  className="flex-1 bg-green-600 text-white py-3 rounded-lg font-semibold hover:bg-green-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full bg-green-600 text-white py-3 rounded-lg font-semibold hover:bg-green-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  {listing.stock_qty === 0 ? 'Stok Habis' : 'Pesan Sekarang'}
+                  {listing.stock_qty === 0 ? 'Stok Habis' : 'Beli Sekarang'}
                 </button>
-                <button className="px-6 py-3 border-2 border-green-600 text-green-600 rounded-lg font-semibold hover:bg-green-50 transition">
-                  💬 Chat
-                </button>
+                <div className="flex gap-3">
+                  <button
+                    onClick={handleAddToCart}
+                    disabled={listing.stock_qty === 0}
+                    className="flex-1 border-2 border-green-600 text-green-600 py-3 rounded-lg font-semibold hover:bg-green-50 transition disabled:opacity-50"
+                  >
+                    🛒 Tambah ke Keranjang
+                  </button>
+                  <button className="px-6 py-3 border-2 border-gray-300 text-gray-700 rounded-lg font-semibold hover:bg-gray-50 transition">
+                    💬
+                  </button>
+                </div>
               </div>
             </div>
 
