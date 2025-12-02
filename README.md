@@ -4,6 +4,19 @@
 
 [![CI Pipeline](https://github.com/daunss/pasarsuara-pintar/actions/workflows/ci.yml/badge.svg)](https://github.com/daunss/pasarsuara-pintar/actions/workflows/ci.yml)
 
+**Status:** Phase 2 Complete (95%) | Ready for Pilot Testing
+
+---
+
+## 📚 Documentation
+
+- **[PROJECT2.md](PROJECT2.md)** - Complete roadmap & milestones
+- **[CONTRIBUTING.md](CONTRIBUTING.md)** - How to contribute
+- **[docs/](docs/)** - Detailed documentation
+  - [Testing Guide](docs/TESTING-GUIDE.md)
+  - [Next Steps](docs/NEXT-STEPS.md)
+  - [Phase 2 Summary](docs/PHASE2-COMPLETION-SUMMARY.md)
+
 ---
 
 ## 🎯 Problem
