@@ -230,6 +230,34 @@ function SellerDashboardContent() {
           </div>
         </div>
 
+        {/* Quick Actions */}
+        <div className="grid md:grid-cols-3 gap-4 mb-8">
+          <Link
+            href="/seller/products/new"
+            className="bg-white rounded-lg shadow p-6 hover:shadow-lg transition text-center"
+          >
+            <div className="text-4xl mb-2">📦</div>
+            <div className="font-semibold text-gray-800">Tambah Produk</div>
+            <div className="text-sm text-gray-600 mt-1">Listing produk baru</div>
+          </Link>
+          <Link
+            href="/orders"
+            className="bg-white rounded-lg shadow p-6 hover:shadow-lg transition text-center"
+          >
+            <div className="text-4xl mb-2">📋</div>
+            <div className="font-semibold text-gray-800">Kelola Pesanan</div>
+            <div className="text-sm text-gray-600 mt-1">Lihat & proses pesanan</div>
+          </Link>
+          <Link
+            href="/seller/deliveries"
+            className="bg-white rounded-lg shadow p-6 hover:shadow-lg transition text-center"
+          >
+            <div className="text-4xl mb-2">🚚</div>
+            <div className="font-semibold text-gray-800">Kelola Pengiriman</div>
+            <div className="text-sm text-gray-600 mt-1">Update status pengiriman</div>
+          </Link>
+        </div>
+
         {/* Stats Cards */}
         <div className="grid md:grid-cols-4 gap-6 mb-8">
           <div className="bg-white rounded-lg shadow p-6">
