@@ -2,6 +2,7 @@ package api
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 
@@ -90,6 +91,47 @@ func (w *WhatsAppWebhook) Handle(rw http.ResponseWriter, r *http.Request) {
 		} else {
 			response.Message = "Audio received but no data"
 			response.Reply = "🎤 Voice note diterima tapi data kosong. Coba kirim lagi ya!"
+		}
+
+	case "image":
+		log.Printf("📷 Image message from %s", payload.From)
+
+		caption := payload.Payload.Text
+		imageData := payload.Payload.AudioData // Reused field
+
+		if len(imageData) > 0 {
+			log.Printf("🖼️ Processing image: %d bytes, caption: %s", len(imageData), caption)
+
+			// For now, just acknowledge receipt
+			// TODO: Image recognition, product catalog, etc.
+			response.Message = "Image received"
+			if caption != "" {
+				// Process caption as text
+				agentResult := w.orchestrator.ProcessMessage(ctx, payload.From, caption)
+				response.AgentResult = agentResult
+				response.Reply = "📷 Gambar diterima!\n\n" + agentResult.Message
+			} else {
+				response.Reply = "📷 Gambar diterima! Kirim caption untuk deskripsi produk ya.\n\nContoh: \"Nasi goreng spesial 15 ribu\""
+			}
+		} else {
+			response.Reply = "📷 Gambar diterima tapi data kosong. Coba kirim lagi ya!"
+		}
+
+	case "document":
+		log.Printf("📄 Document message from %s", payload.From)
+
+		filename := payload.Payload.Text
+		docData := payload.Payload.AudioData // Reused field
+
+		if len(docData) > 0 {
+			log.Printf("📋 Document received: %s (%d bytes)", filename, len(docData))
+
+			// For now, just acknowledge receipt
+			// TODO: OCR for receipts, Excel import, etc.
+			response.Message = "Document received"
+			response.Reply = fmt.Sprintf("📄 Dokumen \"%s\" diterima!\n\nFitur import data akan segera aktif.", filename)
+		} else {
+			response.Reply = "📄 Dokumen diterima tapi data kosong. Coba kirim lagi ya!"
 		}
 
 	default:

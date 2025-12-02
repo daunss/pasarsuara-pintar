@@ -100,6 +100,52 @@ func (h *MessageHandler) Handle(evt *events.Message) {
 			Duration:  seconds,
 		}
 
+	} else if msg.ImageMessage != nil {
+		// Image message
+		log.Printf("📷 Image message received")
+
+		// Download image
+		imageData, err := h.waClient.DownloadImage(context.Background(), msg)
+		if err != nil {
+			log.Printf("❌ Failed to download image: %v", err)
+			go h.sendReply(senderJID.String(), "Maaf, gagal mengunduh gambar. Coba kirim lagi ya!")
+			return
+		}
+
+		log.Printf("✅ Image downloaded: %d bytes", len(imageData))
+
+		// Get caption if any
+		caption := ""
+		if msg.ImageMessage.Caption != nil {
+			caption = *msg.ImageMessage.Caption
+		}
+
+		payload.Type = "image"
+		payload.Payload = MessagePayload{
+			Text:      caption,
+			AudioData: imageData, // Reuse field for image data
+			MimeType:  "image/jpeg",
+		}
+
+	} else if msg.DocumentMessage != nil {
+		// Document message
+		log.Printf("📄 Document message received")
+
+		docData, filename, err := h.waClient.DownloadDocument(context.Background(), msg)
+		if err != nil {
+			log.Printf("❌ Failed to download document: %v", err)
+			go h.sendReply(senderJID.String(), "Maaf, gagal mengunduh dokumen. Coba kirim lagi ya!")
+			return
+		}
+
+		log.Printf("✅ Document downloaded: %s (%d bytes)", filename, len(docData))
+
+		payload.Type = "document"
+		payload.Payload = MessagePayload{
+			Text:      filename,
+			AudioData: docData, // Reuse field for document data
+		}
+
 	} else {
 		// Text message
 		text := whatsapp.ExtractTextFromMessage(msg)
@@ -121,6 +167,12 @@ func (h *MessageHandler) Handle(evt *events.Message) {
 }
 
 func (h *MessageHandler) processAndReply(payload WebhookPayload, senderJID string) {
+	// Send typing indicator
+	if h.waClient != nil {
+		h.waClient.SendTyping(context.Background(), senderJID, true)
+		defer h.waClient.SendTyping(context.Background(), senderJID, false)
+	}
+
 	// Send to backend
 	reply, err := h.sendToBackend(payload)
 	if err != nil {
