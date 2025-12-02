@@ -201,3 +201,288 @@ func (s *SupabaseClient) UpdateNegotiationLog(ctx context.Context, id string, up
 	endpoint := fmt.Sprintf("negotiation_logs?id=eq.%s", id)
 	return s.request(ctx, "PATCH", endpoint, updates, nil)
 }
+
+// ============ PHASE 3: Additional Tables ============
+
+// ProductCatalog types
+type ProductCatalog struct {
+	ID           string  `json:"id,omitempty"`
+	UserID       string  `json:"user_id"`
+	ProductName  string  `json:"product_name"`
+	Category     string  `json:"category,omitempty"`
+	Description  string  `json:"description,omitempty"`
+	DefaultPrice float64 `json:"default_price,omitempty"`
+	DefaultUnit  string  `json:"default_unit,omitempty"`
+	ImageURL     string  `json:"image_url,omitempty"`
+	SKU          string  `json:"sku,omitempty"`
+	IsActive     bool    `json:"is_active"`
+	CreatedAt    string  `json:"created_at,omitempty"`
+	UpdatedAt    string  `json:"updated_at,omitempty"`
+}
+
+// Contact types
+type Contact struct {
+	ID                string  `json:"id,omitempty"`
+	UserID            string  `json:"user_id"`
+	Type              string  `json:"type"` // SUPPLIER, CUSTOMER
+	Name              string  `json:"name"`
+	Phone             string  `json:"phone,omitempty"`
+	Email             string  `json:"email,omitempty"`
+	Address           string  `json:"address,omitempty"`
+	City              string  `json:"city,omitempty"`
+	Notes             string  `json:"notes,omitempty"`
+	Rating            float64 `json:"rating,omitempty"`
+	TotalTransactions int     `json:"total_transactions,omitempty"`
+	IsActive          bool    `json:"is_active"`
+	CreatedAt         string  `json:"created_at,omitempty"`
+	UpdatedAt         string  `json:"updated_at,omitempty"`
+}
+
+// Payment types
+type Payment struct {
+	ID              string  `json:"id,omitempty"`
+	TransactionID   string  `json:"transaction_id"`
+	Amount          float64 `json:"amount"`
+	PaymentMethod   string  `json:"payment_method,omitempty"` // CASH, TRANSFER, CREDIT, DEBIT, EWALLET
+	Status          string  `json:"status"`                   // PAID, PENDING, PARTIAL, FAILED, REFUNDED
+	ReferenceNumber string  `json:"reference_number,omitempty"`
+	Notes           string  `json:"notes,omitempty"`
+	PaidAt          string  `json:"paid_at,omitempty"`
+	CreatedAt       string  `json:"created_at,omitempty"`
+	UpdatedAt       string  `json:"updated_at,omitempty"`
+}
+
+// AuditLog types
+type AuditLog struct {
+	ID         string `json:"id,omitempty"`
+	UserID     string `json:"user_id,omitempty"`
+	Action     string `json:"action"`
+	EntityType string `json:"entity_type,omitempty"`
+	EntityID   string `json:"entity_id,omitempty"`
+	OldData    any    `json:"old_data,omitempty"`
+	NewData    any    `json:"new_data,omitempty"`
+	IPAddress  string `json:"ip_address,omitempty"`
+	UserAgent  string `json:"user_agent,omitempty"`
+	CreatedAt  string `json:"created_at,omitempty"`
+}
+
+// UserPreferences types
+type UserPreferences struct {
+	ID                   string   `json:"id,omitempty"`
+	UserID               string   `json:"user_id"`
+	Language             string   `json:"language,omitempty"`
+	Currency             string   `json:"currency,omitempty"`
+	Timezone             string   `json:"timezone,omitempty"`
+	NotificationEnabled  bool     `json:"notification_enabled"`
+	NotificationChannels []string `json:"notification_channels,omitempty"`
+	LowStockThreshold    int      `json:"low_stock_threshold,omitempty"`
+	ReportFrequency      string   `json:"report_frequency,omitempty"`
+	Theme                string   `json:"theme,omitempty"`
+	CreatedAt            string   `json:"created_at,omitempty"`
+	UpdatedAt            string   `json:"updated_at,omitempty"`
+}
+
+// NotificationQueue types
+type NotificationQueue struct {
+	ID           string `json:"id,omitempty"`
+	UserID       string `json:"user_id"`
+	Type         string `json:"type"`
+	Title        string `json:"title"`
+	Message      string `json:"message"`
+	Channel      string `json:"channel"` // whatsapp, email, push
+	Status       string `json:"status"`  // PENDING, SENT, FAILED, CANCELLED
+	ScheduledAt  string `json:"scheduled_at,omitempty"`
+	SentAt       string `json:"sent_at,omitempty"`
+	ErrorMessage string `json:"error_message,omitempty"`
+	RetryCount   int    `json:"retry_count,omitempty"`
+	CreatedAt    string `json:"created_at,omitempty"`
+}
+
+// CreateProductCatalog creates a new product in catalog
+func (s *SupabaseClient) CreateProductCatalog(ctx context.Context, product *ProductCatalog) error {
+	var result []ProductCatalog
+	err := s.request(ctx, "POST", "product_catalog", product, &result)
+	if err != nil {
+		return err
+	}
+	if len(result) > 0 {
+		*product = result[0]
+	}
+	return nil
+}
+
+// GetProductCatalog gets products from catalog
+func (s *SupabaseClient) GetProductCatalog(ctx context.Context, userID string, activeOnly bool) ([]ProductCatalog, error) {
+	var products []ProductCatalog
+	endpoint := fmt.Sprintf("product_catalog?user_id=eq.%s", userID)
+	if activeOnly {
+		endpoint += "&is_active=eq.true"
+	}
+	endpoint += "&order=product_name.asc"
+	err := s.request(ctx, "GET", endpoint, nil, &products)
+	return products, err
+}
+
+// UpdateProductCatalog updates a product in catalog
+func (s *SupabaseClient) UpdateProductCatalog(ctx context.Context, id string, updates map[string]any) error {
+	endpoint := fmt.Sprintf("product_catalog?id=eq.%s", id)
+	return s.request(ctx, "PATCH", endpoint, updates, nil)
+}
+
+// CreateContact creates a new contact (supplier or customer)
+func (s *SupabaseClient) CreateContact(ctx context.Context, contact *Contact) error {
+	var result []Contact
+	err := s.request(ctx, "POST", "contacts", contact, &result)
+	if err != nil {
+		return err
+	}
+	if len(result) > 0 {
+		*contact = result[0]
+	}
+	return nil
+}
+
+// GetContacts gets contacts by type
+func (s *SupabaseClient) GetContacts(ctx context.Context, userID, contactType string) ([]Contact, error) {
+	var contacts []Contact
+	endpoint := fmt.Sprintf("contacts?user_id=eq.%s", userID)
+	if contactType != "" {
+		endpoint += fmt.Sprintf("&type=eq.%s", contactType)
+	}
+	endpoint += "&is_active=eq.true&order=name.asc"
+	err := s.request(ctx, "GET", endpoint, nil, &contacts)
+	return contacts, err
+}
+
+// UpdateContact updates a contact
+func (s *SupabaseClient) UpdateContact(ctx context.Context, id string, updates map[string]any) error {
+	endpoint := fmt.Sprintf("contacts?id=eq.%s", id)
+	return s.request(ctx, "PATCH", endpoint, updates, nil)
+}
+
+// CreatePayment creates a payment record
+func (s *SupabaseClient) CreatePayment(ctx context.Context, payment *Payment) error {
+	var result []Payment
+	err := s.request(ctx, "POST", "payments", payment, &result)
+	if err != nil {
+		return err
+	}
+	if len(result) > 0 {
+		*payment = result[0]
+	}
+	return nil
+}
+
+// GetPaymentsByTransaction gets payments for a transaction
+func (s *SupabaseClient) GetPaymentsByTransaction(ctx context.Context, transactionID string) ([]Payment, error) {
+	var payments []Payment
+	endpoint := fmt.Sprintf("payments?transaction_id=eq.%s&order=created_at.desc", transactionID)
+	err := s.request(ctx, "GET", endpoint, nil, &payments)
+	return payments, err
+}
+
+// UpdatePayment updates a payment record
+func (s *SupabaseClient) UpdatePayment(ctx context.Context, id string, updates map[string]any) error {
+	endpoint := fmt.Sprintf("payments?id=eq.%s", id)
+	return s.request(ctx, "PATCH", endpoint, updates, nil)
+}
+
+// LogAudit creates an audit log entry
+func (s *SupabaseClient) LogAudit(ctx context.Context, log *AuditLog) error {
+	var result []AuditLog
+	err := s.request(ctx, "POST", "audit_logs", log, &result)
+	if err != nil {
+		return err
+	}
+	if len(result) > 0 {
+		*log = result[0]
+	}
+	return nil
+}
+
+// GetAuditLogs gets audit logs for a user
+func (s *SupabaseClient) GetAuditLogs(ctx context.Context, userID string, limit int) ([]AuditLog, error) {
+	var logs []AuditLog
+	endpoint := fmt.Sprintf("audit_logs?user_id=eq.%s&order=created_at.desc", userID)
+	if limit > 0 {
+		endpoint += fmt.Sprintf("&limit=%d", limit)
+	}
+	err := s.request(ctx, "GET", endpoint, nil, &logs)
+	return logs, err
+}
+
+// CreateUserPreferences creates user preferences
+func (s *SupabaseClient) CreateUserPreferences(ctx context.Context, prefs *UserPreferences) error {
+	var result []UserPreferences
+	err := s.request(ctx, "POST", "user_preferences", prefs, &result)
+	if err != nil {
+		return err
+	}
+	if len(result) > 0 {
+		*prefs = result[0]
+	}
+	return nil
+}
+
+// GetUserPreferences gets user preferences
+func (s *SupabaseClient) GetUserPreferences(ctx context.Context, userID string) (*UserPreferences, error) {
+	var prefs []UserPreferences
+	endpoint := fmt.Sprintf("user_preferences?user_id=eq.%s", userID)
+	err := s.request(ctx, "GET", endpoint, nil, &prefs)
+	if err != nil {
+		return nil, err
+	}
+	if len(prefs) == 0 {
+		return nil, nil
+	}
+	return &prefs[0], nil
+}
+
+// UpdateUserPreferences updates user preferences
+func (s *SupabaseClient) UpdateUserPreferences(ctx context.Context, userID string, updates map[string]any) error {
+	endpoint := fmt.Sprintf("user_preferences?user_id=eq.%s", userID)
+	return s.request(ctx, "PATCH", endpoint, updates, nil)
+}
+
+// CreateNotification creates a notification in queue
+func (s *SupabaseClient) CreateNotification(ctx context.Context, notif *NotificationQueue) error {
+	var result []NotificationQueue
+	err := s.request(ctx, "POST", "notification_queue", notif, &result)
+	if err != nil {
+		return err
+	}
+	if len(result) > 0 {
+		*notif = result[0]
+	}
+	return nil
+}
+
+// GetPendingNotifications gets pending notifications
+func (s *SupabaseClient) GetPendingNotifications(ctx context.Context, limit int) ([]NotificationQueue, error) {
+	var notifs []NotificationQueue
+	endpoint := "notification_queue?status=eq.PENDING&order=scheduled_at.asc"
+	if limit > 0 {
+		endpoint += fmt.Sprintf("&limit=%d", limit)
+	}
+	err := s.request(ctx, "GET", endpoint, nil, &notifs)
+	return notifs, err
+}
+
+// UpdateNotification updates a notification status
+func (s *SupabaseClient) UpdateNotification(ctx context.Context, id string, updates map[string]any) error {
+	endpoint := fmt.Sprintf("notification_queue?id=eq.%s", id)
+	return s.request(ctx, "PATCH", endpoint, updates, nil)
+}
+
+// CreateUser creates a new user
+func (s *SupabaseClient) CreateUser(ctx context.Context, user *User) error {
+	var result []User
+	err := s.request(ctx, "POST", "users", user, &result)
+	if err != nil {
+		return err
+	}
+	if len(result) > 0 {
+		*user = result[0]
+	}
+	return nil
+}

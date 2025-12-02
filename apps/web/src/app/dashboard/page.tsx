@@ -157,10 +157,12 @@ export default function DashboardPage() {
                 🗣️ PasarSuara
               </Link>
               <span className="text-gray-400">|</span>
-              <span className="text-gray-600">Dashboard Bu Siti</span>
+              <span className="text-gray-600">Dashboard</span>
             </div>
             <div className="flex items-center gap-4">
-              <span className="text-sm text-gray-500">Demo Mode</span>
+              <Link href="/dashboard/settings" className="text-sm text-gray-600 hover:text-green-600">
+                ⚙️ Pengaturan
+              </Link>
             </div>
           </div>
         </div>
@@ -168,6 +170,30 @@ export default function DashboardPage() {
 
       {/* Main Content */}
       <main className="container mx-auto px-4 py-8">
+        {/* Quick Links */}
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
+          <Link href="/dashboard/catalog" className="bg-white p-4 rounded-lg shadow hover:shadow-md transition text-center">
+            <div className="text-3xl mb-2">📦</div>
+            <div className="font-semibold">Katalog Produk</div>
+          </Link>
+          <Link href="/dashboard/contacts" className="bg-white p-4 rounded-lg shadow hover:shadow-md transition text-center">
+            <div className="text-3xl mb-2">👥</div>
+            <div className="font-semibold">Kontak</div>
+          </Link>
+          <Link href="/dashboard/payments" className="bg-white p-4 rounded-lg shadow hover:shadow-md transition text-center">
+            <div className="text-3xl mb-2">💳</div>
+            <div className="font-semibold">Pembayaran</div>
+          </Link>
+          <Link href="/dashboard/audit" className="bg-white p-4 rounded-lg shadow hover:shadow-md transition text-center">
+            <div className="text-3xl mb-2">📜</div>
+            <div className="font-semibold">Audit Log</div>
+          </Link>
+          <Link href="/dashboard/settings" className="bg-white p-4 rounded-lg shadow hover:shadow-md transition text-center">
+            <div className="text-3xl mb-2">⚙️</div>
+            <div className="font-semibold">Pengaturan</div>
+          </Link>
+        </div>
+
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           <StatsCard

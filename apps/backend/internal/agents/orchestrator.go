@@ -18,6 +18,9 @@ type AgentOrchestrator struct {
 	negotiation  *NegotiationOrchestrator
 	promo        *PromoAgent
 	inventory    *InventoryAgent
+	catalog      *CatalogAgent
+	contact      *ContactAgent
+	notification *NotificationAgent
 	intentEngine *ai.IntentEngine
 	contextMgr   *appcontext.ConversationManager
 }
@@ -38,6 +41,9 @@ func NewAgentOrchestrator(db *database.SupabaseClient, intentEngine *ai.IntentEn
 		negotiation:  NewNegotiationOrchestrator(db, kolosal),
 		promo:        NewPromoAgent(db, kolosalKey, kolosalURL, geminiKey),
 		inventory:    NewInventoryAgent(db),
+		catalog:      NewCatalogAgent(db),
+		contact:      NewContactAgent(db),
+		notification: NewNotificationAgent(db),
 		intentEngine: intentEngine,
 		contextMgr:   contextMgr,
 	}

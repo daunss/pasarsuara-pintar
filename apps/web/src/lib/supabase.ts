@@ -52,3 +52,92 @@ export type NegotiationLog = {
   created_at: string | null
   completed_at: string | null
 }
+
+// Phase 3 Types
+export type ProductCatalog = {
+  id: string
+  user_id: string
+  product_name: string
+  category: string | null
+  description: string | null
+  default_price: number | null
+  default_unit: string | null
+  image_url: string | null
+  sku: string | null
+  is_active: boolean
+  created_at: string | null
+  updated_at: string | null
+}
+
+export type Contact = {
+  id: string
+  user_id: string
+  type: 'SUPPLIER' | 'CUSTOMER'
+  name: string
+  phone: string | null
+  email: string | null
+  address: string | null
+  city: string | null
+  notes: string | null
+  rating: number | null
+  total_transactions: number | null
+  is_active: boolean
+  created_at: string | null
+  updated_at: string | null
+}
+
+export type Payment = {
+  id: string
+  transaction_id: string
+  amount: number
+  payment_method: 'CASH' | 'TRANSFER' | 'CREDIT' | 'DEBIT' | 'EWALLET' | null
+  status: 'PAID' | 'PENDING' | 'PARTIAL' | 'FAILED' | 'REFUNDED'
+  reference_number: string | null
+  notes: string | null
+  paid_at: string | null
+  created_at: string | null
+  updated_at: string | null
+}
+
+export type AuditLog = {
+  id: string
+  user_id: string | null
+  action: string
+  entity_type: string | null
+  entity_id: string | null
+  old_data: any
+  new_data: any
+  ip_address: string | null
+  user_agent: string | null
+  created_at: string | null
+}
+
+export type UserPreferences = {
+  id: string
+  user_id: string
+  language: string | null
+  currency: string | null
+  timezone: string | null
+  notification_enabled: boolean
+  notification_channels: string[] | null
+  low_stock_threshold: number | null
+  report_frequency: string | null
+  theme: string | null
+  created_at: string | null
+  updated_at: string | null
+}
+
+export type NotificationQueue = {
+  id: string
+  user_id: string
+  type: string
+  title: string
+  message: string
+  channel: 'whatsapp' | 'email' | 'push'
+  status: 'PENDING' | 'SENT' | 'FAILED' | 'CANCELLED'
+  scheduled_at: string | null
+  sent_at: string | null
+  error_message: string | null
+  retry_count: number | null
+  created_at: string | null
+}
