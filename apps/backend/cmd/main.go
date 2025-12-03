@@ -71,8 +71,15 @@ func main() {
 	// Create Catalog Handler
 	catalogHandler := api.NewCatalogHandler(orchestrator.GetPromoAgent())
 
+	// Create Message Router (for registration, ambiguity, categorization)
+	// Note: This requires importing handlers package
+	// messageRouter := handlers.NewMessageRouter(db, intentEngine, contextMgr)
+
 	// Create router
-	router := api.NewRouter(orchestrator, catalogHandler)
+	router := api.NewRouter(orchestrator, catalogHandler, db)
+
+	// TODO: Set message router on webhook handler
+	// webhook.SetMessageRouter(messageRouter)
 
 	// Create server
 	server := &http.Server{
@@ -89,6 +96,7 @@ func main() {
 		log.Println("")
 		log.Println("📋 Available endpoints:")
 		log.Println("   POST /internal/webhook/whatsapp - WA Gateway webhook")
+		log.Println("   POST /api/payments/webhook - Midtrans payment webhook")
 		log.Println("   POST /api/intent/test - Test intent extraction")
 		log.Println("   GET  /health - Health check")
 		log.Println("")

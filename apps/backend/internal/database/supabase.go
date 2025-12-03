@@ -120,6 +120,8 @@ type User struct {
 	Name             string `json:"name,omitempty"`
 	Role             string `json:"role,omitempty"`
 	PreferredDialect string `json:"preferred_dialect,omitempty"`
+	PasswordHash     string `json:"password_hash,omitempty"`
+	CreatedAt        string `json:"created_at,omitempty"`
 }
 
 // CreateTransaction inserts a new transaction
@@ -485,4 +487,117 @@ func (s *SupabaseClient) CreateUser(ctx context.Context, user *User) error {
 		*user = result[0]
 	}
 	return nil
+}
+
+// ============ PHASE 5: Marketplace & Orders ============
+
+// Order types
+type Order struct {
+	ID              string  `json:"id,omitempty"`
+	BuyerID         string  `json:"buyer_id"`
+	SellerID        string  `json:"seller_id"`
+	OrderNumber     string  `json:"order_number"`
+	Status          string  `json:"status"` // PENDING, CONFIRMED, PROCESSING, SHIPPED, DELIVERED, CANCELLED, REFUNDED
+	Subtotal        float64 `json:"subtotal"`
+	DeliveryFee     float64 `json:"delivery_fee"`
+	TotalAmount     float64 `json:"total_amount"`
+	DeliveryAddress string  `json:"delivery_address,omitempty"`
+	DeliveryNotes   string  `json:"delivery_notes,omitempty"`
+	PaymentStatus   string  `json:"payment_status,omitempty"` // PENDING, PAID, FAILED, REFUNDED
+	PaymentMethod   string  `json:"payment_method,omitempty"`
+	PaidAt          string  `json:"paid_at,omitempty"`
+	CreatedAt       string  `json:"created_at,omitempty"`
+	UpdatedAt       string  `json:"updated_at,omitempty"`
+}
+
+// Delivery types
+type Delivery struct {
+	ID                 string    `json:"id,omitempty"`
+	OrderID            string    `json:"order_id,omitempty"`
+	ProviderID         string    `json:"provider_id,omitempty"`
+	TrackingNumber     string    `json:"tracking_number,omitempty"`
+	Status             string    `json:"status"` // PENDING, PICKED_UP, IN_TRANSIT, OUT_FOR_DELIVERY, DELIVERED, FAILED, RETURNED
+	PickupAddress      string    `json:"pickup_address,omitempty"`
+	DeliveryAddress    string    `json:"delivery_address"`
+	RecipientName      string    `json:"recipient_name"`
+	RecipientPhone     string    `json:"recipient_phone"`
+	DeliveryNotes      string    `json:"delivery_notes,omitempty"`
+	DeliveryFee        float64   `json:"delivery_fee"`
+	Weight             float64   `json:"weight,omitempty"`
+	EstimatedDelivery  time.Time `json:"estimated_delivery,omitempty"`
+	ActualDelivery     string    `json:"actual_delivery,omitempty"`
+	ProofOfDeliveryURL string    `json:"proof_of_delivery_url,omitempty"`
+	DriverName         string    `json:"driver_name,omitempty"`
+	DriverPhone        string    `json:"driver_phone,omitempty"`
+	CreatedAt          string    `json:"created_at,omitempty"`
+	UpdatedAt          string    `json:"updated_at,omitempty"`
+}
+
+// GetOrdersByNumber gets orders by order number
+func (s *SupabaseClient) GetOrdersByNumber(ctx context.Context, orderNumber string) ([]Order, error) {
+	var orders []Order
+	endpoint := fmt.Sprintf("orders?order_number=eq.%s", orderNumber)
+	err := s.request(ctx, "GET", endpoint, nil, &orders)
+	return orders, err
+}
+
+// UpdateOrder updates an order
+func (s *SupabaseClient) UpdateOrder(ctx context.Context, id string, updates map[string]interface{}) error {
+	endpoint := fmt.Sprintf("orders?id=eq.%s", id)
+	return s.request(ctx, "PATCH", endpoint, updates, nil)
+}
+
+// CreateDelivery creates a delivery record
+func (s *SupabaseClient) CreateDelivery(ctx context.Context, delivery *Delivery) error {
+	var result []Delivery
+	err := s.request(ctx, "POST", "deliveries", delivery, &result)
+	if err != nil {
+		return err
+	}
+	if len(result) > 0 {
+		*delivery = result[0]
+	}
+	return nil
+}
+
+// GetUserByEmail finds user by email address
+func (s *SupabaseClient) GetUserByEmail(ctx context.Context, email string) (*User, error) {
+	var users []User
+	endpoint := fmt.Sprintf("users?email=eq.%s", email)
+	err := s.request(ctx, "GET", endpoint, nil, &users)
+	if err != nil {
+		return nil, err
+	}
+	if len(users) == 0 {
+		return nil, nil
+	}
+	return &users[0], nil
+}
+
+// GetTransactionsByDate gets transactions for a specific date
+func (s *SupabaseClient) GetTransactionsByDate(ctx context.Context, userID, date string) ([]Transaction, error) {
+	var transactions []Transaction
+	// Format: 2006-01-02
+	startDate := date + "T00:00:00Z"
+	endDate := date + "T23:59:59Z"
+	endpoint := fmt.Sprintf("transactions?user_id=eq.%s&created_at=gte.%s&created_at=lte.%s&order=created_at.desc",
+		userID, startDate, endDate)
+	err := s.request(ctx, "GET", endpoint, nil, &transactions)
+	return transactions, err
+}
+
+// GetRecentTransactions gets recent transactions for a user
+func (s *SupabaseClient) GetRecentTransactions(ctx context.Context, userID string, limit int) ([]Transaction, error) {
+	var transactions []Transaction
+	endpoint := fmt.Sprintf("transactions?user_id=eq.%s&order=created_at.desc&limit=%d", userID, limit)
+	err := s.request(ctx, "GET", endpoint, nil, &transactions)
+	return transactions, err
+}
+
+// GetInventoryByUser gets all inventory items for a user
+func (s *SupabaseClient) GetInventoryByUser(ctx context.Context, userID string) ([]Inventory, error) {
+	var inventory []Inventory
+	endpoint := fmt.Sprintf("inventory?user_id=eq.%s&order=product_name.asc", userID)
+	err := s.request(ctx, "GET", endpoint, nil, &inventory)
+	return inventory, err
 }

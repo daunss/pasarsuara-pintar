@@ -1,8 +1,8 @@
 'use client'
 
 import { useState } from 'react'
-import { supabase } from '@/lib/supabase'
 import { useRouter } from 'next/navigation'
+import { supabase } from '@/lib/supabase'
 import Link from 'next/link'
 
 export default function LoginPage() {
@@ -14,7 +14,15 @@ export default function LoginPage() {
     password: ''
   })
 
-  const handleLogin = async (e: React.FormEvent) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData(prev => ({
+      ...prev,
+      [e.target.name]: e.target.value
+    }))
+    setError('')
+  }
+
+  const handleEmailLogin = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
     setError('')
@@ -27,27 +35,35 @@ export default function LoginPage() {
 
       if (error) throw error
 
-      if (data.user) {
-        router.push('/dashboard')
-      }
-    } catch (err: any) {
-      setError(err.message || 'Login gagal')
+      // Redirect to dashboard
+      const redirectUrl = sessionStorage.getItem('redirectAfterLogin') || '/dashboard'
+      sessionStorage.removeItem('redirectAfterLogin')
+      router.push(redirectUrl)
+    } catch (error: any) {
+      console.error('Login error:', error)
+      setError(error.message || 'Login gagal. Periksa email dan password Anda.')
     } finally {
       setLoading(false)
     }
   }
 
   const handleGoogleLogin = async () => {
+    setLoading(true)
+    setError('')
+
     try {
-      const { error } = await supabase.auth.signInWithOAuth({
+      const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: `${window.location.origin}/dashboard`
+          redirectTo: `${window.location.origin}/auth/callback`
         }
       })
+
       if (error) throw error
-    } catch (err: any) {
-      setError(err.message || 'Google login gagal')
+    } catch (error: any) {
+      console.error('Google login error:', error)
+      setError(error.message || 'Login dengan Google gagal.')
+      setLoading(false)
     }
   }
 
@@ -56,59 +72,59 @@ export default function LoginPage() {
       <div className="max-w-md w-full">
         {/* Logo & Title */}
         <div className="text-center mb-8">
-          <Link href="/" className="inline-block">
-            <h1 className="text-4xl font-bold text-green-700 mb-2">
-              🗣️ PasarSuara
-            </h1>
-          </Link>
-          <p className="text-gray-600">Voice-First AI OS untuk UMKM Indonesia</p>
+          <div className="text-6xl mb-4">🗣️</div>
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">PasarSuara Pintar</h1>
+          <p className="text-gray-600">Voice-First AI OS untuk UMKM</p>
         </div>
 
         {/* Login Card */}
         <div className="bg-white rounded-2xl shadow-xl p-8">
-          <h2 className="text-2xl font-bold text-gray-800 mb-6">Masuk ke Akun</h2>
+          <h2 className="text-2xl font-bold text-gray-900 mb-6">Masuk ke Akun</h2>
 
           {error && (
-            <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
-              {error}
+            <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg">
+              <p className="text-red-600 text-sm">{error}</p>
             </div>
           )}
 
-          <form onSubmit={handleLogin} className="space-y-4">
+          {/* Email/Password Form */}
+          <form onSubmit={handleEmailLogin} className="space-y-4 mb-6">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
                 Email
               </label>
               <input
                 type="email"
-                required
+                name="email"
                 value={formData.email}
-                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                onChange={handleChange}
+                required
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
                 placeholder="nama@email.com"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
                 Password
               </label>
               <input
                 type="password"
-                required
+                name="password"
                 value={formData.password}
-                onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                onChange={handleChange}
+                required
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
                 placeholder="••••••••"
               />
             </div>
 
-            <div className="flex items-center justify-between text-sm">
+            <div className="flex items-center justify-between">
               <label className="flex items-center">
-                <input type="checkbox" className="mr-2" />
-                <span className="text-gray-600">Ingat saya</span>
+                <input type="checkbox" className="rounded border-gray-300 text-green-600 focus:ring-green-500" />
+                <span className="ml-2 text-sm text-gray-600">Ingat saya</span>
               </label>
-              <Link href="/forgot-password" className="text-green-600 hover:underline">
+              <Link href="/forgot-password" className="text-sm text-green-600 hover:text-green-700">
                 Lupa password?
               </Link>
             </div>
@@ -123,7 +139,7 @@ export default function LoginPage() {
           </form>
 
           {/* Divider */}
-          <div className="relative my-6">
+          <div className="relative mb-6">
             <div className="absolute inset-0 flex items-center">
               <div className="w-full border-t border-gray-300"></div>
             </div>
@@ -135,7 +151,8 @@ export default function LoginPage() {
           {/* Google Login */}
           <button
             onClick={handleGoogleLogin}
-            className="w-full flex items-center justify-center gap-3 bg-white border-2 border-gray-300 text-gray-700 py-3 rounded-lg font-semibold hover:bg-gray-50 transition"
+            disabled={loading}
+            className="w-full bg-white border-2 border-gray-300 text-gray-700 py-3 rounded-lg font-semibold hover:bg-gray-50 transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
           >
             <svg className="w-5 h-5" viewBox="0 0 24 24">
               <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
@@ -143,25 +160,35 @@ export default function LoginPage() {
               <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
               <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
             </svg>
-            Masuk dengan Google
+            Google
           </button>
 
           {/* Register Link */}
           <p className="mt-6 text-center text-sm text-gray-600">
             Belum punya akun?{' '}
-            <Link href="/register" className="text-green-600 font-semibold hover:underline">
+            <Link href="/register" className="text-green-600 hover:text-green-700 font-semibold">
               Daftar sekarang
             </Link>
           </p>
         </div>
 
-        {/* Demo Account */}
-        <div className="mt-4 p-4 bg-blue-50 rounded-lg text-center text-sm">
-          <p className="text-blue-800 font-medium mb-2">🎯 Demo Account</p>
-          <p className="text-blue-600">
-            Email: demo@pasarsuara.com<br />
-            Password: demo123456
-          </p>
+        {/* Features */}
+        <div className="mt-8 text-center">
+          <p className="text-sm text-gray-600 mb-4">Kenapa PasarSuara?</p>
+          <div className="flex justify-center gap-6 text-xs text-gray-500">
+            <div className="flex items-center gap-1">
+              <span>✅</span>
+              <span>Voice-First</span>
+            </div>
+            <div className="flex items-center gap-1">
+              <span>✅</span>
+              <span>AI-Powered</span>
+            </div>
+            <div className="flex items-center gap-1">
+              <span>✅</span>
+              <span>Gratis</span>
+            </div>
+          </div>
         </div>
       </div>
     </div>

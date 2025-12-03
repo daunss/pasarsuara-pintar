@@ -11,7 +11,13 @@ import (
 
 // WhatsAppWebhook handles incoming messages from WA Gateway
 type WhatsAppWebhook struct {
-	orchestrator *agents.AgentOrchestrator
+	orchestrator  *agents.AgentOrchestrator
+	messageRouter MessageRouterInterface
+}
+
+// MessageRouterInterface defines the interface for message routing
+type MessageRouterInterface interface {
+	RouteMessage(phoneNumber, message string) (string, error)
 }
 
 // WebhookPayload matches the payload from WA Gateway
@@ -40,8 +46,14 @@ type WebhookResponse struct {
 
 func NewWhatsAppWebhook(orchestrator *agents.AgentOrchestrator) *WhatsAppWebhook {
 	return &WhatsAppWebhook{
-		orchestrator: orchestrator,
+		orchestrator:  orchestrator,
+		messageRouter: nil, // Will be set via SetMessageRouter
 	}
+}
+
+// SetMessageRouter sets the message router for the webhook
+func (w *WhatsAppWebhook) SetMessageRouter(router MessageRouterInterface) {
+	w.messageRouter = router
 }
 
 func (w *WhatsAppWebhook) Handle(rw http.ResponseWriter, r *http.Request) {
@@ -64,7 +76,20 @@ func (w *WhatsAppWebhook) Handle(rw http.ResponseWriter, r *http.Request) {
 		text := payload.Payload.Text
 		log.Printf("💬 Processing text: %s", text)
 
-		// Process through Agent Orchestrator
+		// Try message router first (for registration, ambiguity, categorization)
+		if w.messageRouter != nil {
+			routerResponse, err := w.messageRouter.RouteMessage(payload.From, text)
+			if err != nil {
+				log.Printf("⚠️ Message router error: %v, falling back to orchestrator", err)
+			} else if routerResponse != "" {
+				// Router handled the message
+				response.Reply = routerResponse
+				response.Message = "Processed by Message Router"
+				break
+			}
+		}
+
+		// Fallback to Agent Orchestrator for complex processing
 		agentResult := w.orchestrator.ProcessMessage(ctx, payload.From, text)
 		response.AgentResult = agentResult
 		response.Reply = agentResult.Message

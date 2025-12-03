@@ -7,9 +7,10 @@ import (
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/cors"
 	"github.com/pasarsuara/backend/internal/agents"
+	"github.com/pasarsuara/backend/internal/database"
 )
 
-func NewRouter(orchestrator *agents.AgentOrchestrator, catalogHandler *CatalogHandler) http.Handler {
+func NewRouter(orchestrator *agents.AgentOrchestrator, catalogHandler *CatalogHandler, db *database.SupabaseClient) http.Handler {
 	r := chi.NewRouter()
 
 	// Middleware
@@ -34,10 +35,27 @@ func NewRouter(orchestrator *agents.AgentOrchestrator, catalogHandler *CatalogHa
 	webhook := NewWhatsAppWebhook(orchestrator)
 	r.Post("/internal/webhook/whatsapp", webhook.Handle)
 
+	// Payment webhooks (from Midtrans)
+	paymentWebhook := NewMidtransWebhook(db)
+	r.Post("/api/payments/webhook", paymentWebhook.Handle)
+
+	// Authentication endpoints
+	authHandler := NewAuthHandler(db)
+	r.Post("/api/auth/login", authHandler.HandleLogin)
+	r.Post("/api/auth/google", authHandler.HandleGoogleAuth)
+	r.Post("/api/auth/reset-password", authHandler.HandlePasswordReset)
+	r.Post("/api/auth/logout", authHandler.HandleLogout)
+
+	// Dashboard handler
+	dashboardHandler := NewDashboardHandler(db)
+
 	// Public API routes
 	r.Route("/api", func(r chi.Router) {
 		// Dashboard endpoints
-		r.Get("/dashboard/stats", handleDashboardStats)
+		r.Get("/dashboard/metrics", dashboardHandler.HandleGetMetrics)
+		r.Get("/dashboard/recent-transactions", dashboardHandler.HandleGetRecentTransactions)
+		r.Get("/dashboard/inventory-status", dashboardHandler.HandleGetInventoryStatus)
+		r.Get("/dashboard/stats", handleDashboardStats) // Keep old endpoint for compatibility
 
 		// Inventory endpoints
 		r.Get("/inventory", handleGetInventory)

@@ -26,6 +26,9 @@ out/
 *.test
 *.out
 go.work
+bin/
+main
+main.exe
 
 # IDE
 .idea/
