@@ -15,10 +15,10 @@ export default function DevLoginPage() {
   const handleQuickSignup = async () => {
     setLoading(true)
     setError('')
-    setMessage('')
+    setMessage('Creating account...')
 
     try {
-      // Try to sign up
+      // Try to sign up with email confirmation disabled
       const { data: signupData, error: signupError } = await supabase.auth.signUp({
         email,
         password,
@@ -27,28 +27,41 @@ export default function DevLoginPage() {
             name: 'Test User',
             business_name: 'Warung Test',
             business_type: 'Warung Makan'
-          }
+          },
+          emailRedirectTo: `${window.location.origin}/auth/callback`
         }
       })
 
       if (signupError) {
         // If user exists, try to login
-        if (signupError.message.includes('already registered')) {
+        if (signupError.message.includes('already registered') || signupError.message.includes('User already registered')) {
+          setMessage('User exists, trying to login...')
+          
           const { data: loginData, error: loginError } = await supabase.auth.signInWithPassword({
             email,
             password
           })
 
-          if (loginError) throw loginError
+          if (loginError) {
+            // Try with different error messages
+            setError(`Login failed: ${loginError.message}. Try creating a new account with different email.`)
+            return
+          }
 
-          setMessage('Login berhasil!')
+          setMessage('✅ Login berhasil!')
           setTimeout(() => router.push('/dashboard'), 1000)
         } else {
           throw signupError
         }
       } else {
-        setMessage('Akun dibuat! Redirecting...')
-        setTimeout(() => router.push('/dashboard'), 1000)
+        // Check if email confirmation is required
+        if (signupData.user && !signupData.session) {
+          setMessage('⚠️ Email confirmation required. Check your email or contact admin to confirm your account.')
+          setError('Note: For dev, you may need to disable email confirmation in Supabase Dashboard → Authentication → Settings')
+        } else {
+          setMessage('✅ Akun dibuat! Redirecting...')
+          setTimeout(() => router.push('/dashboard'), 1000)
+        }
       }
     } catch (err: any) {
       setError(err.message || 'Terjadi kesalahan')
