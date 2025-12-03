@@ -7,11 +7,12 @@ import { TransactionList } from '@/components/dashboard/transaction-list'
 import { InventoryTable } from '@/components/dashboard/inventory-table'
 import { NegotiationChat } from '@/components/dashboard/negotiation-chat'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { useAuth } from '@/lib/auth'
 import { supabase, type Transaction, type Inventory, type NegotiationLog } from '@/lib/supabase'
-import { redirect } from 'next/navigation'
 
 export default function DashboardPage() {
+  const router = useRouter()
   const { user, loading: authLoading } = useAuth()
   const [transactions, setTransactions] = useState<Transaction[]>([])
   const [inventory, setInventory] = useState<Inventory[]>([])
@@ -21,9 +22,9 @@ export default function DashboardPage() {
   // Authentication guard
   useEffect(() => {
     if (!authLoading && !user) {
-      redirect('/login')
+      router.push('/login')
     }
-  }, [user, authLoading])
+  }, [user, authLoading, router])
 
   // Fetch data from Supabase
   useEffect(() => {
@@ -176,135 +177,6 @@ export default function DashboardPage() {
 
   // Show empty state if no data
   const hasNoData = transactions.length === 0 && inventory.length === 0
-
-  // Demo data - REMOVED, using real data now
-  const demoTransactions = [
-  {
-    id: '1',
-    user_id: '11111111-1111-1111-1111-111111111111',
-    type: 'SALE' as const,
-    product_name: 'Nasi Rames',
-    qty: 15,
-    price_per_unit: 12000,
-    total_amount: 180000,
-    raw_voice_text: 'Tadi laku nasi rames limolas porsi',
-    created_at: new Date().toISOString()
-  },
-  {
-    id: '2',
-    user_id: '11111111-1111-1111-1111-111111111111',
-    type: 'SALE' as const,
-    product_name: 'Nasi Goreng',
-    qty: 8,
-    price_per_unit: 15000,
-    total_amount: 120000,
-    raw_voice_text: 'Nasi goreng payu wolung porsi',
-    created_at: new Date(Date.now() - 3600000).toISOString()
-  },
-  {
-    id: '3',
-    user_id: '11111111-1111-1111-1111-111111111111',
-    type: 'PURCHASE' as const,
-    product_name: 'Beras Premium',
-    qty: 25,
-    price_per_unit: 11800,
-    total_amount: 295000,
-    raw_voice_text: 'Tuku beras 25 kilo neng Pak Joyo',
-    created_at: new Date(Date.now() - 7200000).toISOString()
-  },
-  {
-    id: '4',
-    user_id: '11111111-1111-1111-1111-111111111111',
-    type: 'EXPENSE' as const,
-    product_name: 'Gas LPG',
-    qty: 2,
-    price_per_unit: 22000,
-    total_amount: 44000,
-    raw_voice_text: 'Beli gas loro tabung',
-    created_at: new Date(Date.now() - 10800000).toISOString()
-  }
-]
-
-const demoInventory = [
-  {
-    id: '1',
-    user_id: '11111111-1111-1111-1111-111111111111',
-    product_name: 'Beras Premium',
-    stock_qty: 25,
-    unit: 'kg',
-    min_sell_price: 13000,
-    max_buy_price: 12000,
-    description: 'Beras putih kualitas premium',
-    created_at: new Date().toISOString()
-  },
-  {
-    id: '2',
-    user_id: '11111111-1111-1111-1111-111111111111',
-    product_name: 'Minyak Goreng',
-    stock_qty: 10,
-    unit: 'liter',
-    min_sell_price: 18000,
-    max_buy_price: 16000,
-    description: 'Minyak goreng sawit',
-    created_at: new Date().toISOString()
-  },
-  {
-    id: '3',
-    user_id: '11111111-1111-1111-1111-111111111111',
-    product_name: 'Telur Ayam',
-    stock_qty: 50,
-    unit: 'butir',
-    min_sell_price: 2500,
-    max_buy_price: 2200,
-    description: 'Telur ayam negeri segar',
-    created_at: new Date().toISOString()
-  },
-  {
-    id: '4',
-    user_id: '11111111-1111-1111-1111-111111111111',
-    product_name: 'Gula Pasir',
-    stock_qty: 5,
-    unit: 'kg',
-    min_sell_price: 16000,
-    max_buy_price: 14000,
-    description: 'Gula pasir putih',
-    created_at: new Date().toISOString()
-  }
-]
-
-const demoNegotiation = {
-  id: '1',
-  buyer_id: '11111111-1111-1111-1111-111111111111',
-  seller_id: '22222222-2222-2222-2222-222222222222',
-  product_name: 'Beras Premium',
-  initial_offer: 12000,
-  final_price: 11800,
-  status: 'SUCCESS' as const,
-  transcript: {
-    messages: [
-      { role: 'buyer_agent', content: 'Saya butuh beras 25 kg, budget maksimal 12.000/kg' },
-      { role: 'seller_agent', content: '[Pak Joyo] Stok ada 500 kg. Harga normal 12.500/kg, tapi untuk 25 kg bisa 12.200/kg' },
-      { role: 'buyer_agent', content: 'Bisa 11.800/kg? Saya langganan tetap' },
-      { role: 'seller_agent', content: '[Pak Joyo] Deal 11.800/kg untuk langganan. Total 295.000 untuk 25 kg' },
-      { role: 'system', content: '✅ Negosiasi berhasil. Deal: 11.800/kg' }
-    ]
-  },
-  created_at: new Date().toISOString(),
-  completed_at: new Date().toISOString()
-}
-
-// Calculate stats
-const totalSales = demoTransactions
-  .filter(t => t.type === 'SALE')
-  .reduce((sum, t) => sum + (t.total_amount || 0), 0)
-
-const totalPurchases = demoTransactions
-  .filter(t => t.type === 'PURCHASE')
-  .reduce((sum, t) => sum + (t.total_amount || 0), 0)
-
-const totalExpenses = demoTransactions
-  .filter(t => t.type === 'EXPENSE')
-  .reduce((sum, t) => sum + (t.total_amount || 0), 0)
 
   return hasNoData ? (
     <div className="min-h-screen bg-gray-50">
@@ -476,5 +348,4 @@ const totalExpenses = demoTransactions
       </main>
     </div>
   )
-}
 }
