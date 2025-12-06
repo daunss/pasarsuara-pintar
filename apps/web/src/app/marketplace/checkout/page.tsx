@@ -123,8 +123,8 @@ function CheckoutContent() {
             order_id: order.id,
             provider_id: selectedShipping.provider_id,
             delivery_address: `${formData.delivery_address}, ${formData.delivery_city}`,
-            recipient_name: formData.recipient_name || profile?.full_name || 'Customer',
-            recipient_phone: formData.recipient_phone || profile?.phone || '08123456789',
+            recipient_name: formData.recipient_name || 'Customer',
+            recipient_phone: formData.recipient_phone || '08123456789',
             delivery_notes: formData.delivery_notes,
             delivery_fee: deliveryFee,
             status: 'PENDING'

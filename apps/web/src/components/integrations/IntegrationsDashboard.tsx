@@ -8,7 +8,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { Badge } from '@/components/ui/badge'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Label } from '@/components/ui/label'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { Select } from '@/components/ui/select'
 import { FileSpreadsheet, Send, Sparkles, Copy, CheckCircle } from 'lucide-react'
 
 interface SocialContent {
@@ -169,36 +169,26 @@ export default function IntegrationsDashboard({ userID }: { userID: string }) {
                 </div>
                 <div className="space-y-2">
                   <Label>Tone</Label>
-                  <Select value={tone} onValueChange={setTone}>
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="casual">Casual</SelectItem>
-                      <SelectItem value="professional">Professional</SelectItem>
-                      <SelectItem value="funny">Funny</SelectItem>
-                      <SelectItem value="urgent">Urgent</SelectItem>
-                    </SelectContent>
+                  <Select value={tone} onChange={(e) => setTone(e.target.value)}>
+                    <option value="casual">Casual</option>
+                    <option value="professional">Professional</option>
+                    <option value="funny">Funny</option>
+                    <option value="urgent">Urgent</option>
                   </Select>
                 </div>
               </div>
 
               <div className="flex gap-2">
-                <Select value={platform} onValueChange={setPlatform}>
-                  <SelectTrigger className="w-48">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="instagram">📸 Instagram</SelectItem>
-                    <SelectItem value="facebook">👥 Facebook</SelectItem>
-                    <SelectItem value="twitter">🐦 Twitter</SelectItem>
-                    <SelectItem value="tiktok">🎵 TikTok</SelectItem>
-                  </SelectContent>
+                <Select value={platform} onChange={(e) => setPlatform(e.target.value)} className="w-48">
+                  <option value="instagram">📸 Instagram</option>
+                  <option value="facebook">👥 Facebook</option>
+                  <option value="twitter">🐦 Twitter</option>
+                  <option value="tiktok">🎵 TikTok</option>
                 </Select>
                 <Button onClick={() => generateSocialContent(false)} disabled={loading}>
                   {loading ? 'Generating...' : 'Generate Single'}
                 </Button>
-                <Button onClick={() => generateSocialContent(true)} disabled={loading} variant="secondary">
+                <Button onClick={() => generateSocialContent(true)} disabled={loading} variant="outline">
                   {loading ? 'Generating...' : 'Generate All Platforms'}
                 </Button>
               </div>
@@ -235,7 +225,7 @@ export default function IntegrationsDashboard({ userID }: { userID: string }) {
                           <Label className="text-xs text-muted-foreground">Hashtags</Label>
                           <div className="flex flex-wrap gap-1 mt-1">
                             {content.hashtags.map((tag, i) => (
-                              <Badge key={i} variant="secondary" className="text-xs">
+                              <Badge key={i} variant="info" className="text-xs">
                                 {tag}
                               </Badge>
                             ))}
@@ -328,7 +318,7 @@ export default function IntegrationsDashboard({ userID }: { userID: string }) {
                     <p className="text-xs text-muted-foreground mt-1">
                       Stock levels and product details
                     </p>
-                    <Badge variant="secondary" className="mt-2">Coming Soon</Badge>
+                    <Badge variant="warning" className="mt-2">Coming Soon</Badge>
                   </CardContent>
                 </Card>
                 <Card className="cursor-pointer hover:bg-gray-50 opacity-50">
@@ -338,7 +328,7 @@ export default function IntegrationsDashboard({ userID }: { userID: string }) {
                     <p className="text-xs text-muted-foreground mt-1">
                       P&L, cash flow, and profitability
                     </p>
-                    <Badge variant="secondary" className="mt-2">Coming Soon</Badge>
+                    <Badge variant="warning" className="mt-2">Coming Soon</Badge>
                   </CardContent>
                 </Card>
               </div>

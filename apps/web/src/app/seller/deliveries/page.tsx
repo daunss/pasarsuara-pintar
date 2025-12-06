@@ -71,13 +71,19 @@ function SellerDeliveriesContent() {
             buyer:users(name)
           )
         `)
-        .in('order_id', 
-          supabase
-            .from('orders')
-            .select('id')
-            .eq('seller_id', sellerProfile.id)
-        )
         .order('created_at', { ascending: false })
+      
+      // Get seller's order IDs first
+      const { data: sellerOrders } = await supabase
+        .from('orders')
+        .select('id')
+        .eq('seller_id', sellerProfile.id)
+      
+      const orderIds = sellerOrders?.map(o => o.id) || []
+      
+      if (orderIds.length > 0) {
+        query = query.in('order_id', orderIds)
+      }
 
       if (filterStatus !== 'ALL') {
         query = query.eq('status', filterStatus)

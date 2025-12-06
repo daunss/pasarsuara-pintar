@@ -1,9 +1,9 @@
-import { Suspense } from 'react'
-import { createServerComponentClient } from '@supabase/auth-helpers-nextjs'
-import { cookies } from 'next/headers'
-import { redirect } from 'next/navigation'
+'use client'
+
+import { useEffect, useState } from 'react'
+import { useRouter } from 'next/navigation'
+import { supabase } from '@/lib/supabase'
 import IntegrationsDashboard from '@/components/integrations/IntegrationsDashboard'
-import { Card, CardContent } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
 
 function IntegrationsLoading() {
@@ -16,31 +16,51 @@ function IntegrationsLoading() {
       
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {[1, 2, 3].map((i) => (
-          <Card key={i}>
-            <CardContent className="pt-6">
-              <Skeleton className="h-32 w-full" />
-            </CardContent>
-          </Card>
+          <div key={i} className="border rounded-lg p-6">
+            <Skeleton className="h-32 w-full" />
+          </div>
         ))}
       </div>
     </div>
   )
 }
 
-export default async function IntegrationsPage() {
-  const supabase = createServerComponentClient({ cookies })
-  
-  const { data: { user } } = await supabase.auth.getUser()
-  
-  if (!user) {
-    redirect('/login')
+export default function IntegrationsPage() {
+  const router = useRouter()
+  const [userId, setUserId] = useState<string | null>(null)
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    async function checkUser() {
+      const { data: { user } } = await supabase.auth.getUser()
+      
+      if (!user) {
+        router.push('/login')
+        return
+      }
+      
+      setUserId(user.id)
+      setLoading(false)
+    }
+    
+    checkUser()
+  }, [router])
+
+  if (loading) {
+    return (
+      <div className="container mx-auto py-6">
+        <IntegrationsLoading />
+      </div>
+    )
+  }
+
+  if (!userId) {
+    return null
   }
 
   return (
     <div className="container mx-auto py-6">
-      <Suspense fallback={<IntegrationsLoading />}>
-        <IntegrationsDashboard userID={user.id} />
-      </Suspense>
+      <IntegrationsDashboard userID={userId} />
     </div>
   )
 }

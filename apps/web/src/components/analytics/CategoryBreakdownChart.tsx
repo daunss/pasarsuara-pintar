@@ -99,11 +99,11 @@ export function CategoryBreakdownChart({ dateRange }: CategoryBreakdownChartProp
       <ResponsiveContainer width="100%" height="100%">
         <PieChart>
           <Pie
-            data={data}
+            data={data as any}
             cx="50%"
             cy="50%"
             labelLine={false}
-            label={({ name, percentage }) => `${name}: ${percentage.toFixed(1)}%`}
+            label={(props: any) => `${props.name}: ${props.percentage?.toFixed(1) || 0}%`}
             outerRadius={80}
             fill="#8884d8"
             dataKey="value"

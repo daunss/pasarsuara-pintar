@@ -21,7 +21,7 @@ export function exportTransactionsToCSV(transactions: Transaction[], filename = 
 
   // Convert transactions to CSV rows
   const rows = transactions.map(tx => [
-    new Date(tx.created_at).toLocaleDateString('id-ID'),
+    tx.created_at ? new Date(tx.created_at).toLocaleDateString('id-ID') : '',
     tx.type,
     tx.product_name || '',
     tx.qty || 0,
@@ -73,7 +73,7 @@ export function exportInventoryToCSV(inventory: Inventory[], filename = 'invento
     item.min_sell_price || 0,
     item.max_buy_price || 0,
     item.description || '',
-    new Date(item.updated_at || item.created_at).toLocaleDateString('id-ID')
+    item.created_at ? new Date(item.created_at).toLocaleDateString('id-ID') : ''
   ])
 
   // Combine headers and rows
@@ -181,7 +181,7 @@ export function exportFinancialReportToCSV(
     '=== SALES TRANSACTIONS ===',
     transactionHeaders.join(','),
     ...salesTx.map(tx => [
-      new Date(tx.created_at).toLocaleDateString('id-ID'),
+      tx.created_at ? new Date(tx.created_at).toLocaleDateString('id-ID') : '',
       tx.product_name || '',
       tx.qty || 0,
       tx.total_amount || 0
@@ -193,7 +193,7 @@ export function exportFinancialReportToCSV(
     '=== PURCHASE TRANSACTIONS ===',
     transactionHeaders.join(','),
     ...purchaseTx.map(tx => [
-      new Date(tx.created_at).toLocaleDateString('id-ID'),
+      tx.created_at ? new Date(tx.created_at).toLocaleDateString('id-ID') : '',
       tx.product_name || '',
       tx.qty || 0,
       tx.total_amount || 0
@@ -205,7 +205,7 @@ export function exportFinancialReportToCSV(
     '=== EXPENSE TRANSACTIONS ===',
     transactionHeaders.join(','),
     ...expenseTx.map(tx => [
-      new Date(tx.created_at).toLocaleDateString('id-ID'),
+      tx.created_at ? new Date(tx.created_at).toLocaleDateString('id-ID') : '',
       tx.product_name || '',
       tx.qty || 0,
       tx.total_amount || 0
