@@ -16,6 +16,8 @@ import (
 	"github.com/pasarsuara/backend/internal/config"
 	appcontext "github.com/pasarsuara/backend/internal/context"
 	"github.com/pasarsuara/backend/internal/database"
+	"github.com/pasarsuara/backend/internal/handlers"
+	"github.com/pasarsuara/backend/internal/integrations"
 )
 
 func main() {
@@ -51,7 +53,12 @@ func main() {
 	if cfg.GeminiAPIKey == "" {
 		log.Println("⚠️ GEMINI_API_KEY not set - audio transcription will fail")
 	} else {
-		log.Println("✅ Gemini API configured")
+		// Log first 20 chars of API key for debugging
+		keyPreview := cfg.GeminiAPIKey
+		if len(keyPreview) > 20 {
+			keyPreview = keyPreview[:20] + "..."
+		}
+		log.Printf("✅ Gemini API configured (key: %s)", keyPreview)
 	}
 
 	// Create Intent Engine
@@ -71,12 +78,20 @@ func main() {
 	// Create Catalog Handler
 	catalogHandler := api.NewCatalogHandler(orchestrator.GetPromoAgent())
 
+	// Create Integration Services
+	excelExporter := integrations.NewExcelExporter(db)
+	whatsappBcast := integrations.NewWhatsAppBroadcaster(db, cfg.KolosalBaseURL, cfg.KolosalAPIKey)
+	socialMediaGen := integrations.NewSocialMediaGenerator(cfg.GeminiAPIKey)
+
+	// Create Integrations Handler
+	integrationsHandler := handlers.NewIntegrationsHandler(excelExporter, whatsappBcast, socialMediaGen)
+
 	// Create Message Router (for registration, ambiguity, categorization)
 	// Note: This requires importing handlers package
 	// messageRouter := handlers.NewMessageRouter(db, intentEngine, contextMgr)
 
-	// Create router
-	router := api.NewRouter(orchestrator, catalogHandler, db)
+	// Create router with integrations handler
+	router := api.NewRouter(orchestrator, catalogHandler, db, integrationsHandler)
 
 	// TODO: Set message router on webhook handler
 	// webhook.SetMessageRouter(messageRouter)
@@ -98,6 +113,14 @@ func main() {
 		log.Println("   POST /internal/webhook/whatsapp - WA Gateway webhook")
 		log.Println("   POST /api/payments/webhook - Midtrans payment webhook")
 		log.Println("   POST /api/intent/test - Test intent extraction")
+		log.Println("   POST /api/analytics/forecast - Sales forecasting")
+		log.Println("   POST /api/analytics/price-optimization - Price optimization")
+		log.Println("   POST /api/analytics/inventory-optimization - Inventory optimization")
+		log.Println("   POST /api/integrations/export - Export to Excel")
+		log.Println("   POST /api/integrations/broadcast - WhatsApp broadcast")
+		log.Println("   GET  /api/integrations/broadcast/templates - Broadcast templates")
+		log.Println("   POST /api/integrations/social-content - Generate social media content")
+		log.Println("   POST /api/integrations/social-content/bulk - Generate bulk content")
 		log.Println("   GET  /health - Health check")
 		log.Println("")
 		if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {

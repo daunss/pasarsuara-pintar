@@ -1,15 +1,9 @@
 package ai
 
 import (
-	"bytes"
 	"context"
-	"encoding/json"
 	"fmt"
-	"io"
 	"log"
-	"net/http"
-	"strings"
-	"time"
 )
 
 // IntentEngine orchestrates STT and intent extraction
@@ -92,85 +86,11 @@ func (e *IntentEngine) ProcessAudio(ctx context.Context, audioData []byte, mimeT
 }
 
 // extractIntentWithGemini uses Gemini as fallback for intent extraction
+// This method delegates to GeminiClient which handles key rotation automatically
 func (e *IntentEngine) extractIntentWithGemini(ctx context.Context, text string) (*Intent, error) {
-	if e.geminiKey == "" {
-		return nil, fmt.Errorf("Gemini API key not configured")
-	}
-
-	prompt := intentSystemPrompt + "\n\nUser message: " + text
-
-	req := GeminiRequest{
-		Contents: []GeminiContent{
-			{
-				Parts: []GeminiPart{
-					{Text: prompt},
-				},
-			},
-		},
-	}
-
-	jsonData, err := json.Marshal(req)
-	if err != nil {
-		return nil, fmt.Errorf("failed to marshal request: %w", err)
-	}
-
-	url := fmt.Sprintf("https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=%s", e.geminiKey)
-
-	httpReq, err := http.NewRequestWithContext(ctx, "POST", url, bytes.NewBuffer(jsonData))
-	if err != nil {
-		return nil, fmt.Errorf("failed to create request: %w", err)
-	}
-	httpReq.Header.Set("Content-Type", "application/json")
-
-	client := &http.Client{Timeout: 30 * time.Second}
-	resp, err := client.Do(httpReq)
-	if err != nil {
-		return nil, fmt.Errorf("failed to call Gemini API: %w", err)
-	}
-	defer resp.Body.Close()
-
-	body, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return nil, fmt.Errorf("failed to read response: %w", err)
-	}
-
-	var geminiResp GeminiResponse
-	if err := json.Unmarshal(body, &geminiResp); err != nil {
-		return nil, fmt.Errorf("failed to parse response: %w", err)
-	}
-
-	if geminiResp.Error != nil {
-		return nil, fmt.Errorf("Gemini API error: %s", geminiResp.Error.Message)
-	}
-
-	if len(geminiResp.Candidates) == 0 || len(geminiResp.Candidates[0].Content.Parts) == 0 {
-		return nil, fmt.Errorf("no response from Gemini")
-	}
-
-	// Parse the JSON response
-	content := geminiResp.Candidates[0].Content.Parts[0].Text
-
-	// Clean up markdown code blocks if present
-	content = strings.TrimPrefix(content, "```json\n")
-	content = strings.TrimPrefix(content, "```\n")
-	content = strings.TrimSuffix(content, "\n```")
-	content = strings.TrimSpace(content)
-
-	var intent Intent
-	if err := json.Unmarshal([]byte(content), &intent); err != nil {
-		log.Printf("⚠️ Failed to parse Gemini response: %s", content)
-		// Return unknown intent as last resort
-		return &Intent{
-			Action:    "UNKNOWN",
-			Entities:  map[string]any{},
-			Sentiment: "neutral",
-			Language:  "id",
-			RawText:   text,
-		}, nil
-	}
-
-	intent.RawText = text
-	return &intent, nil
+	// Use the gemini client's built-in key rotation by making a text-based request
+	// We'll create a helper method in GeminiClient for this
+	return e.gemini.ExtractIntent(ctx, text)
 }
 
 // GenerateResponse creates a response based on intent

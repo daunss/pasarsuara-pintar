@@ -30,30 +30,7 @@ func NewGeminiCategorizationClient(apiKey string) *GeminiCategorizationClient {
 	}
 }
 
-// GeminiRequest represents the request structure for Gemini API
-type GeminiRequest struct {
-	Contents []GeminiContent `json:"contents"`
-}
-
-// GeminiContent represents content in the request
-type GeminiContent struct {
-	Parts []GeminiPart `json:"parts"`
-}
-
-// GeminiPart represents a part of the content
-type GeminiPart struct {
-	Text string `json:"text"`
-}
-
-// GeminiResponse represents the response from Gemini API
-type GeminiResponse struct {
-	Candidates []GeminiCandidate `json:"candidates"`
-}
-
-// GeminiCandidate represents a candidate response
-type GeminiCandidate struct {
-	Content GeminiContent `json:"content"`
-}
+// Types are defined in gemini.go - no need to redeclare
 
 // Categorize categorizes a product using Gemini API
 func (c *GeminiCategorizationClient) Categorize(ctx context.Context, productName string) (string, error) {
@@ -107,7 +84,7 @@ Jangan tambahkan penjelasan lain.`, productName)
 
 // callAPI makes the actual API call to Gemini
 func (c *GeminiCategorizationClient) callAPI(ctx context.Context, prompt string) (string, error) {
-	url := "https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent"
+	url := "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent"
 
 	// Prepare request body
 	reqBody := GeminiRequest{

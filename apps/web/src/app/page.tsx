@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { Logo } from '@/components/ui/logo'
 
 export default function Home() {
   return (
@@ -6,8 +7,11 @@ export default function Home() {
       {/* Hero Section */}
       <div className="container mx-auto px-4 py-16">
         <div className="text-center max-w-3xl mx-auto">
+          <div className="flex justify-center mb-6">
+            <Logo size="lg" showText={false} href={undefined} />
+          </div>
           <h1 className="text-5xl font-bold text-green-800 mb-4">
-            🗣️ PasarSuara Pintar
+            PasarSuara Pintar
           </h1>
           <p className="text-xl text-gray-600 mb-8">
             Voice-First & Cooperative AI OS untuk UMKM Lokal
@@ -25,7 +29,7 @@ export default function Home() {
               Buka Dashboard
             </Link>
             <a 
-              href="https://wa.me/628123456789"
+              href="https://wa.me/6285119607506"
               target="_blank"
               rel="noopener noreferrer"
               className="bg-white text-green-600 border-2 border-green-600 px-6 py-3 rounded-lg font-semibold hover:bg-green-50 transition-colors"
@@ -104,7 +108,7 @@ export default function Home() {
       {/* Footer */}
       <footer className="bg-gray-50 py-8 mt-20">
         <div className="container mx-auto px-4 text-center text-gray-600">
-          <p>🏆 IMPHNEN x KOLOSAL Hackathon 2024</p>
+          <p>🏆 IMPHNEN x KOLOSAL Hackathon 2025</p>
           <p className="text-sm mt-2">Built with Next.js, Go, Supabase, and Kolosal AI</p>
         </div>
       </footer>

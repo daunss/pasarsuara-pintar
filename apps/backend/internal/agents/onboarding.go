@@ -206,7 +206,7 @@ func (o *OnboardingAgent) processCity(ctx context.Context, phone, city string) s
 	// Create user in database
 	if o.db != nil {
 		user := &database.User{
-			PhoneNumber:      phone,
+			Phone:            phone,
 			Name:             name,
 			Role:             "owner", // Default role
 			PreferredDialect: "id",    // Default to Indonesian

@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 import Link from 'next/link'
+import { Logo } from '@/components/ui/logo'
 
 export default function LoginPage() {
   const router = useRouter()
@@ -72,7 +73,9 @@ export default function LoginPage() {
       <div className="max-w-md w-full">
         {/* Logo & Title */}
         <div className="text-center mb-8">
-          <div className="text-6xl mb-4">🗣️</div>
+          <div className="flex justify-center mb-4">
+            <Logo size="lg" showText={false} href={undefined} />
+          </div>
           <h1 className="text-3xl font-bold text-gray-900 mb-2">PasarSuara Pintar</h1>
           <p className="text-gray-600">Voice-First AI OS untuk UMKM</p>
         </div>
@@ -148,7 +151,7 @@ export default function LoginPage() {
             </div>
           </div>
 
-          {/* Google Login */}
+          {/* Google Login Button */}
           <button
             onClick={handleGoogleLogin}
             disabled={loading}

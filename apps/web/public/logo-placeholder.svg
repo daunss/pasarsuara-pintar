@@ -1,0 +1,23 @@
+<svg width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background Circle -->
+  <circle cx="100" cy="100" r="95" fill="#f0f9ff" stroke="#3b82f6" stroke-width="2"/>
+  
+  <!-- Orange Hat (Topi Pedagang) -->
+  <path d="M 60 70 Q 100 50 140 70 L 135 85 Q 100 75 65 85 Z" fill="#fb923c" stroke="#ea580c" stroke-width="2"/>
+  <ellipse cx="100" cy="85" rx="40" ry="8" fill="#fdba74"/>
+  
+  <!-- Blue Chat Bubble -->
+  <path d="M 70 110 Q 70 95 85 95 L 115 95 Q 130 95 130 110 L 130 130 Q 130 145 115 145 L 90 145 L 80 155 L 85 145 L 85 145 Q 70 145 70 130 Z" 
+        fill="#60a5fa" stroke="#3b82f6" stroke-width="2"/>
+  
+  <!-- WiFi/Signal Icon in Chat Bubble -->
+  <g transform="translate(100, 120)">
+    <circle cx="0" cy="5" r="2" fill="white"/>
+    <path d="M -8 -2 Q 0 -8 8 -2" stroke="white" stroke-width="2" fill="none"/>
+    <path d="M -12 -6 Q 0 -14 12 -6" stroke="white" stroke-width="2" fill="none"/>
+  </g>
+  
+  <!-- Text -->
+  <text x="100" y="180" font-family="Arial, sans-serif" font-size="16" font-weight="bold" 
+        text-anchor="middle" fill="#1e40af">PasarSuara</text>
+</svg>

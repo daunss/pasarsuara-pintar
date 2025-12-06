@@ -6,10 +6,14 @@ import { StatsCard } from '@/components/dashboard/stats-card'
 import { TransactionList } from '@/components/dashboard/transaction-list'
 import { InventoryTable } from '@/components/dashboard/inventory-table'
 import { NegotiationChat } from '@/components/dashboard/negotiation-chat'
+import { WhatsAppStatusBadge } from '@/components/dashboard/whatsapp-status'
+import { SyncStatusBadge } from '@/components/dashboard/sync-status'
+import { NotificationCenter } from '@/components/dashboard/notification-center'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/lib/auth'
 import { supabase, type Transaction, type Inventory, type NegotiationLog } from '@/lib/supabase'
+import { Logo } from '@/components/ui/logo'
 
 export default function DashboardPage() {
   const router = useRouter()
@@ -184,11 +188,71 @@ export default function DashboardPage() {
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
-              <Link href="/" className="text-2xl font-bold text-green-700">
-                🗣️ PasarSuara
-              </Link>
+              <Logo size="md" showText={true} href="/" />
               <span className="text-gray-400">|</span>
               <span className="text-gray-600">Dashboard</span>
+            </div>
+            <div className="flex items-center gap-4">
+              {/* Profile Dropdown */}
+              <div className="relative group">
+                <button className="flex items-center gap-2 text-sm text-gray-700 hover:text-green-600 transition">
+                  <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
+                    <span className="text-green-600 font-semibold">
+                      {user?.email?.charAt(0).toUpperCase()}
+                    </span>
+                  </div>
+                  <span className="hidden md:block">{user?.email}</span>
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </button>
+                
+                {/* Dropdown Menu */}
+                <div className="absolute right-0 mt-2 w-64 bg-white rounded-lg shadow-xl border border-gray-200 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+                  <div className="p-4 border-b border-gray-200">
+                    <p className="text-sm font-semibold text-gray-900">{user?.email}</p>
+                    <p className="text-xs text-gray-500 mt-1">UMKM User</p>
+                  </div>
+                  
+                  <div className="py-2">
+                    <Link
+                      href="/setup-whatsapp"
+                      className="flex items-center gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-green-50 transition"
+                    >
+                      <span className="text-lg">📱</span>
+                      <div>
+                        <p className="font-medium">Setup WhatsApp</p>
+                        <p className="text-xs text-gray-500">Tambah/ubah nomor WA</p>
+                      </div>
+                    </Link>
+                    
+                    <Link
+                      href="/dashboard/settings"
+                      className="flex items-center gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-green-50 transition"
+                    >
+                      <span className="text-lg">⚙️</span>
+                      <div>
+                        <p className="font-medium">Pengaturan</p>
+                        <p className="text-xs text-gray-500">Preferensi akun</p>
+                      </div>
+                    </Link>
+                    
+                    <button
+                      onClick={async () => {
+                        await supabase.auth.signOut()
+                        router.push('/login')
+                      }}
+                      className="w-full flex items-center gap-3 px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition"
+                    >
+                      <span className="text-lg">🚪</span>
+                      <div className="text-left">
+                        <p className="font-medium">Logout</p>
+                        <p className="text-xs text-red-500">Keluar dari akun</p>
+                      </div>
+                    </button>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -216,16 +280,71 @@ export default function DashboardPage() {
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
-              <Link href="/" className="text-2xl font-bold text-green-700">
-                🗣️ PasarSuara
-              </Link>
+              <Logo size="md" showText={true} href="/" />
               <span className="text-gray-400">|</span>
               <span className="text-gray-600">Dashboard</span>
             </div>
             <div className="flex items-center gap-4">
-              <Link href="/dashboard/settings" className="text-sm text-gray-600 hover:text-green-600">
-                ⚙️ Pengaturan
-              </Link>
+              {/* Profile Dropdown */}
+              <div className="relative group">
+                <button className="flex items-center gap-2 text-sm text-gray-700 hover:text-green-600 transition">
+                  <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
+                    <span className="text-green-600 font-semibold">
+                      {user?.email?.charAt(0).toUpperCase()}
+                    </span>
+                  </div>
+                  <span className="hidden md:block">{user?.email}</span>
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </button>
+                
+                {/* Dropdown Menu */}
+                <div className="absolute right-0 mt-2 w-64 bg-white rounded-lg shadow-xl border border-gray-200 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+                  <div className="p-4 border-b border-gray-200">
+                    <p className="text-sm font-semibold text-gray-900">{user?.email}</p>
+                    <p className="text-xs text-gray-500 mt-1">UMKM User</p>
+                  </div>
+                  
+                  <div className="py-2">
+                    <Link
+                      href="/setup-whatsapp"
+                      className="flex items-center gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-green-50 transition"
+                    >
+                      <span className="text-lg">📱</span>
+                      <div>
+                        <p className="font-medium">Setup WhatsApp</p>
+                        <p className="text-xs text-gray-500">Tambah/ubah nomor WA</p>
+                      </div>
+                    </Link>
+                    
+                    <Link
+                      href="/dashboard/settings"
+                      className="flex items-center gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-green-50 transition"
+                    >
+                      <span className="text-lg">⚙️</span>
+                      <div>
+                        <p className="font-medium">Pengaturan</p>
+                        <p className="text-xs text-gray-500">Preferensi akun</p>
+                      </div>
+                    </Link>
+                    
+                    <button
+                      onClick={async () => {
+                        await supabase.auth.signOut()
+                        router.push('/login')
+                      }}
+                      className="w-full flex items-center gap-3 px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition"
+                    >
+                      <span className="text-lg">🚪</span>
+                      <div className="text-left">
+                        <p className="font-medium">Logout</p>
+                        <p className="text-xs text-red-500">Keluar dari akun</p>
+                      </div>
+                    </button>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -234,7 +353,7 @@ export default function DashboardPage() {
       {/* Main Content */}
       <main className="container mx-auto px-4 py-8">
         {/* Quick Links */}
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-8">
+        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4 mb-8">
           <Link href="/marketplace" className="bg-gradient-to-br from-green-500 to-green-600 text-white p-4 rounded-lg shadow hover:shadow-lg transition text-center">
             <div className="text-3xl mb-2">🛒</div>
             <div className="font-semibold">Marketplace</div>
@@ -243,9 +362,13 @@ export default function DashboardPage() {
             <div className="text-3xl mb-2">📝</div>
             <div className="font-semibold">Transaksi</div>
           </Link>
-          <Link href="/analytics" className="bg-white p-4 rounded-lg shadow hover:shadow-md transition text-center">
+          <Link href="/analytics" className="bg-gradient-to-br from-blue-500 to-blue-600 text-white p-4 rounded-lg shadow hover:shadow-lg transition text-center">
             <div className="text-3xl mb-2">📊</div>
             <div className="font-semibold">Analytics</div>
+          </Link>
+          <Link href="/automation" className="bg-gradient-to-br from-purple-500 to-purple-600 text-white p-4 rounded-lg shadow hover:shadow-lg transition text-center">
+            <div className="text-3xl mb-2">🤖</div>
+            <div className="font-semibold">Automation</div>
           </Link>
           <Link href="/inventory" className="bg-white p-4 rounded-lg shadow hover:shadow-md transition text-center">
             <div className="text-3xl mb-2">📦</div>

@@ -110,3 +110,14 @@ func (c *Client) SendText(ctx context.Context, jid string, text string) error {
 func (c *Client) Disconnect() {
 	c.wa.Disconnect()
 }
+
+func (c *Client) IsConnected() bool {
+	return c.wa != nil && c.wa.IsConnected()
+}
+
+func (c *Client) GetPhoneNumber() string {
+	if c.wa == nil || c.wa.Store == nil || c.wa.Store.ID == nil {
+		return ""
+	}
+	return c.wa.Store.ID.User
+}

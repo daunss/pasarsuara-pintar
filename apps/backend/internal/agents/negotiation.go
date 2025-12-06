@@ -51,13 +51,20 @@ type SellerAgent struct {
 	stockQty    float64
 }
 
+// DatabaseClient interface for negotiation operations
+type DatabaseClient interface {
+	FindSellers(ctx context.Context, productName string, maxPrice float64) ([]database.Inventory, error)
+	CreateNegotiationLog(ctx context.Context, log *database.NegotiationLog) error
+	CreateTransaction(ctx context.Context, tx *database.Transaction) error
+}
+
 // NegotiationOrchestrator manages the negotiation process
 type NegotiationOrchestrator struct {
-	db      *database.SupabaseClient
+	db      DatabaseClient
 	kolosal *ai.KolosalClient
 }
 
-func NewNegotiationOrchestrator(db *database.SupabaseClient, kolosal *ai.KolosalClient) *NegotiationOrchestrator {
+func NewNegotiationOrchestrator(db DatabaseClient, kolosal *ai.KolosalClient) *NegotiationOrchestrator {
 	return &NegotiationOrchestrator{
 		db:      db,
 		kolosal: kolosal,
@@ -176,6 +183,25 @@ func (n *NegotiationOrchestrator) StartNegotiation(ctx context.Context, buyerID 
 			}
 			if err := n.db.CreateNegotiationLog(ctx, negLog); err != nil {
 				log.Printf("⚠️ Failed to log negotiation: %v", err)
+			}
+
+			// Create transaction record for the purchase
+			tx := &database.Transaction{
+				UserID:       buyerID,
+				Type:         "PURCHASE",
+				ProductName:  product,
+				Qty:          qty,
+				PricePerUnit: finalPrice,
+				TotalAmount:  result.TotalAmount,
+				RawVoiceText: fmt.Sprintf("Negotiated purchase from %s", bestSeller.Name),
+			}
+			if err := n.db.CreateTransaction(ctx, tx); err != nil {
+				log.Printf("⚠️ Failed to create transaction for negotiation: buyer=%s, seller=%s, product=%s, error=%v",
+					buyerID, bestSeller.UserID, product, err)
+				// Continue - don't fail the negotiation
+			} else {
+				log.Printf("✅ Created transaction %s for negotiation: buyer=%s, product=%s, amount=Rp %.0f",
+					tx.ID, buyerID, product, result.TotalAmount)
 			}
 		}
 	} else {

@@ -116,7 +116,7 @@ Bot: 📊 Laporan Hari Ini
      ├ Pembelian: Rp 300.000
      ├ Pengeluaran: Rp 50.000
      └ Laba Bersih: Rp 100.000
-     
+      b
      🏆 Produk Terlaris:
      1. Nasi Goreng - 15 porsi
      2. Ayam Geprek - 8 porsi

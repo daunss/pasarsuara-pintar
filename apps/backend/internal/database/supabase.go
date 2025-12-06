@@ -6,7 +6,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
+	"strings"
 	"time"
 )
 
@@ -116,7 +118,7 @@ type NegotiationLog struct {
 type User struct {
 	ID               string `json:"id,omitempty"`
 	Email            string `json:"email,omitempty"`
-	PhoneNumber      string `json:"phone_number,omitempty"`
+	Phone            string `json:"phone,omitempty"`
 	Name             string `json:"name,omitempty"`
 	Role             string `json:"role,omitempty"`
 	PreferredDialect string `json:"preferred_dialect,omitempty"`
@@ -138,18 +140,66 @@ func (s *SupabaseClient) CreateTransaction(ctx context.Context, tx *Transaction)
 	return nil
 }
 
-// GetUserByPhone finds user by phone number
+// GetUserByPhone finds user by phone number from auth metadata
 func (s *SupabaseClient) GetUserByPhone(ctx context.Context, phone string) (*User, error) {
+	// Try to get from cache first
+	if userID, exists := phoneToUserCache[phone]; exists {
+		return &User{ID: userID, Phone: phone}, nil
+	}
+
+	// Query public.users table by phone_number
+	// Normalize phone format: remove + and spaces
+	normalizedPhone := strings.ReplaceAll(strings.ReplaceAll(phone, "+", ""), " ", "")
+
 	var users []User
-	endpoint := fmt.Sprintf("users?phone_number=eq.%s", phone)
+	// Try exact match first
+	endpoint := fmt.Sprintf("users?phone_number=eq.+%s&select=id,email,phone_number,name", normalizedPhone)
 	err := s.request(ctx, "GET", endpoint, nil, &users)
-	if err != nil {
-		return nil, err
+
+	if err == nil && len(users) > 0 {
+		user := users[0]
+		// Cache for future lookups
+		phoneToUserCache[phone] = user.ID
+		log.Printf("✅ Found user by phone: %s -> %s (%s)", phone, user.ID, user.Email)
+		return &user, nil
 	}
-	if len(users) == 0 {
-		return nil, nil
+
+	// Try without + prefix
+	endpoint = fmt.Sprintf("users?phone_number=eq.%s&select=id,email,phone_number,name", normalizedPhone)
+	err = s.request(ctx, "GET", endpoint, nil, &users)
+
+	if err == nil && len(users) > 0 {
+		user := users[0]
+		// Cache for future lookups
+		phoneToUserCache[phone] = user.ID
+		log.Printf("✅ Found user by phone: %s -> %s (%s)", phone, user.ID, user.Email)
+		return &user, nil
 	}
-	return &users[0], nil
+
+	// Try with LIKE for partial match
+	endpoint = fmt.Sprintf("users?phone_number=like.*%s*&select=id,email,phone_number,name", normalizedPhone)
+	err = s.request(ctx, "GET", endpoint, nil, &users)
+
+	if err == nil && len(users) > 0 {
+		user := users[0]
+		// Cache for future lookups
+		phoneToUserCache[phone] = user.ID
+		log.Printf("✅ Found user by phone (partial): %s -> %s (%s)", phone, user.ID, user.Email)
+		return &user, nil
+	}
+
+	log.Printf("⚠️ User not found for phone: %s", phone)
+	return nil, fmt.Errorf("user not found for phone: %s", phone)
+}
+
+// Phone to user ID cache for quick lookups
+var phoneToUserCache = make(map[string]string)
+
+// RegisterPhoneMapping adds phone to user ID mapping
+// Call this after user registration
+func (s *SupabaseClient) RegisterPhoneMapping(phone, userID string) {
+	phoneToUserCache[phone] = userID
+	log.Printf("✅ Registered phone mapping: %s -> %s", phone, userID)
 }
 
 // GetInventoryByProduct finds inventory by product name for a user
@@ -600,4 +650,27 @@ func (s *SupabaseClient) GetInventoryByUser(ctx context.Context, userID string) 
 	endpoint := fmt.Sprintf("inventory?user_id=eq.%s&order=product_name.asc", userID)
 	err := s.request(ctx, "GET", endpoint, nil, &inventory)
 	return inventory, err
+}
+
+// GetInventory is an alias for GetInventoryByUser
+func (s *SupabaseClient) GetInventory(ctx context.Context, userID string) ([]Inventory, error) {
+	return s.GetInventoryByUser(ctx, userID)
+}
+
+// GetTransactionsByDateRange gets transactions within a date range
+func (s *SupabaseClient) GetTransactionsByDateRange(ctx context.Context, userID, startDate, endDate string) ([]Transaction, error) {
+	var transactions []Transaction
+	endpoint := fmt.Sprintf("transactions?user_id=eq.%s&created_at=gte.%s&created_at=lte.%s&order=created_at.desc",
+		userID, startDate, endDate)
+	err := s.request(ctx, "GET", endpoint, nil, &transactions)
+	return transactions, err
+}
+
+// GetTransactionsByProduct gets transactions for a specific product
+func (s *SupabaseClient) GetTransactionsByProduct(ctx context.Context, userID, productName, startDate, endDate string) ([]Transaction, error) {
+	var transactions []Transaction
+	endpoint := fmt.Sprintf("transactions?user_id=eq.%s&product_name=ilike.*%s*&created_at=gte.%s&created_at=lte.%s&order=created_at.desc",
+		userID, productName, startDate, endDate)
+	err := s.request(ctx, "GET", endpoint, nil, &transactions)
+	return transactions, err
 }

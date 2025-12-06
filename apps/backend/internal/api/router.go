@@ -10,7 +10,7 @@ import (
 	"github.com/pasarsuara/backend/internal/database"
 )
 
-func NewRouter(orchestrator *agents.AgentOrchestrator, catalogHandler *CatalogHandler, db *database.SupabaseClient) http.Handler {
+func NewRouter(orchestrator *agents.AgentOrchestrator, catalogHandler *CatalogHandler, db *database.SupabaseClient, integrationsHandler interface{}) http.Handler {
 	r := chi.NewRouter()
 
 	// Middleware
@@ -49,6 +49,10 @@ func NewRouter(orchestrator *agents.AgentOrchestrator, catalogHandler *CatalogHa
 	// Dashboard handler
 	dashboardHandler := NewDashboardHandler(db)
 
+	// Analytics handler (Phase 8 - Advanced AI)
+	analyticsAgent := agents.NewAnalyticsAgent(db)
+	analyticsAPI := NewAnalyticsAPI(analyticsAgent)
+
 	// Public API routes
 	r.Route("/api", func(r chi.Router) {
 		// Dashboard endpoints
@@ -68,6 +72,26 @@ func NewRouter(orchestrator *agents.AgentOrchestrator, catalogHandler *CatalogHa
 		r.Post("/catalog/generate", catalogHandler.HandleGenerateCatalog)
 		r.Post("/promo/generate", catalogHandler.HandleGeneratePromo)
 		r.Post("/promo/bundle", catalogHandler.HandleGenerateBundle)
+
+		// Analytics endpoints (Phase 8 - Advanced AI)
+		r.Post("/analytics/forecast", analyticsAPI.HandleSalesForecast)
+		r.Post("/analytics/price-optimization", analyticsAPI.HandlePriceRecommendation)
+		r.Post("/analytics/inventory-optimization", analyticsAPI.HandleInventoryOptimization)
+
+		// Integration endpoints (Phase 9 - Multi-Channel)
+		if ih, ok := integrationsHandler.(interface {
+			HandleExportTransactions(http.ResponseWriter, *http.Request)
+			HandleWhatsAppBroadcast(http.ResponseWriter, *http.Request)
+			HandleGetBroadcastTemplates(http.ResponseWriter, *http.Request)
+			HandleGenerateSocialContent(http.ResponseWriter, *http.Request)
+			HandleGenerateBulkSocialContent(http.ResponseWriter, *http.Request)
+		}); ok {
+			r.Post("/integrations/export", ih.HandleExportTransactions)
+			r.Post("/integrations/broadcast", ih.HandleWhatsAppBroadcast)
+			r.Get("/integrations/broadcast/templates", ih.HandleGetBroadcastTemplates)
+			r.Post("/integrations/social-content", ih.HandleGenerateSocialContent)
+			r.Post("/integrations/social-content/bulk", ih.HandleGenerateBulkSocialContent)
+		}
 
 		// Intent/Agent test endpoint (for debugging)
 		r.Post("/intent/test", webhook.Handle)

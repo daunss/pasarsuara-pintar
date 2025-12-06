@@ -29,8 +29,8 @@ func NewAdminClient(supabaseURL, serviceKey string) *AdminClient {
 	}
 }
 
-// User represents a Supabase Auth user
-type User struct {
+// AuthUser represents a Supabase Auth user (different from database User)
+type AuthUser struct {
 	ID           string                 `json:"id"`
 	Email        string                 `json:"email"`
 	Phone        string                 `json:"phone"`
@@ -63,7 +63,7 @@ type ErrorResponse struct {
 }
 
 // CreateUser creates a new user in Supabase Auth with metadata
-func (c *AdminClient) CreateUser(ctx context.Context, email, phone, password string, metadata map[string]interface{}) (*User, error) {
+func (c *AdminClient) CreateUser(ctx context.Context, email, phone, password string, metadata map[string]interface{}) (*AuthUser, error) {
 	// Generate random password if not provided
 	if password == "" {
 		password = generateRandomPassword(16)
@@ -109,7 +109,7 @@ func (c *AdminClient) CreateUser(ctx context.Context, email, phone, password str
 }
 
 // createUserWithRetry performs a single attempt to create a user
-func (c *AdminClient) createUserWithRetry(ctx context.Context, jsonData []byte) (*User, error) {
+func (c *AdminClient) createUserWithRetry(ctx context.Context, jsonData []byte) (*AuthUser, error) {
 	url := fmt.Sprintf("%s/auth/v1/admin/users", c.supabaseURL)
 
 	req, err := http.NewRequestWithContext(ctx, "POST", url, bytes.NewBuffer(jsonData))
@@ -150,9 +150,9 @@ func (c *AdminClient) createUserWithRetry(ctx context.Context, jsonData []byte) 
 		return nil, fmt.Errorf("failed to parse response: %w", err)
 	}
 
-	// Convert to User struct
+	// Convert to AuthUser struct
 	createdAt, _ := time.Parse(time.RFC3339, userResp.CreatedAt)
-	user := &User{
+	user := &AuthUser{
 		ID:           userResp.ID,
 		Email:        userResp.Email,
 		Phone:        userResp.Phone,

@@ -1,28 +1,14 @@
-# 🗣️ PasarSuara Pintar
+# PasarSuara Pintar
 
 **Voice-First & Cooperative AI OS untuk UMKM Lokal**
 
 [![CI Pipeline](https://github.com/daunss/pasarsuara-pintar/actions/workflows/ci.yml/badge.svg)](https://github.com/daunss/pasarsuara-pintar/actions/workflows/ci.yml)
 
-**Status:** Phase 2 Complete (95%) | Ready for Pilot Testing
-
-🏆 **[HACKATHON SUBMISSION](HACKATHON.md)** - Complete hackathon documentation
+**Status:** v2.0 Production Ready | Hackathon Submission
 
 ---
 
-## 📚 Documentation
-
-- **[HACKATHON.md](HACKATHON.md)** - 🏆 Hackathon submission (START HERE!)
-- **[PROJECT2.md](PROJECT2.md)** - Complete roadmap & milestones
-- **[CONTRIBUTING.md](CONTRIBUTING.md)** - How to contribute
-- **[docs/](docs/)** - Detailed documentation
-  - [Testing Guide](docs/TESTING-GUIDE.md)
-  - [Next Steps](docs/NEXT-STEPS.md)
-  - [Phase 2 Summary](docs/PHASE2-COMPLETION-SUMMARY.md)
-
----
-
-## 🎯 Problem
+## Problem
 
 UMKM Indonesia (warung, petani, pedagang pasar) kesulitan menggunakan aplikasi bisnis modern karena:
 - **Antarmuka rumit** - Terlalu banyak menu dan form
@@ -30,18 +16,18 @@ UMKM Indonesia (warung, petani, pedagang pasar) kesulitan menggunakan aplikasi b
 - **Bahasa** - Lebih nyaman dengan bahasa daerah (Jawa, Sunda)
 - **Waktu** - Sibuk melayani pelanggan, tidak sempat input data
 
-## 💡 Solution
+## Solution
 
 **PasarSuara Pintar** adalah sistem operasi bisnis berbasis suara yang memungkinkan UMKM untuk:
 
-1. **🎤 Voice-First** - Cukup kirim voice note di WhatsApp
-2. **🤖 AI Agents** - Agen AI yang bernegosiasi otomatis dengan supplier
-3. **📊 Auto Bookkeeping** - Semua transaksi tercatat otomatis
-4. **🎨 Promo Generator** - AI membuat konten promosi siap share
+1. **Voice-First** - Cukup kirim voice note di WhatsApp
+2. **AI Agents** - Agen AI yang bernegosiasi otomatis dengan supplier
+3. **Auto Bookkeeping** - Semua transaksi tercatat otomatis
+4. **Promo Generator** - AI membuat konten promosi siap share
 
 ---
 
-## 🏗️ Architecture
+## Architecture
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
@@ -86,22 +72,22 @@ UMKM Indonesia (warung, petani, pedagang pasar) kesulitan menggunakan aplikasi b
 
 ---
 
-## 🚀 Features
+## Features
 
 ### Voice Commands (WhatsApp)
 | Command | Example | Action |
 |---------|---------|--------|
-| 📝 Catat Penjualan | "laku nasi 10 porsi 12 ribu" | Record sale transaction |
-| 🛒 Pesan Barang | "cari beras 25 kg maksimal 12 ribu" | Auto-negotiate with suppliers |
-| 💸 Catat Pengeluaran | "beli gas 2 tabung" | Record expense |
-| 📊 Cek Harga | "harga cabai berapa" | Market intelligence |
-| 📦 Cek Stok | "stok telur berapa" | Check inventory |
-| 🎨 Buat Promosi | "buatkan promosi nasi goreng" | Generate promo content |
+| Catat Penjualan | "laku nasi 10 porsi 12 ribu" | Record sale transaction |
+| Pesan Barang | "cari beras 25 kg maksimal 12 ribu" | Auto-negotiate with suppliers |
+| Catat Pengeluaran | "beli gas 2 tabung" | Record expense |
+| Cek Harga | "harga cabai berapa" | Market intelligence |
+| Cek Stok | "stok telur berapa" | Check inventory |
+| Buat Promosi | "buatkan promosi nasi goreng" | Generate promo content |
 
 ### Multi-Language Support
-- 🇮🇩 Indonesian
-- 🏝️ Javanese (Jawa)
-- 🌴 Sundanese (Sunda)
+- Indonesian
+- Javanese (Jawa)
+- Sundanese (Sunda)
 
 ### AI Agents
 - **Finance Agent** - Auto-record transactions
@@ -109,9 +95,17 @@ UMKM Indonesia (warung, petani, pedagang pasar) kesulitan menggunakan aplikasi b
 - **Seller Agent** - Respond to buyer negotiations
 - **Promo Agent** - Generate marketing content
 
+### Production Features
+- Real-time WhatsApp connection monitoring
+- Notification system for important events
+- Error handling with user-friendly messages
+- Customer management and analytics
+- Inventory sync to marketplace
+- Payment reconciliation
+
 ---
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 | Layer | Technology |
 |-------|------------|
@@ -125,26 +119,7 @@ UMKM Indonesia (warung, petani, pedagang pasar) kesulitan menggunakan aplikasi b
 
 ---
 
-## 📁 Project Structure
-
-```
-.
-├── apps/
-│   ├── backend/        # Go backend (API, Agents, AI)
-│   ├── wa-gateway/     # WhatsApp Gateway (whatsmeow)
-│   └── web/            # Next.js Dashboard
-├── infra/
-│   ├── supabase/       # DB migrations & types
-│   ├── docker/         # Docker Compose
-│   └── scripts/        # Setup scripts
-├── .github/
-│   └── workflows/      # CI/CD
-└── README.md
-```
-
----
-
-## 🏃 Quick Start
+## Quick Start
 
 ### Prerequisites
 - Go 1.22+
@@ -163,7 +138,7 @@ cp .env.example .env
 ```bash
 cd apps/backend
 go mod download
-go run cmd/main.go
+go run main.go
 ```
 
 ### 3. Run WA Gateway
@@ -184,7 +159,7 @@ npm run dev
 
 ---
 
-## 🔑 Environment Variables
+## Environment Variables
 
 ```env
 # Supabase
@@ -204,21 +179,7 @@ BACKEND_PORT=8080
 
 ---
 
-## 🧪 Testing
-
-```bash
-# Backend tests
-cd apps/backend
-go test -v ./...
-
-# Web lint
-cd apps/web
-npm run lint
-```
-
----
-
-## 📊 API Endpoints
+## API Endpoints
 
 | Method | Endpoint | Description |
 |--------|----------|-------------|
@@ -227,12 +188,11 @@ npm run lint
 | GET | `/api/inventory` | List inventory |
 | GET | `/api/negotiations` | List negotiations |
 | POST | `/api/promo/generate` | Generate promo content |
-| GET | `/api/catalog` | Generate catalog |
 | GET | `/health` | Health check |
 
 ---
 
-## 🎬 Demo Scenario
+## Demo Scenario
 
 **Bu Siti** - Pemilik Warung Nasi
 
@@ -240,40 +200,42 @@ npm run lint
    > "Mas, cari beras 25 kilo maksimal 12 ribu ya, kalau bisa dikirim sore ini"
 
 2. **AI Process**:
-   - Gemini: Transcribe audio → text
-   - Kolosal: Extract intent → ORDER_RESTOCK
+   - Gemini: Transcribe audio to text
+   - Kolosal: Extract intent (ORDER_RESTOCK)
    - Buyer Agent: Find sellers, negotiate
 
 3. **Result**: 
-   > "🎉 Deal! Beras 25 kg @ Rp 11.800 dari Pak Joyo. Total Rp 295.000"
+   > "Deal! Beras 25 kg @ Rp 11.800 dari Pak Joyo. Total Rp 295.000"
 
 4. **Auto-recorded**: Transaction saved, inventory updated
 
-5. **Evening**: Bu Siti bilang
-   > "Tadi laku nasi rames 15 porsi, 12 ribu satu"
-
-6. **Finance Agent**: Records sale, updates daily report
-
 ---
 
-## 🏆 Hackathon Submission
+## Hackathon Submission
 
-**IMPHNEN x KOLOSAL Hackathon 2024**
+**IMPHNEN x KOLOSAL Hackathon 2025**
 
 ### Bonus Points Achieved
-- ✅ **Testing** (+15) - Unit tests for agents & AI
-- ✅ **Deployment** (+10) - Docker ready, Vercel compatible
-- ✅ **CI/CD** (+5) - GitHub Actions pipeline
-- ✅ **DevOps** (+5) - Docker Compose, pre-commit ready
+- Testing (+15) - Unit tests for agents & AI
+- Deployment (+10) - Docker ready, production-ready
+- CI/CD (+5) - GitHub Actions pipeline
+- DevOps (+5) - Docker Compose, automated workflows
 
 ---
 
-## 👥 Team
+## Documentation
 
-Built with ❤️ for Indonesian UMKM
+- [HACKATHON.md](HACKATHON.md) - Complete hackathon submission
+- [CONTRIBUTING.md](CONTRIBUTING.md) - Contribution guidelines
+- [docs/DEPLOYMENT-GUIDE.md](docs/DEPLOYMENT-GUIDE.md) - Deployment instructions
+- [docs/QUICK-START.md](docs/QUICK-START.md) - Quick start guide
 
 ---
 
-## 📄 License
+## License
 
 MIT License
+
+---
+
+Built for Indonesian UMKM

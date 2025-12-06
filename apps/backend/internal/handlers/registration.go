@@ -232,6 +232,10 @@ func CreateUserInDatabase(state *RegistrationState) error {
 	// Store user ID
 	state.UserID = user.ID
 
+	// Register phone to user ID mapping for future lookups
+	// This is CRITICAL for linking WhatsApp messages to dashboard users
+	RegisterPhoneToUserMapping(state.PhoneNumber, user.ID)
+
 	// Send password reset email for dashboard access
 	if err := adminClient.SendPasswordResetEmail(ctx, state.Email); err != nil {
 		// Log error but don't fail registration
@@ -243,6 +247,26 @@ func CreateUserInDatabase(state *RegistrationState) error {
 		user.ID, user.Email, user.Phone)
 
 	return nil
+}
+
+// Database client for phone mapping
+var dbClient DatabaseClientInterface
+
+// DatabaseClientInterface defines database operations
+type DatabaseClientInterface interface {
+	RegisterPhoneMapping(phone, userID string)
+}
+
+// SetDatabaseClient sets the database client
+func SetDatabaseClient(client DatabaseClientInterface) {
+	dbClient = client
+}
+
+// RegisterPhoneToUserMapping registers phone to user ID mapping
+func RegisterPhoneToUserMapping(phone, userID string) {
+	if dbClient != nil {
+		dbClient.RegisterPhoneMapping(phone, userID)
+	}
 }
 
 // generateRandomPassword generates a secure random password
