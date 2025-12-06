@@ -1,0 +1,11 @@
+# Vercel Ignore
+.env
+.env.local
+.env.*.local
+node_modules
+.git
+.kiro
+session
+apps/wa-gateway/session
+*.log
+.DS_Store
