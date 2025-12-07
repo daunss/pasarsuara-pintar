@@ -102,4 +102,4 @@ BACKEND_PORT=8081
 1. Check logs in terminal
 2. Verify all .env variables
 3. Restart all services
-4. Check [HACKATHON.md](HACKATHON.md) for setup guide
+4. Check [HACKATHON.md](../HACKATHON.md) for setup guide

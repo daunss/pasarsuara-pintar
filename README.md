@@ -221,8 +221,8 @@ BACKEND_PORT=8080
 
 - [HACKATHON.md](HACKATHON.md) - Complete hackathon submission
 - [CONTRIBUTING.md](CONTRIBUTING.md) - Contribution guidelines
-- [docs/DEPLOYMENT-GUIDE.md](docs/DEPLOYMENT-GUIDE.md) - Deployment instructions
 - [docs/QUICK-START.md](docs/QUICK-START.md) - Quick start guide
+- [docs/TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md) - Troubleshooting guide
 
 ---
 
