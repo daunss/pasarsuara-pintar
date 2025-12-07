@@ -6,7 +6,11 @@
 
 **Status:** v2.0 Production Ready | Hackathon Submission
 
+🎬 **Demo Video:** [YouTube](https://youtu.be/RzAAWhelwyo?si=apY3DZiNoCHc1siA)  
+🌐 **Live Demo:** [pasarsuara-pintar-s95j.vercel.app](https://pasarsuara-pintar-s95j.vercel.app/)
+
 ---
+
 
 ## Problem
 
@@ -211,17 +215,7 @@ BACKEND_PORT=8080
 
 ---
 
-## Hackathon Submission
 
-**IMPHNEN x KOLOSAL Hackathon 2025**
-
-### Bonus Points Achieved
-- Testing (+15) - Unit tests for agents & AI
-- Deployment (+10) - Docker ready, production-ready
-- CI/CD (+5) - GitHub Actions pipeline
-- DevOps (+5) - Docker Compose, automated workflows
-
----
 
 ## Documentation
 
