@@ -33,5 +33,8 @@ RUN mkdir -p /app/session
 # Expose port
 EXPOSE 8080
 
+# Copy session if exists (for initial deploy)
+COPY session/ /app/session/ 2>/dev/null || true
+
 # Run the application
 CMD ["./wa-gateway"]
