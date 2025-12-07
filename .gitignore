@@ -46,9 +46,8 @@ Thumbs.db
 logs/
 
 # WhatsApp Session (sensitive!)
-# Temporarily commented for initial deploy
-# apps/wa-gateway/session/
-# session/
+apps/wa-gateway/session/
+session/
 
 # Docker
 .docker/
