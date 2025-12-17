@@ -170,7 +170,7 @@ Untuk testing dan demo, gunakan akun berikut:
 | Email | Password | Description |
 |-------|----------|-------------|
 | test@pasarsuara.com | password123 | Demo account dengan sample data |
-| daunsnime@gmail.com | [your password] | Main demo account |
+
 
 **Note:** Akun demo sudah berisi sample data (inventory, transactions, negotiations) untuk keperluan demo hackathon.
 
