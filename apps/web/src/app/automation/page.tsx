@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { useAuth } from '@/lib/auth'
 import { ProtectedRoute } from '@/components/ProtectedRoute'
 import {
@@ -12,6 +13,7 @@ import {
 import Link from 'next/link'
 
 function AutomationContent() {
+  const router = useRouter()
   const { user } = useAuth()
   const [loading, setLoading] = useState(true)
   const [lowStockAlerts, setLowStockAlerts] = useState<Array<{
@@ -79,6 +81,27 @@ function AutomationContent() {
     if (trend === 'UP') return '📈'
     if (trend === 'DOWN') return '📉'
     return '➡️'
+  }
+
+  const handleNotificationAction = (action?: string) => {
+    if (!action) return
+
+    if (action === 'Buat promosi') {
+      router.push('/integrations')
+      return
+    }
+
+    if (action === 'Cek inventory' || action === 'Reorder sekarang') {
+      router.push('/inventory')
+      return
+    }
+
+    if (action === 'Lihat detail') {
+      const section = document.getElementById('reorder-suggestions')
+      if (section) {
+        section.scrollIntoView({ behavior: 'smooth', block: 'start' })
+      }
+    }
   }
 
   const getConfidenceColor = (confidence: string) => {
@@ -154,7 +177,10 @@ function AutomationContent() {
                       <p className="text-sm">{notif.message}</p>
                     </div>
                     {notif.action && (
-                      <button className="ml-4 px-3 py-1 bg-white rounded-lg text-sm font-medium hover:bg-gray-50 transition">
+                      <button
+                        onClick={() => handleNotificationAction(notif.action)}
+                        className="ml-4 px-3 py-1 bg-white rounded-lg text-sm font-medium hover:bg-gray-50 transition"
+                      >
                         {notif.action}
                       </button>
                     )}
@@ -252,7 +278,7 @@ function AutomationContent() {
         </div>
 
         {/* Auto Reorder Suggestions */}
-        <div className="bg-white rounded-lg shadow">
+        <div id="reorder-suggestions" className="bg-white rounded-lg shadow">
           <div className="p-6 border-b">
             <h2 className="text-xl font-bold">🔄 Auto Reorder Suggestions</h2>
           </div>
