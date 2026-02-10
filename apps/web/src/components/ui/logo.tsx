@@ -20,7 +20,7 @@ export function Logo({ size = 'md', showText = true, href = '/' }: LogoProps) {
     <div className="flex items-center gap-3">
       <Image
         src="/logo.png"
-        alt="PasarSuara Pintar Logo"
+        alt="Suara Niaga Pintar Logo"
         width={width}
         height={height}
         className="object-contain"
@@ -28,7 +28,7 @@ export function Logo({ size = 'md', showText = true, href = '/' }: LogoProps) {
       />
       {showText && (
         <span className={`font-bold text-green-700 ${textSize}`}>
-          PasarSuara
+          Suara Niaga
         </span>
       )}
     </div>

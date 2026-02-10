@@ -76,7 +76,7 @@ export default function LoginPage() {
           <div className="flex justify-center mb-4">
             <Logo size="lg" showText={false} href={undefined} />
           </div>
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">PasarSuara Pintar</h1>
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">Suara Niaga Pintar</h1>
           <p className="text-gray-600">Voice-First AI OS untuk UMKM</p>
         </div>
 
@@ -177,7 +177,7 @@ export default function LoginPage() {
 
         {/* Features */}
         <div className="mt-8 text-center">
-          <p className="text-sm text-gray-600 mb-4">Kenapa PasarSuara?</p>
+          <p className="text-sm text-gray-600 mb-4">Kenapa Suara Niaga Pintar?</p>
           <div className="flex justify-center gap-6 text-xs text-gray-500">
             <div className="flex items-center gap-1">
               <span>✅</span>

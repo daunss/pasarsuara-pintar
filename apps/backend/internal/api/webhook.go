@@ -76,6 +76,16 @@ func (w *WhatsAppWebhook) Handle(rw http.ResponseWriter, r *http.Request) {
 		text := payload.Payload.Text
 		log.Printf("💬 Processing text: %s", text)
 
+		// Handle supplier replies for active negotiations
+		if w.orchestrator != nil {
+			handled, reply := w.orchestrator.HandleSupplierMessage(ctx, payload.From, text)
+			if handled {
+				response.Reply = reply
+				response.Message = "Processed supplier message"
+				break
+			}
+		}
+
 		// Try message router first (for registration, ambiguity, categorization)
 		if w.messageRouter != nil {
 			routerResponse, err := w.messageRouter.RouteMessage(payload.From, text)

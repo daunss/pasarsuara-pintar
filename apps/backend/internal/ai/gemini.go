@@ -234,6 +234,92 @@ func (g *GeminiClient) TranscribeAudio(ctx context.Context, audioData []byte, mi
 	return "", fmt.Errorf("all API keys exhausted: %w", lastErr)
 }
 
+// GenerateText sends a text-only prompt and returns the model response.
+func (g *GeminiClient) GenerateText(ctx context.Context, prompt string) (string, error) {
+	if len(g.apiKeys) == 0 {
+		return "", fmt.Errorf("Gemini API key not configured")
+	}
+
+	req := GeminiRequest{
+		Contents: []GeminiContent{
+			{
+				Parts: []GeminiPart{
+					{
+						Text: prompt,
+					},
+				},
+			},
+		},
+	}
+
+	jsonData, err := json.Marshal(req)
+	if err != nil {
+		return "", fmt.Errorf("failed to marshal request: %w", err)
+	}
+
+	maxRetries := len(g.apiKeys)
+	var lastErr error
+
+	for attempt := 0; attempt < maxRetries; attempt++ {
+		apiKey := g.getCurrentKey()
+		url := fmt.Sprintf("https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=%s", apiKey)
+
+		httpReq, err := http.NewRequestWithContext(ctx, "POST", url, bytes.NewBuffer(jsonData))
+		if err != nil {
+			return "", fmt.Errorf("failed to create request: %w", err)
+		}
+		httpReq.Header.Set("Content-Type", "application/json")
+
+		resp, err := g.httpClient.Do(httpReq)
+		if err != nil {
+			lastErr = fmt.Errorf("failed to call Gemini API: %w", err)
+			log.Printf("⚠️ Gemini API call failed (attempt %d/%d): %v", attempt+1, maxRetries, err)
+			g.rotateKey()
+			continue
+		}
+
+		body, err := io.ReadAll(resp.Body)
+		resp.Body.Close()
+		if err != nil {
+			lastErr = fmt.Errorf("failed to read response: %w", err)
+			log.Printf("⚠️ Failed to read response (attempt %d/%d): %v", attempt+1, maxRetries, err)
+			g.rotateKey()
+			continue
+		}
+
+		var geminiResp GeminiResponse
+		if err := json.Unmarshal(body, &geminiResp); err != nil {
+			lastErr = fmt.Errorf("failed to parse response: %w", err)
+			log.Printf("⚠️ Failed to parse response (attempt %d/%d): %v", attempt+1, maxRetries, err)
+			g.rotateKey()
+			continue
+		}
+
+		if geminiResp.Error != nil {
+			lastErr = fmt.Errorf("Gemini API error: %s", geminiResp.Error.Message)
+			if geminiResp.Error.Code == 429 || geminiResp.Error.Code == 403 {
+				log.Printf("⚠️ API key quota/rate limit (code %d, attempt %d/%d): %s",
+					geminiResp.Error.Code, attempt+1, maxRetries, geminiResp.Error.Message)
+				g.rotateKey()
+				time.Sleep(time.Duration(attempt+1) * 100 * time.Millisecond)
+				continue
+			}
+			return "", lastErr
+		}
+
+		if len(geminiResp.Candidates) == 0 || len(geminiResp.Candidates[0].Content.Parts) == 0 {
+			lastErr = fmt.Errorf("no response from Gemini")
+			log.Printf("⚠️ No response from Gemini (attempt %d/%d)", attempt+1, maxRetries)
+			g.rotateKey()
+			continue
+		}
+
+		return geminiResp.Candidates[0].Content.Parts[0].Text, nil
+	}
+
+	return "", lastErr
+}
+
 // ExtractIntent uses Gemini to extract intent from text with automatic key rotation
 func (g *GeminiClient) ExtractIntent(ctx context.Context, text string) (*Intent, error) {
 	if len(g.apiKeys) == 0 {

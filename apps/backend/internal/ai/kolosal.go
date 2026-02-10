@@ -48,7 +48,7 @@ type KolosalResponse struct {
 	} `json:"error,omitempty"`
 }
 
-const intentSystemPrompt = `You are an Intent Extraction Engine for PasarSuara, a voice-first business OS for Indonesian UMKM (small businesses).
+const intentSystemPrompt = `You are an Intent Extraction Engine for Suara Niaga Pintar, a voice-first business OS for Indonesian UMKM (small businesses).
 
 Your task is to analyze informal Indonesian/Javanese/Sundanese text and extract structured intent.
 

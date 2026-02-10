@@ -119,7 +119,7 @@ export default function RegisterPage() {
           <div className="flex justify-center mb-4">
             <Logo size="lg" showText={false} href={undefined} />
           </div>
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Daftar PasarSuara</h1>
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">Daftar Suara Niaga Pintar</h1>
           <p className="text-gray-600">Mulai kelola bisnis dengan suara</p>
         </div>
 

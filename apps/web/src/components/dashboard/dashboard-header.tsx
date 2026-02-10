@@ -4,7 +4,6 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 import { WhatsAppStatusBadge } from './whatsapp-status'
-import { SyncStatusBadge } from './sync-status'
 import { NotificationCenter } from './notification-center'
 
 interface DashboardHeaderProps {
@@ -20,7 +19,7 @@ export function DashboardHeader({ userEmail }: DashboardHeaderProps) {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
             <Link href="/" className="text-2xl font-bold text-green-700">
-              🗣️ PasarSuara
+              🗣️ Suara Niaga
             </Link>
             <span className="text-gray-400">|</span>
             <span className="text-gray-600">Dashboard</span>
@@ -28,9 +27,6 @@ export function DashboardHeader({ userEmail }: DashboardHeaderProps) {
           <div className="flex items-center gap-4">
             {/* WhatsApp Status */}
             <WhatsAppStatusBadge />
-            
-            {/* Sync Status */}
-            <SyncStatusBadge />
             
             {/* Notifications */}
             <NotificationCenter />

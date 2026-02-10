@@ -103,7 +103,7 @@ function SettingsPageContent() {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
               <Link href="/dashboard" className="text-2xl font-bold text-green-700">
-                🗣️ PasarSuara
+                🗣️ Suara Niaga
               </Link>
               <span className="text-gray-400">|</span>
               <span className="text-gray-600">Pengaturan</span>

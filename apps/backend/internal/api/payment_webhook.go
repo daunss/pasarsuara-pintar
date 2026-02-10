@@ -16,7 +16,13 @@ import (
 
 // MidtransWebhook handles payment notifications from Midtrans
 type MidtransWebhook struct {
-	db *database.SupabaseClient
+	db       *database.SupabaseClient
+	waSender WhatsAppSender
+}
+
+// WhatsAppSender allows sending outbound WhatsApp messages.
+type WhatsAppSender interface {
+	SendMessage(ctx context.Context, to, message string) error
 }
 
 // MidtransNotification represents the webhook payload from Midtrans
@@ -35,9 +41,10 @@ type MidtransNotification struct {
 	Currency          string `json:"currency"`
 }
 
-func NewMidtransWebhook(db *database.SupabaseClient) *MidtransWebhook {
+func NewMidtransWebhook(db *database.SupabaseClient, waSender WhatsAppSender) *MidtransWebhook {
 	return &MidtransWebhook{
-		db: db,
+		db:       db,
+		waSender: waSender,
 	}
 }
 
@@ -97,65 +104,138 @@ func (m *MidtransWebhook) verifySignature(notification MidtransNotification) boo
 func (m *MidtransWebhook) processPayment(ctx context.Context, notification MidtransNotification) error {
 	// Get order by order_number
 	orders, err := m.db.GetOrdersByNumber(ctx, notification.OrderID)
-	if err != nil || len(orders) == 0 {
-		return fmt.Errorf("order not found: %s", notification.OrderID)
+	if err == nil && len(orders) > 0 {
+		order := orders[0]
+
+		// Determine payment status based on transaction status
+		var paymentStatus string
+		var orderStatus string
+
+		switch notification.TransactionStatus {
+		case "capture", "settlement":
+			if notification.FraudStatus == "accept" || notification.FraudStatus == "" {
+				paymentStatus = "PAID"
+				orderStatus = "CONFIRMED"
+			} else {
+				paymentStatus = "FAILED"
+				orderStatus = "CANCELLED"
+			}
+		case "pending":
+			paymentStatus = "PENDING"
+			orderStatus = "PENDING"
+		case "deny", "expire", "cancel":
+			paymentStatus = "FAILED"
+			orderStatus = "CANCELLED"
+		default:
+			paymentStatus = "PENDING"
+			orderStatus = "PENDING"
+		}
+
+		// Update order
+		now := time.Now()
+		updates := map[string]interface{}{
+			"payment_status": paymentStatus,
+			"payment_method": notification.PaymentType,
+			"status":         orderStatus,
+			"updated_at":     now,
+		}
+
+		if paymentStatus == "PAID" {
+			updates["paid_at"] = now
+		}
+
+		if err := m.db.UpdateOrder(ctx, order.ID, updates); err != nil {
+			return fmt.Errorf("failed to update order: %w", err)
+		}
+
+		log.Printf("✅ Order %s updated: payment_status=%s, order_status=%s",
+			notification.OrderID, paymentStatus, orderStatus)
+
+		// Create delivery if payment is successful
+		if paymentStatus == "PAID" {
+			if err := m.createDelivery(ctx, order); err != nil {
+				log.Printf("⚠️ Failed to create delivery: %v", err)
+				// Don't fail the webhook, just log the error
+			}
+		}
+
+		return nil
 	}
 
-	order := orders[0]
+	// Fallback: update payment records by reference number (QRIS/negotiation flow)
+	payment, err := m.db.GetPaymentByReference(ctx, notification.OrderID)
+	if err != nil || payment == nil {
+		return fmt.Errorf("order or payment not found: %s", notification.OrderID)
+	}
 
-	// Determine payment status based on transaction status
-	var paymentStatus string
-	var orderStatus string
-
+	paymentStatus := "PENDING"
 	switch notification.TransactionStatus {
 	case "capture", "settlement":
 		if notification.FraudStatus == "accept" || notification.FraudStatus == "" {
 			paymentStatus = "PAID"
-			orderStatus = "CONFIRMED"
 		} else {
 			paymentStatus = "FAILED"
-			orderStatus = "CANCELLED"
 		}
 	case "pending":
 		paymentStatus = "PENDING"
-		orderStatus = "PENDING"
 	case "deny", "expire", "cancel":
 		paymentStatus = "FAILED"
-		orderStatus = "CANCELLED"
-	default:
-		paymentStatus = "PENDING"
-		orderStatus = "PENDING"
 	}
 
-	// Update order
-	now := time.Now()
 	updates := map[string]interface{}{
-		"payment_status": paymentStatus,
-		"payment_method": notification.PaymentType,
-		"status":         orderStatus,
-		"updated_at":     now,
+		"payment_method":   notification.PaymentType,
+		"status":           paymentStatus,
+		"reference_number": notification.OrderID,
 	}
+	if paymentStatus == "PAID" {
+		updates["paid_at"] = time.Now().Format(time.RFC3339)
+	}
+
+	if err := m.db.UpdatePayment(ctx, payment.ID, updates); err != nil {
+		return fmt.Errorf("failed to update payment: %w", err)
+	}
+
+	log.Printf("✅ Payment %s updated: status=%s", payment.ID, paymentStatus)
 
 	if paymentStatus == "PAID" {
-		updates["paid_at"] = now
+		m.notifySupplier(ctx, payment)
 	}
-
-	if err := m.db.UpdateOrder(ctx, order.ID, updates); err != nil {
-		return fmt.Errorf("failed to update order: %w", err)
-	}
-
-	log.Printf("✅ Order %s updated: payment_status=%s, order_status=%s",
-		notification.OrderID, paymentStatus, orderStatus)
-
-	// Create delivery record if payment is successful
-	if paymentStatus == "PAID" {
-		if err := m.createDelivery(ctx, order); err != nil {
-			log.Printf("⚠️ Failed to create delivery: %v", err)
-			// Don't fail the webhook, just log the error
-		}
-	}
-
 	return nil
+}
+
+func (m *MidtransWebhook) notifySupplier(ctx context.Context, payment *database.Payment) {
+	if m.waSender == nil || payment == nil || payment.Notes == "" {
+		return
+	}
+
+	var noteData map[string]any
+	if err := json.Unmarshal([]byte(payment.Notes), &noteData); err != nil {
+		return
+	}
+
+	phone, _ := noteData["supplier_phone"].(string)
+	if phone == "" {
+		return
+	}
+
+	product, _ := noteData["product"].(string)
+	unit, _ := noteData["unit"].(string)
+	qty := noteData["qty"]
+	qtyText := ""
+	if qtyFloat, ok := qty.(float64); ok && qtyFloat > 0 {
+		qtyText = fmt.Sprintf("%.0f %s", qtyFloat, unit)
+	}
+
+	message := "✅ Pembayaran QRIS sudah diterima. Silakan proses pesanan sekarang."
+	if product != "" && qtyText != "" {
+		message = fmt.Sprintf("✅ Pembayaran QRIS sudah diterima untuk %s (%s). Silakan proses pesanan sekarang.", product, qtyText)
+	}
+
+	ctxTimeout, cancel := context.WithTimeout(ctx, 10*time.Second)
+	defer cancel()
+	if err := m.waSender.SendMessage(ctxTimeout, phone, message); err != nil {
+		log.Printf("⚠️ Failed to notify supplier: %v", err)
+	}
 }
 
 func (m *MidtransWebhook) createDelivery(ctx context.Context, order database.Order) error {

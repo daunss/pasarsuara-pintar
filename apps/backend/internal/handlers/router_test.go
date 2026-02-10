@@ -3,6 +3,7 @@ package handlers
 import (
 	"context"
 	"fmt"
+	"strings"
 	"testing"
 )
 
@@ -274,4 +275,8 @@ func containsAny(s string, substrs []string) bool {
 		}
 	}
 	return false
+}
+
+func contains(s string, substr string) bool {
+	return strings.Contains(s, substr)
 }

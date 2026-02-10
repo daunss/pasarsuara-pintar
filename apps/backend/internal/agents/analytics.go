@@ -105,7 +105,7 @@ func (a *AnalyticsAgent) ForecastSales(ctx context.Context, userID string, produ
 	confidence := a.calculateConfidence(dailySales)
 
 	// Generate recommendation
-	recommendation := a.generateSalesRecommendation(trend, avgDailySales, predictions)
+	recommendation := a.generateSalesRecommendation(trend, avgDailySales)
 
 	return &SalesForecast{
 		ProductName:       productName,
@@ -148,7 +148,7 @@ func (a *AnalyticsAgent) RecommendOptimalPrice(ctx context.Context, userID strin
 	priceChange := ((optimalPrice - currentPrice) / currentPrice) * 100
 
 	// Generate reasoning
-	reasoning := a.generatePriceReasoning(currentPrice, optimalPrice, priceChange, pricePoints)
+	reasoning := a.generatePriceReasoning(currentPrice, optimalPrice, priceChange)
 	confidence := a.calculatePriceConfidence(pricePoints)
 
 	return &PriceRecommendation{
@@ -388,7 +388,7 @@ func (a *AnalyticsAgent) calculateConfidence(dailySales []float64) float64 {
 	return math.Min(confidence, 0.95) // Cap at 95%
 }
 
-func (a *AnalyticsAgent) generateSalesRecommendation(trend string, avgSales float64, predictions []DailyPrediction) string {
+func (a *AnalyticsAgent) generateSalesRecommendation(trend string, avgSales float64) string {
 	switch trend {
 	case "INCREASING":
 		return fmt.Sprintf("📈 Penjualan meningkat! Rata-rata %.0f unit/hari. Pertimbangkan tambah stok dan promosi lebih agresif.", avgSales)
@@ -467,7 +467,7 @@ func (a *AnalyticsAgent) estimateProfit(pricePoints []pricePoint, optimalPrice f
 	return optimalPrice * estimatedDemand
 }
 
-func (a *AnalyticsAgent) generatePriceReasoning(current, optimal, changePercent float64, points []pricePoint) string {
+func (a *AnalyticsAgent) generatePriceReasoning(current, optimal, changePercent float64) string {
 	if math.Abs(changePercent) < 2 {
 		return fmt.Sprintf("Harga saat ini (Rp %.0f) sudah optimal. Pertahankan harga ini.", current)
 	}

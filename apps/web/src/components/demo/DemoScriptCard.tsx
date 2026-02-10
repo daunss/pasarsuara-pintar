@@ -10,7 +10,7 @@ const demoScript = [
     steps: [
       'Introduce problem: Bu Siti warung owner challenges',
       'Show pain points: No time to record, can\'t negotiate',
-      'Present solution: PasarSuara voice-first AI',
+      'Present solution: Suara Niaga Pintar voice-first AI',
     ]
   },
   {

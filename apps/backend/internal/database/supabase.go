@@ -120,6 +120,7 @@ type User struct {
 	Email            string `json:"email,omitempty"`
 	Phone            string `json:"phone,omitempty"`
 	Name             string `json:"name,omitempty"`
+	City             string `json:"city,omitempty"`
 	Role             string `json:"role,omitempty"`
 	PreferredDialect string `json:"preferred_dialect,omitempty"`
 	PasswordHash     string `json:"password_hash,omitempty"`
@@ -153,7 +154,7 @@ func (s *SupabaseClient) GetUserByPhone(ctx context.Context, phone string) (*Use
 
 	var users []User
 	// Try exact match first
-	endpoint := fmt.Sprintf("users?phone_number=eq.+%s&select=id,email,phone_number,name", normalizedPhone)
+	endpoint := fmt.Sprintf("users?phone_number=eq.+%s&select=id,email,phone_number,name,city", normalizedPhone)
 	err := s.request(ctx, "GET", endpoint, nil, &users)
 
 	if err == nil && len(users) > 0 {
@@ -165,7 +166,7 @@ func (s *SupabaseClient) GetUserByPhone(ctx context.Context, phone string) (*Use
 	}
 
 	// Try without + prefix
-	endpoint = fmt.Sprintf("users?phone_number=eq.%s&select=id,email,phone_number,name", normalizedPhone)
+	endpoint = fmt.Sprintf("users?phone_number=eq.%s&select=id,email,phone_number,name,city", normalizedPhone)
 	err = s.request(ctx, "GET", endpoint, nil, &users)
 
 	if err == nil && len(users) > 0 {
@@ -177,7 +178,7 @@ func (s *SupabaseClient) GetUserByPhone(ctx context.Context, phone string) (*Use
 	}
 
 	// Try with LIKE for partial match
-	endpoint = fmt.Sprintf("users?phone_number=like.*%s*&select=id,email,phone_number,name", normalizedPhone)
+	endpoint = fmt.Sprintf("users?phone_number=like.*%s*&select=id,email,phone_number,name,city", normalizedPhone)
 	err = s.request(ctx, "GET", endpoint, nil, &users)
 
 	if err == nil && len(users) > 0 {
@@ -431,6 +432,20 @@ func (s *SupabaseClient) GetPaymentsByTransaction(ctx context.Context, transacti
 	endpoint := fmt.Sprintf("payments?transaction_id=eq.%s&order=created_at.desc", transactionID)
 	err := s.request(ctx, "GET", endpoint, nil, &payments)
 	return payments, err
+}
+
+// GetPaymentByReference finds a payment by reference number.
+func (s *SupabaseClient) GetPaymentByReference(ctx context.Context, reference string) (*Payment, error) {
+	var payments []Payment
+	endpoint := fmt.Sprintf("payments?reference_number=eq.%s&limit=1", reference)
+	err := s.request(ctx, "GET", endpoint, nil, &payments)
+	if err != nil {
+		return nil, err
+	}
+	if len(payments) == 0 {
+		return nil, nil
+	}
+	return &payments[0], nil
 }
 
 // UpdatePayment updates a payment record

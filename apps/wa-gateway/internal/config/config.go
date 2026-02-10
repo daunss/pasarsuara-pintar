@@ -8,6 +8,7 @@ type Config struct {
 	Port        string
 	SessionPath string
 	BackendURL  string
+	APIKey      string
 }
 
 func Load() *Config {
@@ -15,6 +16,7 @@ func Load() *Config {
 		Port:        getEnv("WA_GATEWAY_PORT", "8081"),
 		SessionPath: getEnv("WA_SESSION_PATH", "./session"),
 		BackendURL:  getEnv("BACKEND_URL", "http://localhost:8080"),
+		APIKey:      getEnv("WA_GATEWAY_API_KEY", ""),
 	}
 }
 

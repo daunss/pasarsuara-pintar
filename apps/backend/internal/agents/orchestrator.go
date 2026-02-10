@@ -13,16 +13,17 @@ import (
 
 // AgentOrchestrator coordinates all agents based on intent
 type AgentOrchestrator struct {
-	db           *database.SupabaseClient
-	finance      *FinanceAgent
-	negotiation  *NegotiationOrchestrator
-	promo        *PromoAgent
-	inventory    *InventoryAgent
-	catalog      *CatalogAgent
-	contact      *ContactAgent
-	notification *NotificationAgent
-	intentEngine *ai.IntentEngine
-	contextMgr   *appcontext.ConversationManager
+	db            *database.SupabaseClient
+	finance       *FinanceAgent
+	negotiation   *NegotiationOrchestrator
+	realNegotiate *SupplierNegotiationService
+	promo         *PromoAgent
+	inventory     *InventoryAgent
+	catalog       *CatalogAgent
+	contact       *ContactAgent
+	notification  *NotificationAgent
+	intentEngine  *ai.IntentEngine
+	contextMgr    *appcontext.ConversationManager
 }
 
 // AgentResponse represents the response from agent processing
@@ -34,18 +35,22 @@ type AgentResponse struct {
 	Negotiation *NegotiationResult    `json:"negotiation,omitempty"`
 }
 
-func NewAgentOrchestrator(db *database.SupabaseClient, intentEngine *ai.IntentEngine, kolosal *ai.KolosalClient, kolosalKey, kolosalURL, geminiKey string, contextMgr *appcontext.ConversationManager) *AgentOrchestrator {
+func NewAgentOrchestrator(db *database.SupabaseClient, intentEngine *ai.IntentEngine, kolosal *ai.KolosalClient, kolosalKey, kolosalURL, geminiKey string, contextMgr *appcontext.ConversationManager, waSender WhatsAppSender, qrisClient QrisPaymentClient) *AgentOrchestrator {
+	finance := NewFinanceAgent(db)
+	inventory := NewInventoryAgent(db)
+	geminiClient := ai.NewGeminiClient(geminiKey)
 	return &AgentOrchestrator{
-		db:           db,
-		finance:      NewFinanceAgent(db),
-		negotiation:  NewNegotiationOrchestrator(db, kolosal),
-		promo:        NewPromoAgent(db, kolosalKey, kolosalURL, geminiKey),
-		inventory:    NewInventoryAgent(db),
-		catalog:      NewCatalogAgent(db),
-		contact:      NewContactAgent(db),
-		notification: NewNotificationAgent(db),
-		intentEngine: intentEngine,
-		contextMgr:   contextMgr,
+		db:            db,
+		finance:       finance,
+		negotiation:   NewNegotiationOrchestrator(db, kolosal),
+		realNegotiate: NewSupplierNegotiationService(db, waSender, kolosal, geminiClient, finance, inventory, qrisClient),
+		promo:         NewPromoAgent(db, kolosalKey, kolosalURL, geminiKey),
+		inventory:     inventory,
+		catalog:       NewCatalogAgent(db),
+		contact:       NewContactAgent(db),
+		notification:  NewNotificationAgent(db),
+		intentEngine:  intentEngine,
+		contextMgr:    contextMgr,
 	}
 }
 
@@ -180,6 +185,12 @@ func (o *AgentOrchestrator) processIntent(ctx context.Context, userPhone string,
 		}
 
 	case "ORDER_RESTOCK":
+		if o.realNegotiate != nil && o.realNegotiate.Enabled() {
+			response.Message = o.realNegotiate.StartNegotiation(ctx, userPhone, userID, intent)
+			response.Success = true
+			break
+		}
+
 		negResult := o.negotiation.StartNegotiation(ctx, userID, intent)
 		response.Negotiation = negResult
 		if negResult.Success {
@@ -203,7 +214,7 @@ func (o *AgentOrchestrator) processIntent(ctx context.Context, userPhone string,
 		response.Message = o.handleCheckStock(ctx, userID, intent)
 
 	case "ASK_MARKET":
-		response.Message = o.handleMarketIntel(ctx, intent)
+		response.Message = o.handleMarketIntel(intent)
 
 	case "REQUEST_PROMO":
 		response.Message = o.handlePromoRequest(ctx, userID, intent)
@@ -212,7 +223,7 @@ func (o *AgentOrchestrator) processIntent(ctx context.Context, userPhone string,
 		response.Message = o.handleReportRequest(ctx, userID, intent)
 
 	case "GREETING":
-		response.Message = o.getGreetingResponse(userPhone)
+		response.Message = o.getGreetingResponse()
 
 	default:
 		response.Message = o.intentEngine.GenerateResponse(intent)
@@ -224,6 +235,14 @@ func (o *AgentOrchestrator) processIntent(ctx context.Context, userPhone string,
 	}
 
 	return response
+}
+
+// HandleSupplierMessage routes supplier replies to the real negotiation service.
+func (o *AgentOrchestrator) HandleSupplierMessage(ctx context.Context, phone, message string) (bool, string) {
+	if o.realNegotiate == nil {
+		return false, ""
+	}
+	return o.realNegotiate.HandleSupplierMessage(ctx, phone, message)
 }
 
 func (o *AgentOrchestrator) getUserID(ctx context.Context, phone string) string {
@@ -308,7 +327,7 @@ func (o *AgentOrchestrator) handleCheckStock(ctx context.Context, userID string,
 	return "📦 Produk apa yang ingin dicek stoknya?"
 }
 
-func (o *AgentOrchestrator) handleMarketIntel(ctx context.Context, intent *ai.Intent) string {
+func (o *AgentOrchestrator) handleMarketIntel(intent *ai.Intent) string {
 	product := getStringEntity(intent.Entities, "product")
 
 	// Demo market intel
@@ -363,8 +382,8 @@ func (o *AgentOrchestrator) handlePromoRequest(ctx context.Context, userID strin
 		product, o.promo.FormatForWhatsApp(promo))
 }
 
-func (o *AgentOrchestrator) getGreetingResponse(phone string) string {
-	return fmt.Sprintf("👋 Halo! Selamat datang di PasarSuara Pintar!\n\n" +
+func (o *AgentOrchestrator) getGreetingResponse() string {
+	return fmt.Sprintf("👋 Halo! Selamat datang di Suara Niaga Pintar!\n\n" +
 		"Saya asisten bisnis Anda. Anda bisa:\n" +
 		"• 📝 Catat penjualan: \"laku nasi 10 porsi\"\n" +
 		"• 🛒 Pesan barang: \"cari beras 25 kg\"\n" +

@@ -10,7 +10,7 @@ import (
 	"github.com/pasarsuara/backend/internal/database"
 )
 
-func NewRouter(orchestrator *agents.AgentOrchestrator, catalogHandler *CatalogHandler, db *database.SupabaseClient, integrationsHandler interface{}) http.Handler {
+func NewRouter(orchestrator *agents.AgentOrchestrator, catalogHandler *CatalogHandler, db *database.SupabaseClient, waSender WhatsAppSender, integrationsHandler interface{}) http.Handler {
 	r := chi.NewRouter()
 
 	// Middleware
@@ -36,7 +36,7 @@ func NewRouter(orchestrator *agents.AgentOrchestrator, catalogHandler *CatalogHa
 	r.Post("/internal/webhook/whatsapp", webhook.Handle)
 
 	// Payment webhooks (from Midtrans)
-	paymentWebhook := NewMidtransWebhook(db)
+	paymentWebhook := NewMidtransWebhook(db, waSender)
 	r.Post("/api/payments/webhook", paymentWebhook.Handle)
 
 	// Authentication endpoints

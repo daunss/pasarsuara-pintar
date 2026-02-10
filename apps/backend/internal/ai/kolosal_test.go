@@ -35,6 +35,19 @@ func TestIntent_EntityHelpers(t *testing.T) {
 	if !ok || maxPrice != 12000 {
 		t.Errorf("Expected max_price 12000, got %v", maxPrice)
 	}
+
+	if intent.Action != "ORDER_RESTOCK" {
+		t.Errorf("Expected action ORDER_RESTOCK, got %s", intent.Action)
+	}
+	if intent.Sentiment != "neutral" {
+		t.Errorf("Expected sentiment neutral, got %s", intent.Sentiment)
+	}
+	if intent.Language != "id" {
+		t.Errorf("Expected language id, got %s", intent.Language)
+	}
+	if intent.RawText == "" {
+		t.Error("Expected raw text to be set")
+	}
 }
 
 func TestIntentEngine_GenerateResponse(t *testing.T) {

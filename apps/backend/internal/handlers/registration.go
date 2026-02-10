@@ -65,7 +65,7 @@ func StartRegistration(phoneNumber string) string {
 		CreatedAt:   time.Now(),
 	}
 
-	return `🎉 Selamat datang di PasarSuara!
+	return `🎉 Selamat datang di Suara Niaga Pintar!
 
 Mari kita setup akun Anda.
 

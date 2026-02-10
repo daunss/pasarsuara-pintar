@@ -3,9 +3,11 @@ package main
 import (
 	"context"
 	"log"
+	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
+	"time"
 
 	"github.com/joho/godotenv"
 	"github.com/pasarsuara/wa-gateway/internal/config"
@@ -22,7 +24,7 @@ func main() {
 	// Load config
 	cfg := config.Load()
 
-	log.Println("🚀 PasarSuara WA Gateway starting...")
+	log.Println("🚀 Suara Niaga Pintar WA Gateway starting...")
 	log.Printf("📁 Session path: %s", cfg.SessionPath)
 	log.Printf("🔗 Backend URL: %s", cfg.BackendURL)
 
@@ -48,12 +50,38 @@ func main() {
 	log.Println("✅ WhatsApp Gateway is running!")
 	log.Println("📱 Waiting for messages...")
 
+	// Start HTTP server for status and outbound messaging
+	mux := http.NewServeMux()
+	mux.Handle("/status", handler.HandleStatus(waClient))
+	mux.Handle("/internal/send-message", handler.HandleSendMessage(waClient, cfg.APIKey))
+	mux.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+		w.Write([]byte("ok"))
+	})
+
+	server := &http.Server{
+		Addr:    ":" + cfg.Port,
+		Handler: mux,
+	}
+
+	go func() {
+		log.Printf("✅ HTTP server listening on http://localhost:%s", cfg.Port)
+		if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+			log.Fatalf("❌ HTTP server error: %v", err)
+		}
+	}()
+
 	// Wait for interrupt signal
 	sigChan := make(chan os.Signal, 1)
 	signal.Notify(sigChan, os.Interrupt, syscall.SIGTERM)
 	<-sigChan
 
 	log.Println("\n👋 Shutting down...")
+	ctxShutdown, cancelShutdown := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancelShutdown()
+	if err := server.Shutdown(ctxShutdown); err != nil {
+		log.Printf("⚠️ HTTP server shutdown error: %v", err)
+	}
 	waClient.Disconnect()
 	log.Println("✅ Disconnected from WhatsApp")
 }

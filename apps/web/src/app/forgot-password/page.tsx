@@ -57,7 +57,7 @@ export default function ForgotPasswordPage() {
         <div className="text-center mb-8">
           <Link href="/" className="inline-block">
             <h1 className="text-4xl font-bold text-green-700 mb-2">
-              🗣️ PasarSuara
+              🗣️ Suara Niaga
             </h1>
           </Link>
           <p className="text-gray-600">Reset Password</p>

@@ -121,6 +121,8 @@ func (ap *AudioProcessor) isValidAudioQuality(audioData []byte) bool {
 
 // attemptFormatConversion tries to convert unsupported formats
 func (ap *AudioProcessor) attemptFormatConversion(ctx context.Context, audioData []byte, mimeType string) *AudioProcessingResult {
+	_ = ctx
+	_ = audioData
 	result := &AudioProcessingResult{
 		Success: false,
 		Method:  "conversion",
@@ -135,6 +137,9 @@ func (ap *AudioProcessor) attemptFormatConversion(ctx context.Context, audioData
 
 // attemptFallbackTranscription tries alternative transcription methods
 func (ap *AudioProcessor) attemptFallbackTranscription(ctx context.Context, audioData []byte, mimeType string) *AudioProcessingResult {
+	_ = ctx
+	_ = audioData
+	_ = mimeType
 	result := &AudioProcessingResult{
 		Success: false,
 		Method:  "fallback",

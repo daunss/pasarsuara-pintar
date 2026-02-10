@@ -8,7 +8,7 @@ $dashboardFile = "src/app/dashboard/page.tsx"
 $content = Get-Content $dashboardFile -Raw
 
 # Ganti semua kemunculan logo lama
-$content = $content -replace '<Link href="/" className="text-2xl font-bold text-green-700">\s*🗣️ PasarSuara\s*</Link>', '<Logo size="md" showText={true} href="/" />'
+$content = $content -replace '<Link href="/" className="text-2xl font-bold text-green-700">\s*🗣️ Suara Niaga\s*</Link>', '<Logo size="md" showText={true} href="/" />'
 
 # Simpan kembali
 $content | Set-Content $dashboardFile -NoNewline
@@ -28,15 +28,15 @@ foreach ($file in $filesToUpdate) {
         $content = Get-Content $file -Raw
         
         # Cek apakah file menggunakan logo lama
-        if ($content -match '🗣️ PasarSuara' -or $content -match 'text-2xl font-bold text-green-700.*PasarSuara') {
+        if ($content -match '🗣️ Suara Niaga' -or $content -match 'text-2xl font-bold text-green-700.*Suara Niaga') {
             # Tambahkan import jika belum ada
             if ($content -notmatch "import.*Logo.*from.*@/components/ui/logo") {
                 $content = $content -replace "(import.*from 'next/link')", "`$1`nimport { Logo } from '@/components/ui/logo'"
             }
             
             # Ganti logo
-            $content = $content -replace '<Link href="/" className="text-2xl font-bold text-green-700">\s*🗣️ PasarSuara\s*</Link>', '<Logo size="md" showText={true} href="/" />'
-            $content = $content -replace '🗣️ PasarSuara', 'PasarSuara'
+            $content = $content -replace '<Link href="/" className="text-2xl font-bold text-green-700">\s*🗣️ Suara Niaga\s*</Link>', '<Logo size="md" showText={true} href="/" />'
+            $content = $content -replace '🗣️ Suara Niaga', 'Suara Niaga'
             
             $content | Set-Content $file -NoNewline
             Write-Host "✓ $file updated" -ForegroundColor Green

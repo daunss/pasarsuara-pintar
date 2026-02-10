@@ -156,6 +156,8 @@ func (r *MessageRouter) processCompleteTransaction(ctx context.Context, phoneNum
 
 // getUserIDFromPhone gets user ID from phone number
 func (r *MessageRouter) getUserIDFromPhone(ctx context.Context, phoneNumber string) (string, error) {
+	_ = ctx
+	_ = phoneNumber
 	// Query database for user
 	// This is a placeholder - implement actual query
 	return "user-id-placeholder", nil

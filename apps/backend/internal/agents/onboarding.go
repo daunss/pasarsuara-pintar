@@ -69,7 +69,7 @@ func (o *OnboardingAgent) StartOnboarding(phone string) string {
 		o.contextMgr.AddMessage(phone, "system", "onboarding_started", "ONBOARDING", data)
 	}
 
-	return `👋 *Selamat datang di PasarSuara Pintar!*
+	return `👋 *Selamat datang di Suara Niaga Pintar!*
 
 Saya akan bantu Anda daftar. Butuh beberapa info dulu ya:
 
@@ -208,6 +208,7 @@ func (o *OnboardingAgent) processCity(ctx context.Context, phone, city string) s
 		user := &database.User{
 			Phone:            phone,
 			Name:             name,
+			City:             city,
 			Role:             "owner", // Default role
 			PreferredDialect: "id",    // Default to Indonesian
 		}

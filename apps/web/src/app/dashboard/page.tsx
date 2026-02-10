@@ -6,9 +6,6 @@ import { StatsCard } from '@/components/dashboard/stats-card'
 import { TransactionList } from '@/components/dashboard/transaction-list'
 import { InventoryTable } from '@/components/dashboard/inventory-table'
 import { NegotiationChat } from '@/components/dashboard/negotiation-chat'
-import { WhatsAppStatusBadge } from '@/components/dashboard/whatsapp-status'
-import { SyncStatusBadge } from '@/components/dashboard/sync-status'
-import { NotificationCenter } from '@/components/dashboard/notification-center'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/lib/auth'
@@ -353,11 +350,7 @@ export default function DashboardPage() {
       {/* Main Content */}
       <main className="container mx-auto px-4 py-8">
         {/* Quick Links */}
-        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4 mb-8">
-          <Link href="/marketplace" className="bg-gradient-to-br from-green-500 to-green-600 text-white p-4 rounded-lg shadow hover:shadow-lg transition text-center">
-            <div className="text-3xl mb-2">🛒</div>
-            <div className="font-semibold">Marketplace</div>
-          </Link>
+        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4 mb-8">
           <Link href="/transactions" className="bg-white p-4 rounded-lg shadow hover:shadow-md transition text-center">
             <div className="text-3xl mb-2">📝</div>
             <div className="font-semibold">Transaksi</div>

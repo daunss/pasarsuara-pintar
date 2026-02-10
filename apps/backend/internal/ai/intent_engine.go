@@ -97,7 +97,7 @@ func (e *IntentEngine) extractIntentWithGemini(ctx context.Context, text string)
 func (e *IntentEngine) GenerateResponse(intent *Intent) string {
 	switch intent.Action {
 	case "GREETING":
-		return "Halo! Saya PasarSuara, asisten bisnis Anda. Ada yang bisa saya bantu? 😊"
+		return "Halo! Saya Suara Niaga Pintar, asisten bisnis Anda. Ada yang bisa saya bantu? 😊"
 
 	case "ORDER_RESTOCK":
 		product := getStringEntity(intent.Entities, "product")

@@ -2,7 +2,6 @@ package agents
 
 import (
 	"context"
-	"fmt"
 	"log"
 
 	"github.com/pasarsuara/backend/internal/ai"
@@ -187,7 +186,7 @@ func (f *FinanceAgent) RecordExpense(ctx context.Context, userID string, intent 
 // GetDailySummary returns today's transaction summary
 func (f *FinanceAgent) GetDailySummary(ctx context.Context, userID string) string {
 	// TODO: Query actual data from database
-	return fmt.Sprintf("📊 Ringkasan Hari Ini:\n• Penjualan: Rp 0\n• Pembelian: Rp 0\n• Pengeluaran: Rp 0\n• Laba Kotor: Rp 0")
+	return "📊 Ringkasan Hari Ini:\n• Penjualan: Rp 0\n• Pembelian: Rp 0\n• Pengeluaran: Rp 0\n• Laba Kotor: Rp 0"
 }
 
 // Helper functions

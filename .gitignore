@@ -48,6 +48,12 @@ logs/
 # WhatsApp Session (sensitive!)
 apps/wa-gateway/session/
 session/
+apps/wa-gateway/session_base64.txt
+apps/wa-gateway/wa-gateway-linux
+
+# Certificates/keys
+*.pem
+*.key
 
 # Docker
 .docker/

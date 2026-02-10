@@ -97,7 +97,7 @@ export default function DevLoginPage() {
       <div className="bg-white rounded-lg shadow-xl p-8 max-w-md w-full">
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold text-green-700 mb-2">
-            🗣️ PasarSuara
+            🗣️ Suara Niaga
           </h1>
           <p className="text-gray-600">Dev Login - Quick Access</p>
         </div>

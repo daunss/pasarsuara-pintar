@@ -18,7 +18,7 @@ export default function DemoPage() {
           <div className="text-center">
             <h1 className="text-5xl font-bold mb-4 flex items-center justify-center gap-3">
               <Sparkles className="w-12 h-12" />
-              PasarSuara Demo
+              Suara Niaga Pintar Demo
               <Sparkles className="w-12 h-12" />
             </h1>
             <p className="text-xl text-green-100 mb-6">

@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"math/rand"
-	"strings"
 	"testing"
 	"testing/quick"
 	"time"
@@ -554,9 +553,4 @@ func TestEdgeCases_NegativePrice(t *testing.T) {
 	if result.Success && result.FinalPrice < 0 {
 		t.Error("Final price should not be negative")
 	}
-}
-
-// Helper function to check if string contains substring (case-insensitive)
-func containsIgnoreCase(s, substr string) bool {
-	return strings.Contains(strings.ToLower(s), strings.ToLower(substr))
 }

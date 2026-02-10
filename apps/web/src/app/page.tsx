@@ -11,7 +11,7 @@ export default function Home() {
             <Logo size="lg" showText={false} href={undefined} />
           </div>
           <h1 className="text-5xl font-bold text-green-800 mb-4">
-            PasarSuara Pintar
+            Suara Niaga Pintar
           </h1>
           <p className="text-xl text-gray-600 mb-8">
             Voice-First & Cooperative AI OS untuk UMKM Lokal

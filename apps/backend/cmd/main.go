@@ -29,7 +29,7 @@ func main() {
 	// Load config
 	cfg := config.Load()
 
-	log.Println("🚀 PasarSuara Backend starting...")
+	log.Println("🚀 Suara Niaga Pintar Backend starting...")
 	log.Printf("🔌 Port: %s", cfg.Port)
 
 	// Initialize database client
@@ -72,8 +72,26 @@ func main() {
 	contextMgr := appcontext.NewConversationManager(30 * time.Minute)
 	log.Println("✅ Conversation Manager initialized")
 
+	// Create WA Gateway sender (for outbound supplier negotiation)
+	var waSender agents.WhatsAppSender
+	if cfg.WAGatewayURL != "" {
+		waSender = integrations.NewWAGatewayClient(cfg.WAGatewayURL, cfg.WAGatewayKey)
+		log.Println("✅ WA Gateway client configured")
+	} else {
+		log.Println("⚠️ WA Gateway not configured - outbound WhatsApp disabled")
+	}
+
+	// Create Midtrans client for QRIS
+	var qrisClient agents.QrisPaymentClient
+	if cfg.MidtransServerKey != "" {
+		qrisClient = integrations.NewMidtransClient(cfg.MidtransServerKey, cfg.MidtransIsProduction)
+		log.Println("✅ Midtrans QRIS client configured")
+	} else {
+		log.Println("⚠️ MIDTRANS_SERVER_KEY not set - QRIS payments disabled")
+	}
+
 	// Create Agent Orchestrator
-	orchestrator := agents.NewAgentOrchestrator(db, intentEngine, kolosalClient, cfg.KolosalAPIKey, cfg.KolosalBaseURL, cfg.GeminiAPIKey, contextMgr)
+	orchestrator := agents.NewAgentOrchestrator(db, intentEngine, kolosalClient, cfg.KolosalAPIKey, cfg.KolosalBaseURL, cfg.GeminiAPIKey, contextMgr, waSender, qrisClient)
 
 	// Create Catalog Handler
 	catalogHandler := api.NewCatalogHandler(orchestrator.GetPromoAgent())
@@ -91,7 +109,7 @@ func main() {
 	// messageRouter := handlers.NewMessageRouter(db, intentEngine, contextMgr)
 
 	// Create router with integrations handler
-	router := api.NewRouter(orchestrator, catalogHandler, db, integrationsHandler)
+	router := api.NewRouter(orchestrator, catalogHandler, db, waSender, integrationsHandler)
 
 	// TODO: Set message router on webhook handler
 	// webhook.SetMessageRouter(messageRouter)

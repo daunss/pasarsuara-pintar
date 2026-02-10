@@ -73,12 +73,6 @@ func TestProperty6_UserCreationAtomicity(t *testing.T) {
 			time.Sleep(100 * time.Millisecond)
 
 			// Verify user exists in users table (profiles)
-			var dbUser struct {
-				ID    string `json:"id"`
-				Email string `json:"email"`
-				Phone string `json:"phone_number"`
-			}
-
 			query := fmt.Sprintf(`
 				SELECT id, email, phone_number 
 				FROM users 

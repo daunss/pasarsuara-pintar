@@ -71,12 +71,12 @@ func (api *AnalyticsAPI) HandlePriceRecommendation(w http.ResponseWriter, r *htt
 	json.NewEncoder(w).Encode(recommendation)
 }
 
-// InventoryOptimizationRequest represents inventory optimization request
+// inventory optimasi request
 type InventoryOptimizationRequest struct {
 	UserID string `json:"user_id"`
 }
 
-// HandleInventoryOptimization handles inventory optimization requests
+// optimasi inventory
 func (api *AnalyticsAPI) HandleInventoryOptimization(w http.ResponseWriter, r *http.Request) {
 	var req InventoryOptimizationRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {

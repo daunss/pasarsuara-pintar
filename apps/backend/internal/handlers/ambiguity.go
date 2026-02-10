@@ -66,11 +66,12 @@ func CheckAmbiguity(phoneNumber string, intent *TransactionIntent) (bool, string
 func AskForMissingInfo(intent *TransactionIntent, missing string) string {
 	switch missing {
 	case "product":
-		if intent.Type == "SALE" {
+		switch intent.Type {
+		case "SALE":
 			return "Produk apa yang dijual? 🛍️\n\nContoh: Nasi goreng, Beras, Minyak goreng"
-		} else if intent.Type == "PURCHASE" {
+		case "PURCHASE":
 			return "Beli produk apa? 🛒\n\nContoh: Beras, Minyak, Telur"
-		} else {
+		default:
 			return "Pengeluaran untuk apa? 💸\n\nContoh: Listrik, Gas, Bensin"
 		}
 
