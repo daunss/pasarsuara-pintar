@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"errors"
 	"log"
 	"net/http"
 	"os"
@@ -44,8 +45,20 @@ func main() {
 
 	// Connect only if session already exists
 	if err := waClient.Connect(ctx); err != nil {
-		log.Printf("⚠️ WhatsApp not connected: %v", err)
-		log.Println("ℹ️ Pairing required. Call POST /internal/qr to get a QR code.")
+		if errors.Is(err, whatsapp.ErrPairingRequired) {
+			log.Println("ℹ️ Pairing required. Generating QR code...")
+			qrCtx, cancelQR := context.WithTimeout(ctx, 30*time.Second)
+			defer cancelQR()
+			code, qrErr := waClient.StartPairing(qrCtx)
+			if qrErr != nil {
+				log.Printf("❌ Failed to start pairing: %v", qrErr)
+			} else if code != "" {
+				log.Printf("📱 WhatsApp QR code generated: %s", code)
+			}
+		} else {
+			log.Printf("⚠️ WhatsApp not connected: %v", err)
+			log.Println("ℹ️ Pairing required. Call POST /internal/qr to get a QR code.")
+		}
 	} else {
 		log.Println("✅ WhatsApp Gateway is running!")
 		log.Println("📱 Waiting for messages...")

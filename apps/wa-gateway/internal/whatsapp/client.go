@@ -2,6 +2,7 @@ package whatsapp
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"os"
 	"sync"
@@ -23,6 +24,8 @@ type Client struct {
 	pairingMu        sync.Mutex
 	pairingInProgress bool
 }
+
+var ErrPairingRequired = errors.New("pairing required")
 
 func NewClient(ctx context.Context, sessionPath string) (*Client, error) {
 	// Ensure session directory exists
@@ -65,7 +68,7 @@ func (c *Client) Connect(ctx context.Context) error {
 	c.wa.AddEventHandler(c.eventHandler)
 
 	if c.wa.Store.ID == nil {
-		return fmt.Errorf("no session found; pairing required")
+		return ErrPairingRequired
 	}
 
 	if err := c.wa.Connect(); err != nil {

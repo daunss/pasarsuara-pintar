@@ -3,6 +3,7 @@ package handler
 import (
 	"context"
 	"encoding/json"
+	"log"
 	"net/http"
 	"strings"
 	"time"
@@ -46,6 +47,10 @@ func HandleQRCode(client *whatsapp.Client, apiKey string) http.HandlerFunc {
 			w.WriteHeader(http.StatusBadRequest)
 			json.NewEncoder(w).Encode(qrCodeResponse{Success: false, Error: err.Error()})
 			return
+		}
+
+		if code != "" {
+			log.Printf("📱 WhatsApp QR code generated: %s", code)
 		}
 
 		w.Header().Set("Content-Type", "application/json")
