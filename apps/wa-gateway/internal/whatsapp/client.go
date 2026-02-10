@@ -21,7 +21,7 @@ type Client struct {
 	container *sqlstore.Container
 	onMessage func(*events.Message)
 
-	pairingMu        sync.Mutex
+	pairingMu         sync.Mutex
 	pairingInProgress bool
 }
 
