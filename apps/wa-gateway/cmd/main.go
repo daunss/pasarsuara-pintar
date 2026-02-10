@@ -42,18 +42,20 @@ func main() {
 	msgHandler := handler.NewMessageHandler(cfg.BackendURL, waClient)
 	waClient.SetMessageHandler(msgHandler.Handle)
 
-	// Connect to WhatsApp
+	// Connect only if session already exists
 	if err := waClient.Connect(ctx); err != nil {
-		log.Fatalf("❌ Failed to connect to WhatsApp: %v", err)
+		log.Printf("⚠️ WhatsApp not connected: %v", err)
+		log.Println("ℹ️ Pairing required. Call POST /internal/qr to get a QR code.")
+	} else {
+		log.Println("✅ WhatsApp Gateway is running!")
+		log.Println("📱 Waiting for messages...")
 	}
-
-	log.Println("✅ WhatsApp Gateway is running!")
-	log.Println("📱 Waiting for messages...")
 
 	// Start HTTP server for status and outbound messaging
 	mux := http.NewServeMux()
 	mux.Handle("/status", handler.HandleStatus(waClient))
 	mux.Handle("/internal/send-message", handler.HandleSendMessage(waClient, cfg.APIKey))
+	mux.Handle("/internal/qr", handler.HandleQRCode(waClient, cfg.APIKey))
 	mux.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 		w.Write([]byte("ok"))

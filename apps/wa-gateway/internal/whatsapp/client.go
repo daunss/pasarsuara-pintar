@@ -4,8 +4,8 @@ import (
 	"context"
 	"fmt"
 	"os"
+	"sync"
 
-	"github.com/mdp/qrterminal/v3"
 	"go.mau.fi/whatsmeow"
 	"go.mau.fi/whatsmeow/proto/waE2E"
 	"go.mau.fi/whatsmeow/store/sqlstore"
@@ -19,6 +19,9 @@ type Client struct {
 	wa        *whatsmeow.Client
 	container *sqlstore.Container
 	onMessage func(*events.Message)
+
+	pairingMu        sync.Mutex
+	pairingInProgress bool
 }
 
 func NewClient(ctx context.Context, sessionPath string) (*Client, error) {
@@ -53,37 +56,71 @@ func (c *Client) SetMessageHandler(handler func(*events.Message)) {
 	c.onMessage = handler
 }
 
+func (c *Client) HasSession() bool {
+	return c.wa != nil && c.wa.Store != nil && c.wa.Store.ID != nil
+}
+
 func (c *Client) Connect(ctx context.Context) error {
 	// Register event handler
 	c.wa.AddEventHandler(c.eventHandler)
 
 	if c.wa.Store.ID == nil {
-		// No session, need to pair with QR code
-		qrChan, _ := c.wa.GetQRChannel(ctx)
-		err := c.wa.Connect()
-		if err != nil {
-			return fmt.Errorf("failed to connect: %w", err)
-		}
-
-		for evt := range qrChan {
-			if evt.Event == "code" {
-				fmt.Println("\n📱 Scan QR Code ini dengan WhatsApp:")
-				qrterminal.GenerateHalfBlock(evt.Code, qrterminal.L, os.Stdout)
-				fmt.Println("")
-			} else {
-				fmt.Println("Login event:", evt.Event)
-			}
-		}
-	} else {
-		// Already logged in
-		err := c.wa.Connect()
-		if err != nil {
-			return fmt.Errorf("failed to connect: %w", err)
-		}
-		fmt.Println("✅ Connected to WhatsApp (existing session)")
+		return fmt.Errorf("no session found; pairing required")
 	}
 
+	if err := c.wa.Connect(); err != nil {
+		return fmt.Errorf("failed to connect: %w", err)
+	}
+	fmt.Println("✅ Connected to WhatsApp (existing session)")
 	return nil
+}
+
+// StartPairing connects and returns a QR code string for manual scanning.
+func (c *Client) StartPairing(ctx context.Context) (string, error) {
+	c.pairingMu.Lock()
+	if c.pairingInProgress {
+		c.pairingMu.Unlock()
+		return "", fmt.Errorf("pairing already in progress")
+	}
+	c.pairingInProgress = true
+	c.pairingMu.Unlock()
+	defer func() {
+		c.pairingMu.Lock()
+		c.pairingInProgress = false
+		c.pairingMu.Unlock()
+	}()
+
+	if c.HasSession() {
+		if c.wa.IsConnected() {
+			return "", fmt.Errorf("already connected")
+		}
+		if err := c.wa.Connect(); err != nil {
+			return "", fmt.Errorf("failed to connect: %w", err)
+		}
+		return "", fmt.Errorf("session exists; no QR required")
+	}
+
+	qrChan, _ := c.wa.GetQRChannel(ctx)
+	if err := c.wa.Connect(); err != nil {
+		return "", fmt.Errorf("failed to connect: %w", err)
+	}
+
+	for {
+		select {
+		case <-ctx.Done():
+			return "", ctx.Err()
+		case evt, ok := <-qrChan:
+			if !ok {
+				return "", fmt.Errorf("qr channel closed")
+			}
+			if evt.Event == "code" {
+				return evt.Code, nil
+			}
+			if evt.Event == "success" {
+				return "", nil
+			}
+		}
+	}
 }
 
 func (c *Client) eventHandler(evt interface{}) {

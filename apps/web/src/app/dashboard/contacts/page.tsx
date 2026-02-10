@@ -1,15 +1,20 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { supabase, type Contact } from '@/lib/supabase'
+import { useAuth } from '@/lib/auth'
 import Link from 'next/link'
 
 export default function ContactsPage() {
+  const router = useRouter()
+  const { user, loading: authLoading } = useAuth()
   const [contacts, setContacts] = useState<Contact[]>([])
   const [loading, setLoading] = useState(true)
   const [activeTab, setActiveTab] = useState<'SUPPLIER' | 'CUSTOMER'>('SUPPLIER')
   const [showAddForm, setShowAddForm] = useState(false)
+  const [didAutoCreateSupplier, setDidAutoCreateSupplier] = useState(false)
   const [formData, setFormData] = useState({
     name: '',
     phone: '',
@@ -19,24 +24,54 @@ export default function ContactsPage() {
     notes: ''
   })
 
-  const demoUserId = '11111111-1111-1111-1111-111111111111'
+  useEffect(() => {
+    if (!authLoading && !user) {
+      router.push('/login')
+    }
+  }, [authLoading, user, router])
 
   useEffect(() => {
-    fetchContacts()
-  }, [activeTab])
+    if (user) {
+      fetchContacts()
+    }
+  }, [activeTab, user])
 
   const fetchContacts = async () => {
+    if (!user) return
     setLoading(true)
     try {
       const { data, error } = await supabase
         .from('contacts')
         .select('*')
-        .eq('user_id', demoUserId)
+        .eq('user_id', user.id)
         .eq('type', activeTab)
         .eq('is_active', true)
         .order('name', { ascending: true })
 
       if (error) throw error
+
+      if (activeTab === 'SUPPLIER' && !didAutoCreateSupplier && (data?.length ?? 0) === 0) {
+        const metadata = user.user_metadata as Record<string, string>
+        const phone = metadata?.phone || '085179720499'
+        const name = metadata?.business_name || metadata?.name || 'Supplier'
+
+        const { error: insertError } = await supabase
+          .from('contacts')
+          .insert([{
+            user_id: user.id,
+            type: 'SUPPLIER',
+            name,
+            phone,
+            is_active: true
+          }])
+
+        if (!insertError) {
+          setDidAutoCreateSupplier(true)
+          return fetchContacts()
+        }
+        setDidAutoCreateSupplier(true)
+      }
+
       setContacts(data || [])
     } catch (error) {
       console.error('Error fetching contacts:', error)
@@ -47,12 +82,17 @@ export default function ContactsPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+
+    if (!user) {
+      router.push('/login')
+      return
+    }
     
     try {
       const { error } = await supabase
         .from('contacts')
         .insert([{
-          user_id: demoUserId,
+          user_id: user.id,
           type: activeTab,
           name: formData.name,
           phone: formData.phone || null,

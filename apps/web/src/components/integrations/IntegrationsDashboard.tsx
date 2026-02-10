@@ -36,11 +36,30 @@ export default function IntegrationsDashboard({ userID }: { userID: string }) {
   const [message, setMessage] = useState('')
   const [broadcastResult, setBroadcastResult] = useState<any>(null)
 
+  const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || ''
+
+  const buildApiUrl = (path: string) => {
+    if (!apiBaseUrl) return path
+    return `${apiBaseUrl.replace(/\/$/, '')}${path}`
+  }
+
+  const readJson = async (response: Response) => {
+    const text = await response.text()
+    if (!text) {
+      throw new Error(`Empty response (status ${response.status})`)
+    }
+    try {
+      return JSON.parse(text)
+    } catch (error) {
+      throw new Error(`Invalid JSON response (status ${response.status})`)
+    }
+  }
+
   const generateSocialContent = async (bulk: boolean = false) => {
     setLoading(true)
     try {
       const endpoint = bulk ? '/api/integrations/social-content/bulk' : '/api/integrations/social-content'
-      const response = await fetch(endpoint, {
+      const response = await fetch(buildApiUrl(endpoint), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -51,7 +70,10 @@ export default function IntegrationsDashboard({ userID }: { userID: string }) {
           tone: tone
         })
       })
-      const data = await response.json()
+      if (!response.ok) {
+        throw new Error(`Request failed (status ${response.status})`)
+      }
+      const data = await readJson(response)
       setSocialContent(bulk ? data : { [platform]: data })
     } catch (error) {
       console.error('Error generating content:', error)
@@ -68,7 +90,7 @@ export default function IntegrationsDashboard({ userID }: { userID: string }) {
   const exportToExcel = async () => {
     setExportLoading(true)
     try {
-      const response = await fetch('/api/integrations/export', {
+      const response = await fetch(buildApiUrl('/api/integrations/export'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -76,7 +98,10 @@ export default function IntegrationsDashboard({ userID }: { userID: string }) {
           type: 'transactions'
         })
       })
-      const data = await response.json()
+      if (!response.ok) {
+        throw new Error(`Request failed (status ${response.status})`)
+      }
+      const data = await readJson(response)
       alert(`✅ Export berhasil! File: ${data.file_name}\nTotal: ${data.record_count} records`)
     } catch (error) {
       console.error('Error exporting:', error)
@@ -89,7 +114,7 @@ export default function IntegrationsDashboard({ userID }: { userID: string }) {
     setLoading(true)
     try {
       const recipientList = recipients.split('\n').filter(r => r.trim())
-      const response = await fetch('/api/integrations/broadcast', {
+      const response = await fetch(buildApiUrl('/api/integrations/broadcast'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -98,7 +123,10 @@ export default function IntegrationsDashboard({ userID }: { userID: string }) {
           message: message
         })
       })
-      const data = await response.json()
+      if (!response.ok) {
+        throw new Error(`Request failed (status ${response.status})`)
+      }
+      const data = await readJson(response)
       setBroadcastResult(data)
     } catch (error) {
       console.error('Error sending broadcast:', error)
