@@ -231,31 +231,31 @@ function AnalyticsContent() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 overflow-x-hidden">
       {/* Header */}
       <header className="bg-white shadow-sm">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-2xl font-bold text-gray-900">📊 Advanced Analytics</h1>
-              <p className="text-gray-600">Business intelligence & insights</p>
+        <div className="max-w-7xl mx-auto px-4 py-4">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+            <div className="min-w-0">
+              <h1 className="text-xl sm:text-2xl font-bold text-gray-900 truncate">📊 Advanced Analytics</h1>
+              <p className="text-sm text-gray-600">Business intelligence & insights</p>
             </div>
-            <div className="flex gap-3">
+            <div className="flex flex-wrap gap-2">
               <Link
                 href="/dashboard"
-                className="bg-white border-2 border-green-600 text-green-600 px-4 py-2 rounded-lg font-semibold hover:bg-green-50 transition"
+                className="bg-white border-2 border-green-600 text-green-600 px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg text-sm sm:text-base font-semibold hover:bg-green-50 transition"
               >
                 ← Dashboard
               </Link>
               <button
                 onClick={() => exportAnalyticsToCSV(data, `analytics-${dateRange}.csv`)}
-                className="bg-blue-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-blue-700 transition"
+                className="bg-blue-600 text-white px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg text-sm sm:text-base font-semibold hover:bg-blue-700 transition"
               >
                 📊 Export Excel
               </button>
               <button
                 onClick={printPageAsPDF}
-                className="bg-green-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-green-700 transition"
+                className="bg-green-600 text-white px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg text-sm sm:text-base font-semibold hover:bg-green-700 transition"
               >
                 📄 Export PDF
               </button>
@@ -265,12 +265,12 @@ function AnalyticsContent() {
       </header>
 
       {/* Main Content */}
-      <div className="container mx-auto px-4 py-8">
+      <div className="max-w-7xl mx-auto px-4 py-6 sm:py-8">
         {/* Date Range Filter */}
         <div className="bg-white rounded-lg shadow p-4 mb-6">
-          <div className="flex items-center gap-4">
-            <span className="text-gray-700 font-medium">Periode:</span>
-            <div className="flex gap-2">
+          <div className="flex flex-wrap items-center gap-3 sm:gap-4">
+            <span className="text-gray-700 font-medium text-sm sm:text-base">Periode:</span>
+            <div className="flex flex-wrap gap-2">
               {['7d', '30d', '90d', 'all'].map(range => (
                 <button
                   key={range}
@@ -292,41 +292,41 @@ function AnalyticsContent() {
         </div>
 
         {/* Summary Cards */}
-        <div className="grid md:grid-cols-3 gap-6 mb-8">
-          <div className="bg-white rounded-lg shadow p-6">
-            <div className="flex items-center justify-between mb-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-8">
+          <div className="bg-white rounded-lg shadow p-4 sm:p-6">
+            <div className="flex items-center justify-between mb-3 sm:mb-4">
               <span className="text-gray-600 text-sm font-medium">Total Revenue</span>
-              <span className="text-3xl">💰</span>
+              <span className="text-2xl sm:text-3xl">💰</span>
             </div>
-            <div className="text-3xl font-bold text-green-600">{formatCurrency(totalRevenue)}</div>
+            <div className="text-2xl sm:text-3xl font-bold text-green-600 break-all">{formatCurrency(totalRevenue)}</div>
             <p className="text-sm text-gray-500 mt-2">Dari {totalTransactions} transaksi</p>
           </div>
 
-          <div className="bg-white rounded-lg shadow p-6">
-            <div className="flex items-center justify-between mb-4">
+          <div className="bg-white rounded-lg shadow p-4 sm:p-6">
+            <div className="flex items-center justify-between mb-3 sm:mb-4">
               <span className="text-gray-600 text-sm font-medium">Rata-rata Transaksi</span>
-              <span className="text-3xl">📊</span>
+              <span className="text-2xl sm:text-3xl">📊</span>
             </div>
-            <div className="text-3xl font-bold text-blue-600">{formatCurrency(avgTransactionValue)}</div>
+            <div className="text-2xl sm:text-3xl font-bold text-blue-600 break-all">{formatCurrency(avgTransactionValue)}</div>
             <p className="text-sm text-gray-500 mt-2">Per transaksi</p>
           </div>
 
-          <div className="bg-white rounded-lg shadow p-6">
-            <div className="flex items-center justify-between mb-4">
+          <div className="bg-white rounded-lg shadow p-4 sm:p-6 sm:col-span-2 lg:col-span-1">
+            <div className="flex items-center justify-between mb-3 sm:mb-4">
               <span className="text-gray-600 text-sm font-medium">Total Transaksi</span>
-              <span className="text-3xl">📝</span>
+              <span className="text-2xl sm:text-3xl">📝</span>
             </div>
-            <div className="text-3xl font-bold text-purple-600">{totalTransactions}</div>
+            <div className="text-2xl sm:text-3xl font-bold text-purple-600">{totalTransactions}</div>
             <p className="text-sm text-gray-500 mt-2">Transaksi penjualan</p>
           </div>
         </div>
 
         {/* Charts Grid */}
-        <div className="grid lg:grid-cols-2 gap-8 mb-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 mb-8">
           {/* Sales Trend Chart */}
-          <div className="bg-white rounded-lg shadow p-6">
-            <h2 className="text-xl font-bold mb-4">📈 Trend Penjualan</h2>
-            <div className="h-80">
+          <div className="bg-white rounded-lg shadow p-4 sm:p-6">
+            <h2 className="text-lg sm:text-xl font-bold mb-4">📈 Trend Penjualan</h2>
+            <div className="h-64 sm:h-80">
               {data.salesTrend.length > 0 ? (
                 <Line data={salesTrendChartData} options={chartOptions} />
               ) : (
@@ -338,9 +338,9 @@ function AnalyticsContent() {
           </div>
 
           {/* Revenue Breakdown Chart */}
-          <div className="bg-white rounded-lg shadow p-6">
-            <h2 className="text-xl font-bold mb-4">🥧 Breakdown Revenue</h2>
-            <div className="h-80">
+          <div className="bg-white rounded-lg shadow p-4 sm:p-6">
+            <h2 className="text-lg sm:text-xl font-bold mb-4">🥧 Breakdown Revenue</h2>
+            <div className="h-64 sm:h-80">
               {data.revenueBreakdown.length > 0 ? (
                 <Pie data={revenueBreakdownChartData} options={chartOptions} />
               ) : (
@@ -353,9 +353,9 @@ function AnalyticsContent() {
         </div>
 
         {/* Product Performance Chart */}
-        <div className="bg-white rounded-lg shadow p-6 mb-8">
-          <h2 className="text-xl font-bold mb-4">🏆 Top 10 Produk Terlaris</h2>
-          <div className="h-96">
+        <div className="bg-white rounded-lg shadow p-4 sm:p-6 mb-8">
+          <h2 className="text-lg sm:text-xl font-bold mb-4">🏆 Top 10 Produk Terlaris</h2>
+          <div className="h-72 sm:h-96">
             {data.productPerformance.length > 0 ? (
               <Bar data={productPerformanceChartData} options={chartOptions} />
             ) : (
