@@ -182,6 +182,16 @@ func (o *AgentOrchestrator) processIntent(ctx context.Context, userPhone string,
 		} else {
 			response.Transaction = tx
 			response.Message = o.formatExpenseResponse(tx)
+
+			// Auto-update inventory for product purchases (beli beras, beli gula, etc.)
+			product := getStringEntity(intent.Entities, "product")
+			qty := getFloatEntity(intent.Entities, "qty")
+			if o.inventory != nil && product != "" && qty > 0 {
+				err := o.inventory.UpdateStockAfterPurchase(ctx, userID, intent, qty)
+				if err != nil {
+					log.Printf("⚠️ Failed to update inventory after expense: %v", err)
+				}
+			}
 		}
 
 	case "ORDER_RESTOCK":
