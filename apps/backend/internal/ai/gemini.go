@@ -160,8 +160,8 @@ func (g *GeminiClient) TranscribeAudio(ctx context.Context, audioData []byte, mi
 	for attempt := 0; attempt < maxRetries; attempt++ {
 		apiKey := g.getCurrentKey()
 
-		// Call Gemini API (using 2.0-flash for better audio transcription)
-		url := fmt.Sprintf("https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=%s", apiKey)
+		// Call Gemini API
+		url := fmt.Sprintf("https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=%s", apiKey)
 
 		httpReq, err := http.NewRequestWithContext(ctx, "POST", url, bytes.NewBuffer(jsonData))
 		if err != nil {
@@ -262,7 +262,7 @@ func (g *GeminiClient) GenerateText(ctx context.Context, prompt string) (string,
 
 	for attempt := 0; attempt < maxRetries; attempt++ {
 		apiKey := g.getCurrentKey()
-		url := fmt.Sprintf("https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=%s", apiKey)
+		url := fmt.Sprintf("https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=%s", apiKey)
 
 		httpReq, err := http.NewRequestWithContext(ctx, "POST", url, bytes.NewBuffer(jsonData))
 		if err != nil {
@@ -350,7 +350,7 @@ func (g *GeminiClient) ExtractIntent(ctx context.Context, text string) (*Intent,
 	for attempt := 0; attempt < maxRetries; attempt++ {
 		apiKey := g.getCurrentKey()
 
-		url := fmt.Sprintf("https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=%s", apiKey)
+		url := fmt.Sprintf("https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=%s", apiKey)
 
 		httpReq, err := http.NewRequestWithContext(ctx, "POST", url, bytes.NewBuffer(jsonData))
 		if err != nil {

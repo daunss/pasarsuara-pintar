@@ -84,7 +84,7 @@ Jangan tambahkan penjelasan lain.`, productName)
 
 // callAPI makes the actual API call to Gemini
 func (c *GeminiCategorizationClient) callAPI(ctx context.Context, prompt string) (string, error) {
-	url := "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent"
+	url := "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent"
 
 	// Prepare request body
 	reqBody := GeminiRequest{
