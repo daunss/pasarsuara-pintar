@@ -44,9 +44,29 @@ func (a *InventoryAgent) UpdateStockAfterSale(ctx context.Context, userID string
 	}
 
 	if inv == nil {
-		// Product not in inventory yet
-		log.Printf("⚠️ Product '%s' not in inventory, skipping stock update", product)
-		return nil, nil
+		// Auto-create inventory item when product not found
+		unit := getStringEntity(intent.Entities, "unit")
+		if unit == "" {
+			unit = "pcs"
+		}
+		price := getFloatEntity(intent.Entities, "price")
+
+		newInv := &database.Inventory{
+			UserID:       userID,
+			ProductName:  product,
+			StockQty:     -qtySold, // Negative: sold without prior stock
+			Unit:         unit,
+			MinSellPrice: price,
+		}
+		if err := a.db.CreateInventory(ctx, newInv); err != nil {
+			log.Printf("❌ Failed to auto-create inventory for '%s': %v", product, err)
+			return nil, nil
+		}
+		log.Printf("✅ Auto-created inventory: %s (stock: -%.0f %s, price: Rp %.0f)", product, qtySold, unit, price)
+
+		// Check stock level for the new item
+		alert := a.checkStockLevel(product, -qtySold, unit)
+		return alert, nil
 	}
 
 	// Calculate new stock
@@ -87,8 +107,19 @@ func (a *InventoryAgent) UpdateStockAfterPurchase(ctx context.Context, userID st
 			unit = "unit"
 		}
 
-		// Note: Need to add CreateInventory method to database client
-		log.Printf("✅ New inventory would be created: %s %.0f %s", product, qtyPurchased, unit)
+		price := getFloatEntity(intent.Entities, "price")
+		newInv := &database.Inventory{
+			UserID:      userID,
+			ProductName: product,
+			StockQty:    qtyPurchased,
+			Unit:        unit,
+			MaxBuyPrice: price,
+		}
+		if err := a.db.CreateInventory(ctx, newInv); err != nil {
+			log.Printf("❌ Failed to create inventory for '%s': %v", product, err)
+			return err
+		}
+		log.Printf("✅ New inventory created: %s %.0f %s", product, qtyPurchased, unit)
 		return nil
 	}
 

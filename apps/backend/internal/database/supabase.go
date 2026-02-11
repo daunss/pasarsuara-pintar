@@ -123,6 +123,7 @@ type User struct {
 	City             string `json:"city,omitempty"`
 	Role             string `json:"role,omitempty"`
 	PreferredDialect string `json:"preferred_dialect,omitempty"`
+	WASenderID       string `json:"wa_sender_id,omitempty"`
 	CreatedAt        string `json:"created_at,omitempty"`
 }
 
@@ -214,6 +215,34 @@ func (s *SupabaseClient) RegisterPhoneMapping(phone, userID string) {
 	} else {
 		log.Printf("✅ Phone mapping persisted to public.users: %s -> %s", phone, userID)
 	}
+}
+
+// GetUserByWASenderID finds a user by their WhatsApp sender ID (LID or raw phone)
+func (s *SupabaseClient) GetUserByWASenderID(ctx context.Context, senderID string) (*User, error) {
+	var users []User
+	endpoint := fmt.Sprintf("users?wa_sender_id=eq.%s&select=id,email,phone_number,name,city,wa_sender_id", senderID)
+	err := s.request(ctx, "GET", endpoint, nil, &users)
+	if err != nil || len(users) == 0 {
+		return nil, fmt.Errorf("user not found for wa_sender_id: %s", senderID)
+	}
+	user := users[0]
+	// Cache for future lookups
+	phoneToUserCache[senderID] = user.ID
+	log.Printf("✅ Found user by WA sender ID: %s -> %s (%s)", senderID, user.ID, user.Email)
+	return &user, nil
+}
+
+// SaveWASenderID stores the WA sender ID (LID or raw JID user) for a user
+func (s *SupabaseClient) SaveWASenderID(ctx context.Context, userID, senderID string) error {
+	update := map[string]string{"wa_sender_id": senderID}
+	endpoint := fmt.Sprintf("users?id=eq.%s", userID)
+	err := s.request(ctx, "PATCH", endpoint, update, nil)
+	if err != nil {
+		log.Printf("⚠️ Failed to save WA sender ID: %v", err)
+		return err
+	}
+	log.Printf("✅ Saved WA sender ID %s for user %s", senderID, userID)
+	return nil
 }
 
 // GetInventoryByProduct finds inventory by product name for a user

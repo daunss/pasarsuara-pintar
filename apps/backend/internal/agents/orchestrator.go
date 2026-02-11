@@ -251,13 +251,29 @@ func (o *AgentOrchestrator) getUserID(ctx context.Context, phone string) string 
 		return "11111111-1111-1111-1111-111111111111"
 	}
 
+	// Try phone lookup first
 	user, err := o.db.GetUserByPhone(ctx, phone)
-	if err != nil || user == nil {
-		log.Printf("⚠️ User not found for phone: %s (err=%v), using demo user ID", phone, err)
-		return "11111111-1111-1111-1111-111111111111"
+	if err == nil && user != nil {
+		// If the sender identifier differs from stored phone, save it as WA sender ID
+		// so future LID-based messages can be matched
+		normalizedPhone := strings.ReplaceAll(strings.ReplaceAll(phone, "+", ""), " ", "")
+		storedPhone := strings.ReplaceAll(strings.ReplaceAll(user.Phone, "+", ""), " ", "")
+		if normalizedPhone != storedPhone {
+			go o.db.SaveWASenderID(context.Background(), user.ID, phone)
+		}
+		log.Printf("✅ Matched phone %s to user %s (%s)", phone, user.ID, user.Email)
+		return user.ID
 	}
-	log.Printf("✅ Matched phone %s to user %s (%s)", phone, user.ID, user.Email)
-	return user.ID
+
+	// Try WA sender ID lookup (for LID-based senders)
+	user, err = o.db.GetUserByWASenderID(ctx, phone)
+	if err == nil && user != nil {
+		log.Printf("✅ Matched WA sender ID %s to user %s (%s)", phone, user.ID, user.Email)
+		return user.ID
+	}
+
+	log.Printf("⚠️ User not found for phone/sender: %s (err=%v), using demo user ID", phone, err)
+	return "11111111-1111-1111-1111-111111111111"
 }
 
 func (o *AgentOrchestrator) formatSaleResponse(tx *database.Transaction) string {
