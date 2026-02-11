@@ -67,10 +67,9 @@ export default function DashboardPage() {
           .or(`buyer_id.eq.${user.id},seller_id.eq.${user.id}`)
           .order('created_at', { ascending: false })
           .limit(1)
-          .maybeSingle()
 
-        if (!negError && negData) {
-          setNegotiation(negData)
+        if (!negError && negData && negData.length > 0) {
+          setNegotiation(negData[0])
         }
       } catch (error) {
         console.error('Error fetching data:', error)
