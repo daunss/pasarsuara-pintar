@@ -119,14 +119,14 @@ function CatalogPageContent() {
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
       <header className="bg-white shadow-sm">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
+        <div className="max-w-7xl mx-auto px-4 py-4">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
             <div className="flex items-center gap-4">
-              <Link href="/dashboard" className="text-2xl font-bold text-green-700">
+              <Link href="/dashboard" className="text-xl sm:text-2xl font-bold text-green-700">
                 🗣️ Suara Niaga
               </Link>
-              <span className="text-gray-400">|</span>
-              <span className="text-gray-600">Katalog Produk</span>
+              <span className="text-gray-400 hidden sm:inline">|</span>
+              <span className="text-gray-600 hidden sm:inline">Katalog Produk</span>
             </div>
             <Link href="/dashboard" className="text-sm text-blue-600 hover:underline">
               ← Kembali ke Dashboard
@@ -136,12 +136,12 @@ function CatalogPageContent() {
       </header>
 
       {/* Main Content */}
-      <main className="container mx-auto px-4 py-8">
-        <div className="flex justify-between items-center mb-6">
-          <h1 className="text-3xl font-bold text-gray-800">📦 Katalog Produk</h1>
+      <main className="max-w-7xl mx-auto px-4 py-4 sm:py-8">
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 mb-6">
+          <h1 className="text-xl sm:text-3xl font-bold text-gray-800">📦 Katalog Produk</h1>
           <button
             onClick={() => setShowAddForm(!showAddForm)}
-            className="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition"
+            className="bg-green-600 text-white px-4 sm:px-6 py-2 rounded-lg hover:bg-green-700 transition w-full sm:w-auto"
           >
             {showAddForm ? '✕ Batal' : '+ Tambah Produk'}
           </button>

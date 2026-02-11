@@ -99,14 +99,14 @@ function SettingsPageContent() {
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
       <header className="bg-white shadow-sm">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
+        <div className="max-w-7xl mx-auto px-4 py-4">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
             <div className="flex items-center gap-4">
-              <Link href="/dashboard" className="text-2xl font-bold text-green-700">
+              <Link href="/dashboard" className="text-xl sm:text-2xl font-bold text-green-700">
                 🗣️ Suara Niaga
               </Link>
-              <span className="text-gray-400">|</span>
-              <span className="text-gray-600">Pengaturan</span>
+              <span className="text-gray-400 hidden sm:inline">|</span>
+              <span className="text-gray-600 hidden sm:inline">Pengaturan</span>
             </div>
             <Link href="/dashboard" className="text-sm text-blue-600 hover:underline">
               ← Kembali ke Dashboard
@@ -116,8 +116,8 @@ function SettingsPageContent() {
       </header>
 
       {/* Main Content */}
-      <main className="container mx-auto px-4 py-8">
-        <h1 className="text-3xl font-bold text-gray-800 mb-6">⚙️ Pengaturan</h1>
+      <main className="max-w-7xl mx-auto px-4 py-4 sm:py-8">
+        <h1 className="text-xl sm:text-3xl font-bold text-gray-800 mb-6">⚙️ Pengaturan</h1>
 
         {loading ? (
           <div className="text-center py-12">

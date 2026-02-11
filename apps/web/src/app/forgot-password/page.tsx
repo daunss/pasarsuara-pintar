@@ -56,7 +56,7 @@ export default function ForgotPasswordPage() {
         {/* Logo & Title */}
         <div className="text-center mb-8">
           <Link href="/" className="inline-block">
-            <h1 className="text-4xl font-bold text-green-700 mb-2">
+            <h1 className="text-2xl sm:text-4xl font-bold text-green-700 mb-2">
               🗣️ Suara Niaga
             </h1>
           </Link>

@@ -48,7 +48,7 @@ export default function IntegrationsPage() {
 
   if (loading) {
     return (
-      <div className="container mx-auto py-6">
+      <div className="max-w-7xl mx-auto px-4 py-6">
         <IntegrationsLoading />
       </div>
     )
@@ -59,7 +59,7 @@ export default function IntegrationsPage() {
   }
 
   return (
-    <div className="container mx-auto py-6">
+    <div className="max-w-7xl mx-auto px-4 py-6">
       <IntegrationsDashboard userID={userId} />
     </div>
   )

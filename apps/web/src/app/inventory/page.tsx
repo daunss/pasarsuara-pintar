@@ -142,28 +142,28 @@ function InventoryContent() {
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
       <header className="bg-white shadow-sm">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
+        <div className="max-w-7xl mx-auto px-4 py-4">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
-              <h1 className="text-2xl font-bold text-gray-900">📦 Inventory Management</h1>
-              <p className="text-gray-600">Kelola stok produk Anda</p>
+              <h1 className="text-xl sm:text-2xl font-bold text-gray-900">📦 Inventory Management</h1>
+              <p className="text-sm sm:text-base text-gray-600">Kelola stok produk Anda</p>
             </div>
-            <div className="flex gap-3">
+            <div className="flex flex-wrap gap-2 sm:gap-3">
               <button
                 onClick={() => setShowShopeeImport(true)}
-                className="bg-orange-500 text-white px-4 py-2 rounded-lg font-semibold hover:bg-orange-600 transition flex items-center gap-1"
+                className="bg-orange-500 text-white px-3 sm:px-4 py-2 rounded-lg text-sm sm:text-base font-semibold hover:bg-orange-600 transition flex items-center gap-1"
               >
                 🛒 Import Shopee
               </button>
               <button
                 onClick={() => setShowPhotoImport(true)}
-                className="bg-purple-500 text-white px-4 py-2 rounded-lg font-semibold hover:bg-purple-600 transition flex items-center gap-1"
+                className="bg-purple-500 text-white px-3 sm:px-4 py-2 rounded-lg text-sm sm:text-base font-semibold hover:bg-purple-600 transition flex items-center gap-1"
               >
                 📸 Foto Nota
               </button>
               <button
                 onClick={() => setShowBulkImport(true)}
-                className="bg-white border-2 border-blue-600 text-blue-600 px-4 py-2 rounded-lg font-semibold hover:bg-blue-50 transition"
+                className="bg-white border-2 border-blue-600 text-blue-600 px-3 sm:px-4 py-2 rounded-lg text-sm sm:text-base font-semibold hover:bg-blue-50 transition"
               >
                 📥 Bulk Import
               </button>
@@ -173,7 +173,7 @@ function InventoryContent() {
                   setFormMode('create')
                   setShowForm(true)
                 }}
-                className="bg-green-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-green-700 transition"
+                className="bg-green-600 text-white px-3 sm:px-4 py-2 rounded-lg text-sm sm:text-base font-semibold hover:bg-green-700 transition"
               >
                 + Tambah Produk
               </button>
@@ -183,7 +183,7 @@ function InventoryContent() {
       </header>
 
       {/* Main Content */}
-      <div className="container mx-auto px-4 py-8">
+      <div className="max-w-7xl mx-auto px-4 py-4 sm:py-8">
         {/* Filters */}
         <div className="bg-white rounded-lg shadow p-6 mb-6">
           <div className="grid md:grid-cols-2 gap-4">

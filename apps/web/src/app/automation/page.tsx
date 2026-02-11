@@ -131,22 +131,22 @@ function AutomationContent() {
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
       <header className="bg-white shadow-sm">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
+        <div className="max-w-7xl mx-auto px-4 py-4">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
             <div>
-              <h1 className="text-2xl font-bold text-gray-900">🤖 Smart Automation</h1>
-              <p className="text-gray-600">AI-powered business automation & insights</p>
+              <h1 className="text-xl sm:text-2xl font-bold text-gray-900">🤖 Smart Automation</h1>
+              <p className="text-sm sm:text-base text-gray-600">AI-powered business automation & insights</p>
             </div>
-            <div className="flex gap-3">
+            <div className="flex flex-wrap gap-2 sm:gap-3">
               <Link
                 href="/dashboard"
-                className="bg-white border-2 border-green-600 text-green-600 px-4 py-2 rounded-lg font-semibold hover:bg-green-50 transition"
+                className="bg-white border-2 border-green-600 text-green-600 px-3 sm:px-4 py-2 rounded-lg text-sm sm:text-base font-semibold hover:bg-green-50 transition"
               >
                 ← Dashboard
               </Link>
               <button
                 onClick={loadAutomationData}
-                className="bg-green-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-green-700 transition"
+                className="bg-green-600 text-white px-3 sm:px-4 py-2 rounded-lg text-sm sm:text-base font-semibold hover:bg-green-700 transition"
               >
                 🔄 Refresh
               </button>
@@ -156,7 +156,7 @@ function AutomationContent() {
       </header>
 
       {/* Main Content */}
-      <div className="container mx-auto px-4 py-8">
+      <div className="max-w-7xl mx-auto px-4 py-4 sm:py-8">
         {/* Smart Notifications */}
         <div className="mb-8">
           <h2 className="text-xl font-bold mb-4">🔔 Smart Notifications</h2>

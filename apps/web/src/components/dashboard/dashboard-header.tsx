@@ -15,14 +15,14 @@ export function DashboardHeader({ userEmail }: DashboardHeaderProps) {
 
   return (
     <header className="bg-white shadow-sm">
-      <div className="container mx-auto px-4 py-4">
+      <div className="max-w-7xl mx-auto px-4 py-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <Link href="/" className="text-2xl font-bold text-green-700">
+            <Link href="/" className="text-xl sm:text-2xl font-bold text-green-700">
               🗣️ Suara Niaga
             </Link>
-            <span className="text-gray-400">|</span>
-            <span className="text-gray-600">Dashboard</span>
+            <span className="text-gray-400 hidden sm:inline">|</span>
+            <span className="text-gray-600 hidden sm:inline">Dashboard</span>
           </div>
           <div className="flex items-center gap-4">
             {/* WhatsApp Status */}

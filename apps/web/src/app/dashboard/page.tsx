@@ -188,7 +188,7 @@ export default function DashboardPage() {
   // Shared header component
   const renderHeader = () => (
     <header className="bg-white shadow-sm">
-      <div className="container mx-auto px-4 py-4">
+      <div className="max-w-7xl mx-auto px-4 py-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
             <Logo size="md" showText={true} href="/" />
@@ -286,9 +286,9 @@ export default function DashboardPage() {
         <Link href="/analytics" className="px-3 py-1.5 text-xs font-medium text-gray-600 hover:bg-gray-100 rounded-full whitespace-nowrap">Analytics</Link>
       </div>
 
-      <main className="container mx-auto px-4 py-8">
+      <main className="max-w-7xl mx-auto px-4 py-4 sm:py-8">
         {/* Quick Links Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4 mb-8">
+        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3 sm:gap-4 mb-8">
           <Link href="/transactions" className="bg-white p-4 rounded-lg shadow hover:shadow-md transition text-center">
             <div className="text-3xl mb-2">📝</div>
             <div className="font-semibold text-sm">Transaksi</div>
@@ -434,9 +434,9 @@ export default function DashboardPage() {
       {renderHeader()}
 
       {/* Main Content */}
-      <main className="container mx-auto px-4 py-8">
+      <main className="max-w-7xl mx-auto px-4 py-4 sm:py-8">
         {/* Quick Links */}
-        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4 mb-8">
+        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3 sm:gap-4 mb-8">
           <Link href="/transactions" className="bg-white p-4 rounded-lg shadow hover:shadow-md transition text-center">
             <div className="text-3xl mb-2">📝</div>
             <div className="font-semibold">Transaksi</div>
@@ -492,7 +492,7 @@ export default function DashboardPage() {
         </div>
 
         {/* Main Grid */}
-        <div className="grid lg:grid-cols-2 gap-8">
+        <div className="grid lg:grid-cols-2 gap-4 lg:gap-8">
           {/* Transactions */}
           <Card>
             <CardHeader>

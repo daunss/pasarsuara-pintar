@@ -183,32 +183,32 @@ function TransactionsContent() {
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
       <header className="bg-white shadow-sm">
-        <div className="container mx-auto px-4 py-4">
-          <h1 className="text-2xl font-bold text-gray-900">📊 Riwayat Transaksi</h1>
-          <p className="text-gray-600">Kelola dan analisis transaksi bisnis Anda</p>
+        <div className="max-w-7xl mx-auto px-4 py-4">
+          <h1 className="text-xl sm:text-2xl font-bold text-gray-900">📊 Riwayat Transaksi</h1>
+          <p className="text-sm sm:text-base text-gray-600">Kelola dan analisis transaksi bisnis Anda</p>
         </div>
       </header>
 
-      <div className="container mx-auto px-4 py-8">
+      <div className="max-w-7xl mx-auto px-4 py-4 sm:py-8">
         {/* Summary Cards */}
-        <div className="grid md:grid-cols-3 gap-6 mb-6">
-          <div className="bg-white rounded-lg shadow p-6">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-6 mb-6">
+          <div className="bg-white rounded-lg shadow p-4 sm:p-6">
             <div className="text-sm text-gray-600 mb-1">Total Penjualan</div>
-            <div className="text-2xl font-bold text-green-600">{formatCurrency(totalSales)}</div>
+            <div className="text-xl sm:text-2xl font-bold text-green-600">{formatCurrency(totalSales)}</div>
           </div>
-          <div className="bg-white rounded-lg shadow p-6">
+          <div className="bg-white rounded-lg shadow p-4 sm:p-6">
             <div className="text-sm text-gray-600 mb-1">Total Pembelian</div>
-            <div className="text-2xl font-bold text-blue-600">{formatCurrency(totalPurchases)}</div>
+            <div className="text-xl sm:text-2xl font-bold text-blue-600">{formatCurrency(totalPurchases)}</div>
           </div>
-          <div className="bg-white rounded-lg shadow p-6">
+          <div className="bg-white rounded-lg shadow p-4 sm:p-6">
             <div className="text-sm text-gray-600 mb-1">Total Pengeluaran</div>
-            <div className="text-2xl font-bold text-red-600">{formatCurrency(totalExpenses)}</div>
+            <div className="text-xl sm:text-2xl font-bold text-red-600">{formatCurrency(totalExpenses)}</div>
           </div>
         </div>
 
         {/* Filters */}
         <div className="bg-white rounded-lg shadow p-6 mb-6">
-          <div className="grid md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">Dari Tanggal</label>
               <input
@@ -251,7 +251,7 @@ function TransactionsContent() {
               />
             </div>
           </div>
-          <div className="mt-4 flex gap-3">
+          <div className="mt-4 flex flex-wrap gap-3">
             <button
               onClick={() => {
                 setDateFrom('')

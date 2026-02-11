@@ -102,41 +102,39 @@ export default function CustomersPage() {
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
       <header className="bg-white shadow-sm">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <Link href="/dashboard" className="text-green-600 hover:text-green-700">
-                ← Dashboard
-              </Link>
-              <span className="text-gray-400">|</span>
-              <h1 className="text-xl font-bold text-gray-900">👥 Manajemen Pelanggan</h1>
-            </div>
+        <div className="max-w-7xl mx-auto px-4 py-4">
+          <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
+            <Link href="/dashboard" className="text-green-600 hover:text-green-700">
+              ← Dashboard
+            </Link>
+            <span className="text-gray-400 hidden sm:inline">|</span>
+            <h1 className="text-lg sm:text-xl font-bold text-gray-900">👥 Manajemen Pelanggan</h1>
           </div>
         </div>
       </header>
 
-      <main className="container mx-auto px-4 py-8">
+      <main className="max-w-7xl mx-auto px-4 py-4 sm:py-8">
         {/* Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <div className="bg-white p-6 rounded-lg shadow">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-6 mb-8">
+          <div className="bg-white p-4 sm:p-6 rounded-lg shadow">
             <p className="text-sm text-gray-600 mb-1">Total Pelanggan</p>
-            <p className="text-3xl font-bold text-gray-900">{customers.length}</p>
+            <p className="text-xl sm:text-3xl font-bold text-gray-900">{customers.length}</p>
           </div>
-          <div className="bg-white p-6 rounded-lg shadow">
+          <div className="bg-white p-4 sm:p-6 rounded-lg shadow">
             <p className="text-sm text-gray-600 mb-1">Total Transaksi</p>
-            <p className="text-3xl font-bold text-gray-900">
+            <p className="text-xl sm:text-3xl font-bold text-gray-900">
               {customers.reduce((sum, c) => sum + c.total_transactions, 0)}
             </p>
           </div>
-          <div className="bg-white p-6 rounded-lg shadow">
+          <div className="bg-white p-4 sm:p-6 rounded-lg shadow">
             <p className="text-sm text-gray-600 mb-1">Total Pendapatan</p>
-            <p className="text-2xl font-bold text-green-600">
+            <p className="text-lg sm:text-2xl font-bold text-green-600">
               {formatCurrency(customers.reduce((sum, c) => sum + c.total_spent, 0))}
             </p>
           </div>
-          <div className="bg-white p-6 rounded-lg shadow">
+          <div className="bg-white p-4 sm:p-6 rounded-lg shadow">
             <p className="text-sm text-gray-600 mb-1">Rata-rata per Pelanggan</p>
-            <p className="text-2xl font-bold text-blue-600">
+            <p className="text-lg sm:text-2xl font-bold text-blue-600">
               {formatCurrency(
                 customers.length > 0
                   ? customers.reduce((sum, c) => sum + c.total_spent, 0) / customers.length
