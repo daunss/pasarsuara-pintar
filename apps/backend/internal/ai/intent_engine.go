@@ -85,6 +85,12 @@ func (e *IntentEngine) ProcessAudio(ctx context.Context, audioData []byte, mimeT
 	return intent, nil
 }
 
+// ProcessImage analyzes a receipt/financial photo and extracts items
+func (e *IntentEngine) ProcessImage(ctx context.Context, imageData []byte, mimeType, caption string) (*ReceiptResult, error) {
+	log.Printf("📷 Processing image (%d bytes, %s)", len(imageData), mimeType)
+	return e.gemini.AnalyzeReceiptImage(ctx, imageData, mimeType, caption)
+}
+
 // extractIntentWithGemini uses Gemini as fallback for intent extraction
 // This method delegates to GeminiClient which handles key rotation automatically
 func (e *IntentEngine) extractIntentWithGemini(ctx context.Context, text string) (*Intent, error) {

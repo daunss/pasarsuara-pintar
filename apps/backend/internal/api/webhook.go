@@ -137,17 +137,16 @@ func (w *WhatsAppWebhook) Handle(rw http.ResponseWriter, r *http.Request) {
 		if len(imageData) > 0 {
 			log.Printf("🖼️ Processing image: %d bytes, caption: %s", len(imageData), caption)
 
-			// For now, just acknowledge receipt
-			// TODO: Image recognition, product catalog, etc.
-			response.Message = "Image received"
-			if caption != "" {
-				// Process caption as text
-				agentResult := w.orchestrator.ProcessMessage(ctx, payload.From, caption)
-				response.AgentResult = agentResult
-				response.Reply = "📷 Gambar diterima!\n\n" + agentResult.Message
-			} else {
-				response.Reply = "📷 Gambar diterima! Kirim caption untuk deskripsi produk ya.\n\nContoh: \"Nasi goreng spesial 15 ribu\""
+			mimeType := "image/jpeg"
+			if payload.Payload.MimeType != "" {
+				mimeType = payload.Payload.MimeType
 			}
+
+			// Process image through Agent Orchestrator (Gemini Vision OCR)
+			agentResult := w.orchestrator.ProcessImage(ctx, payload.From, imageData, mimeType, caption)
+			response.AgentResult = agentResult
+			response.Reply = agentResult.Message
+			response.Message = "Image processed successfully"
 		} else {
 			response.Reply = "📷 Gambar diterima tapi data kosong. Coba kirim lagi ya!"
 		}

@@ -320,6 +320,156 @@ func (g *GeminiClient) GenerateText(ctx context.Context, prompt string) (string,
 	return "", lastErr
 }
 
+// ReceiptItem represents a single item extracted from a receipt/financial photo
+type ReceiptItem struct {
+	Product  string  `json:"product"`
+	Qty      float64 `json:"qty"`
+	Unit     string  `json:"unit"`
+	Price    float64 `json:"price"`
+	Total    float64 `json:"total"`
+	Type     string  `json:"type"` // SALE, PURCHASE, EXPENSE
+}
+
+// ReceiptResult contains all items extracted from a receipt image
+type ReceiptResult struct {
+	Items   []ReceiptItem `json:"items"`
+	Summary string        `json:"summary"`
+}
+
+// AnalyzeReceiptImage uses Gemini Vision to extract financial data from a photo
+func (g *GeminiClient) AnalyzeReceiptImage(ctx context.Context, imageData []byte, mimeType string, caption string) (*ReceiptResult, error) {
+	if len(g.apiKeys) == 0 {
+		return nil, fmt.Errorf("Gemini API key not configured")
+	}
+
+	imageBase64 := base64.StdEncoding.EncodeToString(imageData)
+
+	promptText := `Kamu adalah asisten pencatatan keuangan UMKM Indonesia.
+Analisis foto ini yang berisi catatan keuangan, nota, struk belanja, atau daftar produk.
+
+Ekstrak SEMUA item yang terlihat di foto. Untuk setiap item, tentukan:
+- product: nama produk/barang
+- qty: jumlah (default 1 jika tidak jelas)
+- unit: satuan (pcs, kg, liter, porsi, dll. Default "pcs")
+- price: harga per unit dalam Rupiah (angka saja, tanpa "Rp" atau titik)
+- total: total harga (qty x price)
+- type: "SALE" jika ini catatan penjualan, "PURCHASE" jika pembelian/belanja, "EXPENSE" jika pengeluaran
+
+Petunjuk:
+- Jika foto menunjukkan nota/struk pembelian dari toko/supplier → type = "PURCHASE"
+- Jika foto menunjukkan catatan penjualan harian → type = "SALE"
+- Jika foto menunjukkan daftar harga produk untuk dijual → type = "SALE" (gunakan qty=0 untuk menandai ini hanya harga catalog)
+- Jika tidak jelas, gunakan type = "EXPENSE"
+- Bersihkan nama produk dari singkatan yang tidak perlu
+- Konversi harga dari format "15rb" atau "15.000" menjadi angka 15000`
+
+	if caption != "" {
+		promptText += "\n\nCaption dari user: " + caption
+	}
+
+	promptText += `
+
+Jawab HANYA dalam format JSON valid (tanpa markdown code block):
+{
+  "items": [
+    {"product": "nama produk", "qty": 1, "unit": "pcs", "price": 10000, "total": 10000, "type": "SALE"}
+  ],
+  "summary": "Ringkasan singkat isi foto dalam 1 kalimat bahasa Indonesia"
+}`
+
+	req := GeminiRequest{
+		Contents: []GeminiContent{
+			{
+				Parts: []GeminiPart{
+					{Text: promptText},
+					{
+						InlineData: &GeminiInline{
+							MimeType: mimeType,
+							Data:     imageBase64,
+						},
+					},
+				},
+			},
+		},
+	}
+
+	jsonData, err := json.Marshal(req)
+	if err != nil {
+		return nil, fmt.Errorf("failed to marshal request: %w", err)
+	}
+
+	maxRetries := len(g.apiKeys)
+	var lastErr error
+
+	for attempt := 0; attempt < maxRetries; attempt++ {
+		apiKey := g.getCurrentKey()
+		url := fmt.Sprintf("https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=%s", apiKey)
+
+		httpReq, err := http.NewRequestWithContext(ctx, "POST", url, bytes.NewBuffer(jsonData))
+		if err != nil {
+			return nil, fmt.Errorf("failed to create request: %w", err)
+		}
+		httpReq.Header.Set("Content-Type", "application/json")
+
+		resp, err := g.httpClient.Do(httpReq)
+		if err != nil {
+			lastErr = err
+			g.rotateKey()
+			continue
+		}
+
+		body, err := io.ReadAll(resp.Body)
+		resp.Body.Close()
+		if err != nil {
+			lastErr = err
+			g.rotateKey()
+			continue
+		}
+
+		var geminiResp GeminiResponse
+		if err := json.Unmarshal(body, &geminiResp); err != nil {
+			lastErr = err
+			g.rotateKey()
+			continue
+		}
+
+		if geminiResp.Error != nil {
+			lastErr = fmt.Errorf("Gemini API error: %s", geminiResp.Error.Message)
+			if geminiResp.Error.Code == 429 || geminiResp.Error.Code == 403 {
+				g.rotateKey()
+				time.Sleep(time.Duration(attempt+1) * 100 * time.Millisecond)
+				continue
+			}
+			return nil, lastErr
+		}
+
+		if len(geminiResp.Candidates) == 0 || len(geminiResp.Candidates[0].Content.Parts) == 0 {
+			lastErr = fmt.Errorf("no response from Gemini Vision")
+			g.rotateKey()
+			continue
+		}
+
+		content := geminiResp.Candidates[0].Content.Parts[0].Text
+		content = strings.TrimPrefix(content, "```json\n")
+		content = strings.TrimPrefix(content, "```json")
+		content = strings.TrimPrefix(content, "```\n")
+		content = strings.TrimSuffix(content, "\n```")
+		content = strings.TrimSuffix(content, "```")
+		content = strings.TrimSpace(content)
+
+		var result ReceiptResult
+		if err := json.Unmarshal([]byte(content), &result); err != nil {
+			log.Printf("⚠️ Failed to parse receipt JSON: %s", content)
+			return nil, fmt.Errorf("failed to parse receipt data: %w", err)
+		}
+
+		log.Printf("✅ Receipt analyzed: %d items found", len(result.Items))
+		return &result, nil
+	}
+
+	return nil, fmt.Errorf("all API keys exhausted: %w", lastErr)
+}
+
 // ExtractIntent uses Gemini to extract intent from text with automatic key rotation
 func (g *GeminiClient) ExtractIntent(ctx context.Context, text string) (*Intent, error) {
 	if len(g.apiKeys) == 0 {

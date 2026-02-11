@@ -79,6 +79,126 @@ func (o *AgentOrchestrator) ProcessAudio(ctx context.Context, userPhone string, 
 	return o.processIntent(ctx, userPhone, transcript)
 }
 
+// ProcessImage handles incoming image (receipt/financial record photo)
+func (o *AgentOrchestrator) ProcessImage(ctx context.Context, userPhone string, imageData []byte, mimeType, caption string) *AgentResponse {
+	log.Printf("📷 Orchestrator processing image from %s: %d bytes", userPhone, len(imageData))
+
+	userID := o.getUserID(ctx, userPhone)
+
+	// Analyze image with Gemini Vision
+	receipt, err := o.intentEngine.ProcessImage(ctx, imageData, mimeType, caption)
+	if err != nil {
+		log.Printf("❌ Image analysis failed: %v", err)
+		return &AgentResponse{
+			Success: false,
+			Message: "Maaf, foto tidak bisa diproses. Pastikan foto jelas dan coba lagi ya! 🙏",
+		}
+	}
+
+	if len(receipt.Items) == 0 {
+		return &AgentResponse{
+			Success: false,
+			Message: "📷 Foto diterima tapi tidak ada item yang terdeteksi.\n\nPastikan foto menampilkan nota/struk/catatan keuangan dengan jelas.",
+		}
+	}
+
+	// Process each item: create transaction + inventory
+	var successCount, failCount int
+	var totalAmount float64
+	var responseLines []string
+
+	responseLines = append(responseLines, fmt.Sprintf("📸 *%s*\n", receipt.Summary))
+
+	for i, item := range receipt.Items {
+		if item.Product == "" || item.Price <= 0 {
+			continue
+		}
+
+		// Fix total if not set
+		if item.Total <= 0 {
+			item.Total = item.Qty * item.Price
+		}
+		if item.Qty <= 0 {
+			item.Qty = 1
+		}
+
+		// Create intent for this item
+		intent := &ai.Intent{
+			Entities: map[string]any{
+				"product": item.Product,
+				"qty":     item.Qty,
+				"price":   item.Price,
+				"unit":    item.Unit,
+			},
+			RawText: fmt.Sprintf("[Foto] %s x%.0f @ Rp%.0f", item.Product, item.Qty, item.Price),
+		}
+
+		// Determine action type
+		switch item.Type {
+		case "SALE":
+			intent.Action = "RECORD_SALE"
+			tx, err := o.finance.RecordSale(ctx, userID, intent)
+			if err != nil {
+				log.Printf("❌ Failed to record sale from photo item %d: %v", i+1, err)
+				failCount++
+				continue
+			}
+			_ = tx
+
+			// Auto-update inventory
+			if o.inventory != nil {
+				o.inventory.UpdateStockAfterSale(ctx, userID, intent)
+			}
+
+			responseLines = append(responseLines, fmt.Sprintf("✅ Jual: %s x%.0f = Rp %.0f", item.Product, item.Qty, item.Total))
+
+		case "PURCHASE":
+			intent.Action = "RECORD_EXPENSE"
+			tx, err := o.finance.RecordExpense(ctx, userID, intent)
+			if err != nil {
+				log.Printf("❌ Failed to record purchase from photo item %d: %v", i+1, err)
+				failCount++
+				continue
+			}
+			_ = tx
+
+			// Auto-update inventory (add stock)
+			if o.inventory != nil {
+				o.inventory.UpdateStockAfterPurchase(ctx, userID, intent, item.Qty)
+			}
+
+			responseLines = append(responseLines, fmt.Sprintf("✅ Beli: %s x%.0f = Rp %.0f", item.Product, item.Qty, item.Total))
+
+		default: // EXPENSE
+			intent.Action = "RECORD_EXPENSE"
+			tx, err := o.finance.RecordExpense(ctx, userID, intent)
+			if err != nil {
+				log.Printf("❌ Failed to record expense from photo item %d: %v", i+1, err)
+				failCount++
+				continue
+			}
+			_ = tx
+
+			responseLines = append(responseLines, fmt.Sprintf("✅ Biaya: %s = Rp %.0f", item.Product, item.Total))
+		}
+
+		successCount++
+		totalAmount += item.Total
+	}
+
+	// Build final response
+	responseLines = append(responseLines, "")
+	responseLines = append(responseLines, fmt.Sprintf("📊 Total: %d item tercatat, Rp %.0f", successCount, totalAmount))
+	if failCount > 0 {
+		responseLines = append(responseLines, fmt.Sprintf("⚠️ %d item gagal diproses", failCount))
+	}
+
+	return &AgentResponse{
+		Success: true,
+		Message: strings.Join(responseLines, "\n"),
+	}
+}
+
 // ProcessMessage handles incoming message and routes to appropriate agent
 func (o *AgentOrchestrator) ProcessMessage(ctx context.Context, userPhone, text string) *AgentResponse {
 	log.Printf("🎯 Orchestrator processing message from %s: %s", userPhone, text)
