@@ -32,21 +32,6 @@ export default function SetupWhatsAppPage() {
       if (userPhone) {
         setHasPhone(true)
         setPhone(userPhone)
-        return
-      }
-
-      // Fallback: check from public.users table
-      if (user) {
-        const { data: dbUser } = await supabase
-          .from('users')
-          .select('phone_number')
-          .eq('id', user.id)
-          .limit(1)
-
-        if (dbUser?.[0]?.phone_number) {
-          setHasPhone(true)
-          setPhone(dbUser[0].phone_number)
-        }
       }
     } catch (error) {
       console.error('Error checking phone:', error)
@@ -77,34 +62,35 @@ export default function SetupWhatsAppPage() {
     }
 
     try {
-      // Try updating user metadata (best-effort, don't block on failure)
+      // Update user metadata
       const { error: authError } = await supabase.auth.updateUser({
         data: { phone: formattedPhone }
       })
 
-      if (authError) {
-        console.warn('Auth metadata update failed (non-blocking):', authError.message)
-      }
+      if (authError) throw authError
 
-      // Upsert into public.users so WA bot can find this user
+      // Also upsert into public.users so WA bot can find this user
       if (user) {
         const { data: userData } = await supabase.auth.getUser()
-        const { error: upsertError } = await supabase.from('users').upsert({
+        await supabase.from('users').upsert({
           id: user.id,
           email: userData.user?.email || '',
           phone_number: formattedPhone,
           name: userData.user?.user_metadata?.business_name || userData.user?.user_metadata?.full_name || '',
           role: 'umkm'
         }, { onConflict: 'id' })
-
-        if (upsertError) throw upsertError
       }
 
       // Redirect to dashboard
       router.push('/dashboard')
     } catch (error: any) {
       console.error('Error saving phone:', error)
-      setError(error.message || 'Gagal menyimpan nomor WhatsApp')
+      const msg = error?.message || ''
+      if (msg.includes('unique') || msg.includes('duplicate') || msg.includes('23505')) {
+        setError('Nomor WhatsApp ini sudah terdaftar di akun lain. Gunakan nomor yang berbeda.')
+      } else {
+        setError(msg || 'Gagal menyimpan nomor WhatsApp')
+      }
     } finally {
       setLoading(false)
     }
