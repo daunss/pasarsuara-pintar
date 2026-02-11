@@ -50,7 +50,7 @@ func NewMessageHandler(backendURL string, waClient *whatsapp.Client) *MessageHan
 		backendURL: backendURL,
 		waClient:   waClient,
 		httpClient: &http.Client{
-			Timeout: 60 * time.Second, // Longer timeout for AI processing
+			Timeout: 120 * time.Second, // Longer timeout for AI processing
 		},
 	}
 }
@@ -197,7 +197,7 @@ func (h *MessageHandler) sendToBackend(payload WebhookPayload) (string, error) {
 
 	url := fmt.Sprintf("%s/internal/webhook/whatsapp", h.backendURL)
 
-	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 120*time.Second)
 	defer cancel()
 
 	req, err := http.NewRequestWithContext(ctx, "POST", url, bytes.NewBuffer(jsonData))
