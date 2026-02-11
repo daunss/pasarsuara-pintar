@@ -68,6 +68,7 @@ func main() {
 	mux := http.NewServeMux()
 	mux.Handle("/status", handler.HandleStatus(waClient))
 	mux.Handle("/internal/send-message", handler.HandleSendMessage(waClient, cfg.APIKey))
+	mux.Handle("/internal/send-image", handler.HandleSendImage(waClient, cfg.APIKey))
 	mux.Handle("/internal/qr", handler.HandleQRCode(waClient, cfg.APIKey))
 	mux.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)

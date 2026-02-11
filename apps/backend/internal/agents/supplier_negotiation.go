@@ -236,21 +236,20 @@ func (s *SupplierNegotiationService) acceptOffer(ctx context.Context, session *S
 		}
 	}
 
-	qrMessage := ""
+	qrURL := ""
 	if tx != nil && s.qris != nil {
 		orderID := fmt.Sprintf("NEG-%s", tx.ID)
-		qrURL, _, err := s.qris.CreateQris(ctx, orderID, tx.TotalAmount, session.BuyerName, session.BuyerPhone)
+		var err error
+		qrURL, _, err = s.qris.CreateQris(ctx, orderID, tx.TotalAmount, session.BuyerName, session.BuyerPhone)
 		if err != nil {
 			log.Printf("⚠️ Failed to create QRIS: %v", err)
-		} else {
-			qrMessage = fmt.Sprintf("\n\n💳 *QRIS Pembayaran*\nTotal: Rp %.0f\nScan QR: %s", tx.TotalAmount, qrURL)
-			if s.db != nil {
-				s.updatePaymentRecord(ctx, tx.ID, orderID, session)
-			}
+			qrURL = ""
+		} else if s.db != nil {
+			s.updatePaymentRecord(ctx, tx.ID, orderID, session)
 		}
 	}
 
-	buyerSummary := fmt.Sprintf("🤝 Deal dengan %s!\nProduk: %s\nJumlah: %.0f %s\nHarga: Rp %.0f/%s\nTotal: Rp %.0f%s",
+	buyerSummary := fmt.Sprintf("🤝 Deal dengan %s!\nProduk: %s\nJumlah: %.0f %s\nHarga: Rp %.0f/%s\nTotal: Rp %.0f",
 		session.Offers[session.CurrentIndex].SupplierName,
 		session.ProductName,
 		session.Quantity,
@@ -258,9 +257,14 @@ func (s *SupplierNegotiationService) acceptOffer(ctx context.Context, session *S
 		price,
 		session.Unit,
 		session.Quantity*price,
-		qrMessage,
 	)
 	s.notifyBuyer(session, buyerSummary)
+
+	// Send QRIS as image separately
+	if qrURL != "" {
+		qrCaption := fmt.Sprintf("💳 QRIS Pembayaran\nTotal: Rp %.0f\nScan QR code di bawah ini untuk membayar", tx.TotalAmount)
+		s.notifyBuyerImage(session, qrURL, qrCaption)
+	}
 
 	s.recordNegotiationLog(ctx, session, price)
 	s.cleanupSession(session)
@@ -350,6 +354,19 @@ func (s *SupplierNegotiationService) notifyBuyer(session *SupplierNegotiationSes
 	defer cancel()
 	if err := s.waSender.SendMessage(ctx, session.BuyerPhone, message); err != nil {
 		log.Printf("⚠️ Failed to notify buyer: %v", err)
+	}
+}
+
+func (s *SupplierNegotiationService) notifyBuyerImage(session *SupplierNegotiationSession, imageURL, caption string) {
+	if s.waSender == nil {
+		return
+	}
+	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
+	defer cancel()
+	if err := s.waSender.SendImageFromURL(ctx, session.BuyerPhone, imageURL, caption); err != nil {
+		log.Printf("⚠️ Failed to send QRIS image to buyer, falling back to URL: %v", err)
+		// Fallback: send URL as text
+		s.waSender.SendMessage(ctx, session.BuyerPhone, fmt.Sprintf("%s\nScan QR: %s", caption, imageURL))
 	}
 }
 
