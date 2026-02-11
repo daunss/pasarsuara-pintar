@@ -192,7 +192,7 @@ export default function ContactsPage() {
         {showAddForm && activeTab === 'CUSTOMER' && (
           <Card className="mb-6">
             <CardHeader>
-              <CardTitle>Tambah {activeTab === 'SUPPLIER' ? 'Supplier' : 'Pelanggan'} Baru</CardTitle>
+              <CardTitle>Tambah Pelanggan Baru</CardTitle>
             </CardHeader>
             <CardContent>
               <form onSubmit={handleSubmit} className="space-y-4">
