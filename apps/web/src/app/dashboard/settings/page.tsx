@@ -96,19 +96,19 @@ function SettingsPageContent() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="page-bg">
       {/* Header */}
-      <header className="bg-white shadow-sm">
+      <header className="page-header">
         <div className="max-w-7xl mx-auto px-4 py-4">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
             <div className="flex items-center gap-4">
-              <Link href="/dashboard" className="text-xl sm:text-2xl font-bold text-green-700">
+              <Link href="/dashboard" className="text-xl sm:text-2xl font-bold font-display text-forest">
                 🗣️ Suara Niaga
               </Link>
-              <span className="text-gray-400 hidden sm:inline">|</span>
-              <span className="text-gray-600 hidden sm:inline">Pengaturan</span>
+              <span className="text-muted/70 hidden sm:inline">|</span>
+              <span className="text-muted hidden sm:inline">Pengaturan</span>
             </div>
-            <Link href="/dashboard" className="text-sm text-blue-600 hover:underline">
+            <Link href="/dashboard" className="text-sm text-terra hover:text-terra-dark transition">
               ← Kembali ke Dashboard
             </Link>
           </div>
@@ -117,12 +117,12 @@ function SettingsPageContent() {
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 py-4 sm:py-8">
-        <h1 className="text-xl sm:text-3xl font-bold text-gray-800 mb-6">⚙️ Pengaturan</h1>
+        <h1 className="text-xl sm:text-3xl font-bold font-display text-charcoal mb-6">⚙️ Pengaturan</h1>
 
         {loading ? (
           <div className="text-center py-12">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 mx-auto"></div>
-            <p className="mt-4 text-gray-600">Memuat pengaturan...</p>
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-terra mx-auto"></div>
+            <p className="mt-4 text-muted">Memuat pengaturan...</p>
           </div>
         ) : (
           <div className="grid lg:grid-cols-3 gap-6">
@@ -133,24 +133,24 @@ function SettingsPageContent() {
               </CardHeader>
               <CardContent>
                 <div className="text-center mb-4">
-                  <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                  <div className="w-20 h-20 bg-forest/10 rounded-full flex items-center justify-center mx-auto mb-3">
                     <span className="text-3xl">👤</span>
                   </div>
                   <h3 className="font-semibold text-lg">{user?.user_metadata?.name || 'User'}</h3>
-                  <p className="text-sm text-gray-600">{user?.email}</p>
-                  <p className="text-xs text-gray-500 mt-1">{user?.user_metadata?.business_type}</p>
+                  <p className="text-sm text-muted">{user?.email}</p>
+                  <p className="text-xs text-muted mt-1">{user?.user_metadata?.business_type}</p>
                 </div>
                 <div className="space-y-2 text-sm">
                   <div className="flex justify-between">
-                    <span className="text-gray-600">Kota:</span>
+                    <span className="text-muted">Kota:</span>
                     <span className="font-medium">{user?.user_metadata?.city || '-'}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-600">WhatsApp:</span>
+                    <span className="text-muted">WhatsApp:</span>
                     <span className="font-medium">{user?.user_metadata?.phone || '-'}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-600">Bergabung:</span>
+                    <span className="text-muted">Bergabung:</span>
                     <span className="font-medium">
                       {user?.created_at ? new Date(user.created_at).toLocaleDateString('id-ID') : '-'}
                     </span>
@@ -158,7 +158,7 @@ function SettingsPageContent() {
                 </div>
                 <button
                   onClick={handleSignOut}
-                  className="w-full mt-6 bg-red-600 text-white py-2 rounded-lg hover:bg-red-700 transition"
+                  className="w-full mt-6 bg-red-600 text-white py-2 rounded-2xl hover:bg-red-700 transition"
                 >
                   Keluar
                 </button>
@@ -178,7 +178,7 @@ function SettingsPageContent() {
                     <select
                       value={formData.language}
                       onChange={(e) => setFormData({ ...formData, language: e.target.value })}
-                      className="w-full px-3 py-2 border rounded-lg"
+                      className="input-warm"
                     >
                       <option value="id">Bahasa Indonesia</option>
                       <option value="jv">Bahasa Jawa</option>
@@ -192,7 +192,7 @@ function SettingsPageContent() {
                     <select
                       value={formData.currency}
                       onChange={(e) => setFormData({ ...formData, currency: e.target.value })}
-                      className="w-full px-3 py-2 border rounded-lg"
+                      className="input-warm"
                     >
                       <option value="IDR">Rupiah (IDR)</option>
                       <option value="USD">US Dollar (USD)</option>
@@ -205,7 +205,7 @@ function SettingsPageContent() {
                     <select
                       value={formData.timezone}
                       onChange={(e) => setFormData({ ...formData, timezone: e.target.value })}
-                      className="w-full px-3 py-2 border rounded-lg"
+                      className="input-warm"
                     >
                       <option value="Asia/Jakarta">WIB (Jakarta)</option>
                       <option value="Asia/Makassar">WITA (Makassar)</option>
@@ -224,7 +224,7 @@ function SettingsPageContent() {
                       />
                       <span className="text-sm font-medium">Aktifkan Notifikasi</span>
                     </label>
-                    <p className="text-xs text-gray-500 mt-1 ml-6">
+                    <p className="text-xs text-muted mt-1 ml-6">
                       Terima notifikasi stok menipis dan laporan harian via WhatsApp
                     </p>
                   </div>
@@ -238,10 +238,10 @@ function SettingsPageContent() {
                       type="number"
                       value={formData.low_stock_threshold}
                       onChange={(e) => setFormData({ ...formData, low_stock_threshold: parseInt(e.target.value) })}
-                      className="w-full px-3 py-2 border rounded-lg"
+                      className="input-warm"
                       min="1"
                     />
-                    <p className="text-xs text-gray-500 mt-1">
+                    <p className="text-xs text-muted mt-1">
                       Notifikasi akan dikirim jika stok di bawah angka ini
                     </p>
                   </div>
@@ -252,7 +252,7 @@ function SettingsPageContent() {
                     <select
                       value={formData.report_frequency}
                       onChange={(e) => setFormData({ ...formData, report_frequency: e.target.value })}
-                      className="w-full px-3 py-2 border rounded-lg"
+                      className="input-warm"
                     >
                       <option value="daily">Harian</option>
                       <option value="weekly">Mingguan</option>
@@ -267,7 +267,7 @@ function SettingsPageContent() {
                     <select
                       value={formData.theme}
                       onChange={(e) => setFormData({ ...formData, theme: e.target.value })}
-                      className="w-full px-3 py-2 border rounded-lg"
+                      className="input-warm"
                     >
                       <option value="light">Terang</option>
                       <option value="dark">Gelap</option>
@@ -279,7 +279,7 @@ function SettingsPageContent() {
                   <button
                     onClick={handleSave}
                     disabled={saving}
-                    className="w-full bg-green-600 text-white py-3 rounded-lg font-semibold hover:bg-green-700 transition disabled:opacity-50"
+                    className="w-full bg-forest text-white py-3 rounded-2xl font-semibold hover:bg-forest-dark transition disabled:opacity-50"
                   >
                     {saving ? 'Menyimpan...' : 'Simpan Pengaturan'}
                   </button>

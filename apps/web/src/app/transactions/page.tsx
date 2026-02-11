@@ -159,10 +159,10 @@ function TransactionsContent() {
 
   const getTypeColor = (type: string) => {
     switch (type) {
-      case 'SALE': return 'bg-green-100 text-green-800'
-      case 'PURCHASE': return 'bg-blue-100 text-blue-800'
+      case 'SALE': return 'bg-forest/10 text-forest-dark'
+      case 'PURCHASE': return 'bg-terra/10 text-terra-dark'
       case 'EXPENSE': return 'bg-red-100 text-red-800'
-      default: return 'bg-gray-100 text-gray-800'
+      default: return 'bg-cream text-charcoal'
     }
   }
 
@@ -180,59 +180,59 @@ function TransactionsContent() {
     .reduce((sum, tx) => sum + tx.total_amount, 0)
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="page-bg">
       {/* Header */}
-      <header className="bg-white shadow-sm">
+      <header className="page-header">
         <div className="max-w-7xl mx-auto px-4 py-4">
-          <h1 className="text-xl sm:text-2xl font-bold text-gray-900">📊 Riwayat Transaksi</h1>
-          <p className="text-sm sm:text-base text-gray-600">Kelola dan analisis transaksi bisnis Anda</p>
+          <h1 className="text-xl sm:text-2xl font-bold font-display text-charcoal">📊 Riwayat Transaksi</h1>
+          <p className="text-sm sm:text-base text-muted">Kelola dan analisis transaksi bisnis Anda</p>
         </div>
       </header>
 
       <div className="max-w-7xl mx-auto px-4 py-4 sm:py-8">
         {/* Summary Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-6 mb-6">
-          <div className="bg-white rounded-lg shadow p-4 sm:p-6">
-            <div className="text-sm text-gray-600 mb-1">Total Penjualan</div>
-            <div className="text-xl sm:text-2xl font-bold text-green-600">{formatCurrency(totalSales)}</div>
+          <div className="card-warm p-4 sm:p-6">
+            <div className="text-sm text-muted mb-1">Total Penjualan</div>
+            <div className="text-xl sm:text-2xl font-bold text-forest">{formatCurrency(totalSales)}</div>
           </div>
-          <div className="bg-white rounded-lg shadow p-4 sm:p-6">
-            <div className="text-sm text-gray-600 mb-1">Total Pembelian</div>
-            <div className="text-xl sm:text-2xl font-bold text-blue-600">{formatCurrency(totalPurchases)}</div>
+          <div className="card-warm p-4 sm:p-6">
+            <div className="text-sm text-muted mb-1">Total Pembelian</div>
+            <div className="text-xl sm:text-2xl font-bold text-terra">{formatCurrency(totalPurchases)}</div>
           </div>
-          <div className="bg-white rounded-lg shadow p-4 sm:p-6">
-            <div className="text-sm text-gray-600 mb-1">Total Pengeluaran</div>
+          <div className="card-warm p-4 sm:p-6">
+            <div className="text-sm text-muted mb-1">Total Pengeluaran</div>
             <div className="text-xl sm:text-2xl font-bold text-red-600">{formatCurrency(totalExpenses)}</div>
           </div>
         </div>
 
         {/* Filters */}
-        <div className="bg-white rounded-lg shadow p-6 mb-6">
+        <div className="card-warm p-6 mb-6">
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Dari Tanggal</label>
+              <label className="block text-sm font-medium text-charcoal mb-2">Dari Tanggal</label>
               <input
                 type="date"
                 value={dateFrom}
                 onChange={(e) => setDateFrom(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500"
+                className="w-full input-warm focus:ring-2 focus:ring-terra/30"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Sampai Tanggal</label>
+              <label className="block text-sm font-medium text-charcoal mb-2">Sampai Tanggal</label>
               <input
                 type="date"
                 value={dateTo}
                 onChange={(e) => setDateTo(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500"
+                className="w-full input-warm focus:ring-2 focus:ring-terra/30"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Tipe</label>
+              <label className="block text-sm font-medium text-charcoal mb-2">Tipe</label>
               <select
                 value={typeFilter}
                 onChange={(e) => setTypeFilter(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500"
+                className="w-full input-warm focus:ring-2 focus:ring-terra/30"
               >
                 <option value="ALL">Semua</option>
                 <option value="SALE">Penjualan</option>
@@ -241,13 +241,13 @@ function TransactionsContent() {
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Cari Produk</label>
+              <label className="block text-sm font-medium text-charcoal mb-2">Cari Produk</label>
               <input
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Nama produk..."
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500"
+                className="w-full input-warm focus:ring-2 focus:ring-terra/30"
               />
             </div>
           </div>
@@ -259,13 +259,13 @@ function TransactionsContent() {
                 setTypeFilter('ALL')
                 setSearchQuery('')
               }}
-              className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200"
+              className="px-4 py-2 bg-cream text-charcoal rounded-2xl hover:bg-cream-dark"
             >
               Reset Filter
             </button>
             <button
               onClick={handleExport}
-              className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
+              className="px-4 py-2 bg-forest text-white rounded-2xl hover:bg-forest-dark"
             >
               📥 Export Excel
             </button>
@@ -273,35 +273,35 @@ function TransactionsContent() {
         </div>
 
         {/* Transactions Table */}
-        <div className="bg-white rounded-lg shadow overflow-hidden">
+        <div className="card-warm overflow-hidden">
           {loading ? (
             <div className="p-12 text-center">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 mx-auto mb-4"></div>
-              <p className="text-gray-600">Memuat transaksi...</p>
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-forest mx-auto mb-4"></div>
+              <p className="text-muted">Memuat transaksi...</p>
             </div>
           ) : filteredTransactions.length === 0 ? (
-            <div className="p-12 text-center text-gray-500">
+            <div className="p-12 text-center text-muted">
               <div className="text-6xl mb-4">📝</div>
               <p className="text-lg">Tidak ada transaksi</p>
             </div>
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full">
-                <thead className="bg-gray-50">
+                <thead className="bg-cream-light">
                   <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Tanggal</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Tipe</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Produk</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Jumlah</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Harga</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Total</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Aksi</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-muted uppercase">Tanggal</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-muted uppercase">Tipe</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-muted uppercase">Produk</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-muted uppercase">Jumlah</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-muted uppercase">Harga</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-muted uppercase">Total</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-muted uppercase">Aksi</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-200">
+                <tbody className="divide-y divide-cream-dark">
                   {filteredTransactions.map((tx) => (
-                    <tr key={tx.id} className="hover:bg-gray-50">
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    <tr key={tx.id} className="hover:bg-cream-light">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-muted">
                         {new Date(tx.created_at).toLocaleDateString('id-ID')}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
@@ -309,14 +309,14 @@ function TransactionsContent() {
                           {tx.type}
                         </span>
                       </td>
-                      <td className="px-6 py-4 font-medium text-gray-900">{tx.product_name}</td>
-                      <td className="px-6 py-4 text-gray-700">{tx.qty}</td>
-                      <td className="px-6 py-4 text-gray-700">{formatCurrency(tx.price_per_unit)}</td>
-                      <td className="px-6 py-4 font-semibold text-gray-900">{formatCurrency(tx.total_amount)}</td>
+                      <td className="px-6 py-4 font-medium text-charcoal">{tx.product_name}</td>
+                      <td className="px-6 py-4 text-charcoal">{tx.qty}</td>
+                      <td className="px-6 py-4 text-charcoal">{formatCurrency(tx.price_per_unit)}</td>
+                      <td className="px-6 py-4 font-semibold text-charcoal">{formatCurrency(tx.total_amount)}</td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <button
                           onClick={() => handleEdit(tx)}
-                          className="text-blue-600 hover:text-blue-700 mr-3"
+                          className="text-terra hover:text-terra-dark mr-3"
                         >
                           Edit
                         </button>
@@ -339,41 +339,41 @@ function TransactionsContent() {
       {/* Edit Modal */}
       {showEditModal && editingTransaction && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-lg p-6 max-w-md w-full">
-            <h3 className="text-xl font-bold mb-4">Edit Transaksi</h3>
+          <div className="card-warm p-6 max-w-md w-full">
+            <h3 className="text-xl font-bold font-display mb-4">Edit Transaksi</h3>
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Produk</label>
+                <label className="block text-sm font-medium text-charcoal mb-2">Produk</label>
                 <input
                   type="text"
                   value={editingTransaction.product_name}
                   onChange={(e) => setEditingTransaction({...editingTransaction, product_name: e.target.value})}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                  className="w-full input-warm"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Jumlah</label>
+                <label className="block text-sm font-medium text-charcoal mb-2">Jumlah</label>
                 <input
                   type="number"
                   value={editingTransaction.qty}
                   onChange={(e) => setEditingTransaction({...editingTransaction, qty: parseFloat(e.target.value)})}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                  className="w-full input-warm"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Harga Satuan</label>
+                <label className="block text-sm font-medium text-charcoal mb-2">Harga Satuan</label>
                 <input
                   type="number"
                   value={editingTransaction.price_per_unit}
                   onChange={(e) => setEditingTransaction({...editingTransaction, price_per_unit: parseFloat(e.target.value)})}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                  className="w-full input-warm"
                 />
               </div>
             </div>
             <div className="mt-6 flex gap-3">
               <button
                 onClick={handleSaveEdit}
-                className="flex-1 bg-green-600 text-white py-2 rounded-lg hover:bg-green-700"
+                className="flex-1 bg-forest text-white py-2 rounded-2xl hover:bg-forest-dark"
               >
                 Simpan
               </button>
@@ -382,7 +382,7 @@ function TransactionsContent() {
                   setShowEditModal(false)
                   setEditingTransaction(null)
                 }}
-                className="flex-1 bg-gray-200 text-gray-700 py-2 rounded-lg hover:bg-gray-300"
+                className="flex-1 bg-cream-dark text-charcoal py-2 rounded-2xl hover:bg-cream-dark"
               >
                 Batal
               </button>

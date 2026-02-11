@@ -117,25 +117,25 @@ export default function ContactsPage() {
   }
 
   const renderStars = (rating: number | null) => {
-    if (!rating) return <span className="text-gray-400">Belum ada rating</span>
+    if (!rating) return <span className="text-muted/70">Belum ada rating</span>
     const stars = '⭐'.repeat(Math.round(rating))
     return <span>{stars} {rating.toFixed(1)}</span>
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="page-bg">
       {/* Header */}
-      <header className="bg-white shadow-sm">
+      <header className="page-header">
         <div className="max-w-7xl mx-auto px-4 py-4">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
             <div className="flex items-center gap-4">
-              <Link href="/dashboard" className="text-xl sm:text-2xl font-bold text-green-700">
+              <Link href="/dashboard" className="text-xl sm:text-2xl font-bold font-display text-forest">
                 🗣️ Suara Niaga
               </Link>
-              <span className="text-gray-400 hidden sm:inline">|</span>
-              <span className="text-gray-600 hidden sm:inline">Kontak</span>
+              <span className="text-muted/70 hidden sm:inline">|</span>
+              <span className="text-muted hidden sm:inline">Kontak</span>
             </div>
-            <Link href="/dashboard" className="text-sm text-blue-600 hover:underline">
+            <Link href="/dashboard" className="text-sm text-terra hover:text-terra-dark transition">
               ← Kembali ke Dashboard
             </Link>
           </div>
@@ -145,13 +145,13 @@ export default function ContactsPage() {
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 py-4 sm:py-8">
         <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 mb-6">
-          <h1 className="text-xl sm:text-3xl font-bold text-gray-800">
+          <h1 className="text-xl sm:text-3xl font-bold font-display text-charcoal">
             {activeTab === 'SUPPLIER' ? '🏭 Supplier' : '👥 Pelanggan'}
           </h1>
           {activeTab === 'CUSTOMER' && (
             <button
               onClick={() => setShowAddForm(!showAddForm)}
-              className="bg-green-600 text-white px-4 sm:px-6 py-2 rounded-lg hover:bg-green-700 transition w-full sm:w-auto"
+              className="bg-forest text-white px-4 sm:px-6 py-2 rounded-2xl hover:bg-forest-dark transition w-full sm:w-auto"
             >
               {showAddForm ? '✕ Batal' : '+ Tambah Pelanggan'}
             </button>
@@ -165,10 +165,10 @@ export default function ContactsPage() {
               setActiveTab('SUPPLIER')
               setShowAddForm(false)
             }}
-            className={`px-4 sm:px-6 py-2 rounded-lg font-medium transition whitespace-nowrap ${
+            className={`px-4 sm:px-6 py-2 rounded-2xl font-medium transition whitespace-nowrap ${
               activeTab === 'SUPPLIER'
-                ? 'bg-green-600 text-white'
-                : 'bg-white text-gray-600 hover:bg-gray-100'
+                ? 'bg-forest text-white'
+                : 'bg-white text-muted hover:bg-cream'
             }`}
           >
             🏭 Supplier
@@ -178,10 +178,10 @@ export default function ContactsPage() {
               setActiveTab('CUSTOMER')
               setShowAddForm(false)
             }}
-            className={`px-6 py-2 rounded-lg font-medium transition ${
+            className={`px-6 py-2 rounded-2xl font-medium transition ${
               activeTab === 'CUSTOMER'
-                ? 'bg-green-600 text-white'
-                : 'bg-white text-gray-600 hover:bg-gray-100'
+                ? 'bg-forest text-white'
+                : 'bg-white text-muted hover:bg-cream'
             }`}
           >
             👥 Pelanggan
@@ -204,7 +204,7 @@ export default function ContactsPage() {
                       required
                       value={formData.name}
                       onChange={(e) => setFormData({...formData, name: e.target.value})}
-                      className="w-full px-3 py-2 border rounded-lg"
+                      className="input-warm"
                       placeholder="Toko Beras Jaya"
                     />
                   </div>
@@ -214,7 +214,7 @@ export default function ContactsPage() {
                       type="tel"
                       value={formData.phone}
                       onChange={(e) => setFormData({...formData, phone: e.target.value})}
-                      className="w-full px-3 py-2 border rounded-lg"
+                      className="input-warm"
                       placeholder="081234567890"
                     />
                   </div>
@@ -224,7 +224,7 @@ export default function ContactsPage() {
                       type="email"
                       value={formData.email}
                       onChange={(e) => setFormData({...formData, email: e.target.value})}
-                      className="w-full px-3 py-2 border rounded-lg"
+                      className="input-warm"
                       placeholder="email@example.com"
                     />
                   </div>
@@ -234,7 +234,7 @@ export default function ContactsPage() {
                       type="text"
                       value={formData.city}
                       onChange={(e) => setFormData({...formData, city: e.target.value})}
-                      className="w-full px-3 py-2 border rounded-lg"
+                      className="input-warm"
                       placeholder="Jakarta"
                     />
                   </div>
@@ -244,7 +244,7 @@ export default function ContactsPage() {
                       type="text"
                       value={formData.address}
                       onChange={(e) => setFormData({...formData, address: e.target.value})}
-                      className="w-full px-3 py-2 border rounded-lg"
+                      className="input-warm"
                       placeholder="Jl. Pasar Minggu No. 123"
                     />
                   </div>
@@ -253,7 +253,7 @@ export default function ContactsPage() {
                     <textarea
                       value={formData.notes}
                       onChange={(e) => setFormData({...formData, notes: e.target.value})}
-                      className="w-full px-3 py-2 border rounded-lg"
+                      className="input-warm"
                       rows={3}
                       placeholder="Catatan tambahan..."
                     />
@@ -261,7 +261,7 @@ export default function ContactsPage() {
                 </div>
                 <button
                   type="submit"
-                  className="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700"
+                  className="bg-forest text-white px-6 py-2 rounded-2xl hover:bg-forest-dark"
                 >
                   Simpan Kontak
                 </button>
@@ -273,16 +273,16 @@ export default function ContactsPage() {
         {/* Contacts List */}
         {loading ? (
           <div className="text-center py-12">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 mx-auto"></div>
-            <p className="mt-4 text-gray-600">Memuat kontak...</p>
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-terra mx-auto"></div>
+            <p className="mt-4 text-muted">Memuat kontak...</p>
           </div>
         ) : contacts.length === 0 ? (
           <Card>
             <CardContent className="py-12 text-center">
-              <p className="text-gray-500 text-lg mb-4">
+              <p className="text-muted text-lg mb-4">
                 {activeTab === 'SUPPLIER' ? '🏭 Belum ada supplier' : '👥 Belum ada pelanggan'}
               </p>
-              <p className="text-gray-400">
+              <p className="text-muted/70">
                 {activeTab === 'SUPPLIER'
                   ? 'Supplier ditambahkan oleh admin melalui database'
                   : 'Klik "Tambah Pelanggan" untuk mulai menambahkan kontak'}
@@ -292,7 +292,7 @@ export default function ContactsPage() {
         ) : (
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
             {contacts.map((contact) => (
-              <Card key={contact.id} className="hover:shadow-lg transition">
+              <Card key={contact.id} className="hover:shadow-warm transition">
                 <CardContent className="pt-6">
                   <div className="flex justify-between items-start mb-4">
                     <h3 className="font-bold text-lg">{contact.name}</h3>
@@ -310,7 +310,7 @@ export default function ContactsPage() {
                     {contact.phone && (
                       <p className="flex items-center gap-2">
                         <span>📱</span>
-                        <a href={`tel:${contact.phone}`} className="text-blue-600 hover:underline">
+                        <a href={`tel:${contact.phone}`} className="text-terra hover:text-terra-dark transition">
                           {contact.phone}
                         </a>
                       </p>
@@ -318,7 +318,7 @@ export default function ContactsPage() {
                     {contact.email && (
                       <p className="flex items-center gap-2">
                         <span>📧</span>
-                        <a href={`mailto:${contact.email}`} className="text-blue-600 hover:underline">
+                        <a href={`mailto:${contact.email}`} className="text-terra hover:text-terra-dark transition">
                           {contact.email}
                         </a>
                       </p>
@@ -326,13 +326,13 @@ export default function ContactsPage() {
                     {contact.city && (
                       <p className="flex items-center gap-2">
                         <span>📍</span>
-                        <span className="text-gray-600">{contact.city}</span>
+                        <span className="text-muted">{contact.city}</span>
                       </p>
                     )}
                     {contact.address && (
                       <p className="flex items-start gap-2">
                         <span>🏠</span>
-                        <span className="text-gray-600 text-xs">{contact.address}</span>
+                        <span className="text-muted text-xs">{contact.address}</span>
                       </p>
                     )}
                   </div>
@@ -342,14 +342,14 @@ export default function ContactsPage() {
                       <div>
                         {renderStars(contact.rating)}
                       </div>
-                      <div className="text-gray-500">
+                      <div className="text-muted">
                         {contact.total_transactions || 0} transaksi
                       </div>
                     </div>
                   </div>
 
                   {contact.notes && (
-                    <div className="mt-3 p-2 bg-yellow-50 rounded text-xs text-gray-600">
+                    <div className="mt-3 p-2 bg-amber-50 rounded text-xs text-muted">
                       💡 {contact.notes}
                     </div>
                   )}

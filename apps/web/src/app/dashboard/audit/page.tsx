@@ -55,10 +55,10 @@ export default function AuditPage() {
   }
 
   const getActionColor = (action: string) => {
-    if (action.includes('CREATE')) return 'text-green-600'
-    if (action.includes('UPDATE')) return 'text-blue-600'
+    if (action.includes('CREATE')) return 'text-terra'
+    if (action.includes('UPDATE')) return 'text-terra'
     if (action.includes('DELETE')) return 'text-red-600'
-    return 'text-gray-600'
+    return 'text-muted'
   }
 
   const uniqueActions = ['ALL', ...Array.from(new Set(logs.map(log => log.action)))]
@@ -72,19 +72,19 @@ export default function AuditPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="page-bg">
       {/* Header */}
-      <header className="bg-white shadow-sm">
+      <header className="page-header">
         <div className="max-w-7xl mx-auto px-4 py-4">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
             <div className="flex items-center gap-4">
-              <Link href="/dashboard" className="text-xl sm:text-2xl font-bold text-green-700">
+              <Link href="/dashboard" className="text-xl sm:text-2xl font-bold font-display text-forest">
                 🗣️ Suara Niaga
               </Link>
-              <span className="text-gray-400 hidden sm:inline">|</span>
-              <span className="text-gray-600 hidden sm:inline">Audit Log</span>
+              <span className="text-muted/70 hidden sm:inline">|</span>
+              <span className="text-muted hidden sm:inline">Audit Log</span>
             </div>
-            <Link href="/dashboard" className="text-sm text-blue-600 hover:underline">
+            <Link href="/dashboard" className="text-sm text-terra hover:text-terra-dark transition">
               ← Kembali ke Dashboard
             </Link>
           </div>
@@ -94,19 +94,19 @@ export default function AuditPage() {
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 py-4 sm:py-8">
         <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 mb-6">
-          <h1 className="text-xl sm:text-3xl font-bold text-gray-800">📜 Audit Log</h1>
+          <h1 className="text-xl sm:text-3xl font-bold font-display text-charcoal">📜 Audit Log</h1>
           <button
             onClick={fetchLogs}
-            className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition w-full sm:w-auto"
+            className="bg-forest text-white px-4 py-2 rounded-2xl hover:bg-forest-dark transition w-full sm:w-auto"
           >
             🔄 Refresh
           </button>
         </div>
 
         {/* Info Card */}
-        <Card className="mb-6 bg-blue-50 border-blue-200">
+        <Card className="mb-6 bg-terra/5 border-terra/20">
           <CardContent className="pt-6">
-            <p className="text-sm text-blue-800">
+            <p className="text-sm text-charcoal">
               <strong>ℹ️ Audit Log</strong> mencatat semua aktivitas penting dalam sistem untuk keamanan dan compliance.
               Semua perubahan data tercatat dengan timestamp dan detail lengkap.
             </p>
@@ -119,10 +119,10 @@ export default function AuditPage() {
             <button
               key={action}
               onClick={() => setFilterAction(action)}
-              className={`px-4 py-2 rounded-lg font-medium whitespace-nowrap transition ${
+              className={`px-4 py-2 rounded-2xl font-medium whitespace-nowrap transition ${
                 filterAction === action
-                  ? 'bg-green-600 text-white'
-                  : 'bg-white text-gray-600 hover:bg-gray-100'
+                  ? 'bg-forest text-white'
+                  : 'bg-white text-muted hover:bg-cream'
               }`}
             >
               {action === 'ALL' ? 'Semua' : action}
@@ -133,20 +133,20 @@ export default function AuditPage() {
         {/* Logs List */}
         {loading ? (
           <div className="text-center py-12">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 mx-auto"></div>
-            <p className="mt-4 text-gray-600">Memuat audit log...</p>
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-terra mx-auto"></div>
+            <p className="mt-4 text-muted">Memuat audit log...</p>
           </div>
         ) : filteredLogs.length === 0 ? (
           <Card>
             <CardContent className="py-12 text-center">
-              <p className="text-gray-500 text-lg mb-4">📜 Belum ada audit log</p>
-              <p className="text-gray-400">Log aktivitas akan muncul di sini</p>
+              <p className="text-muted text-lg mb-4">📜 Belum ada audit log</p>
+              <p className="text-muted/70">Log aktivitas akan muncul di sini</p>
             </CardContent>
           </Card>
         ) : (
           <div className="space-y-3">
             {filteredLogs.map((log) => (
-              <Card key={log.id} className="hover:shadow-md transition">
+              <Card key={log.id} className="hover:shadow-warm transition">
                 <CardContent className="p-4">
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
@@ -158,28 +158,28 @@ export default function AuditPage() {
                               {log.action}
                             </span>
                             {log.entity_type && (
-                              <span className="text-sm text-gray-500">
+                              <span className="text-sm text-muted">
                                 on {log.entity_type}
                               </span>
                             )}
                           </div>
-                          <div className="text-xs text-gray-500 mt-1">
+                          <div className="text-xs text-muted mt-1">
                             {formatDate(log.created_at)}
                           </div>
                         </div>
                       </div>
 
                       {log.entity_id && (
-                        <div className="text-xs text-gray-400 mb-2">
-                          Entity ID: {log.entity_id}
-                        </div>
-                      )}
+                      <div className="text-xs text-muted/70 mb-2">
+                        Entity ID: {log.entity_id}
+                      </div>
+                    )}
 
                       {/* Expandable Details */}
                       {(log.old_data || log.new_data) && (
                         <button
                           onClick={() => toggleExpand(log.id)}
-                          className="text-sm text-blue-600 hover:underline"
+                          className="text-sm text-terra hover:text-terra-dark transition"
                         >
                           {expandedLog === log.id ? '▼ Hide Details' : '▶ Show Details'}
                         </button>
@@ -196,9 +196,9 @@ export default function AuditPage() {
                             </div>
                           )}
                           {log.new_data && (
-                            <div className="bg-green-50 p-3 rounded text-xs">
-                              <div className="font-semibold text-green-700 mb-1">New Data:</div>
-                              <pre className="overflow-x-auto text-green-600">
+                            <div className="bg-forest/5 p-3 rounded text-xs">
+                              <div className="font-semibold text-forest mb-1">New Data:</div>
+                              <pre className="overflow-x-auto text-terra">
                                 {JSON.stringify(log.new_data, null, 2)}
                               </pre>
                             </div>
@@ -208,7 +208,7 @@ export default function AuditPage() {
                     </div>
 
                     {log.ip_address && (
-                      <div className="text-xs text-gray-400 ml-4">
+                      <div className="text-xs text-muted/70 ml-4">
                         IP: {log.ip_address}
                       </div>
                     )}
@@ -228,23 +228,23 @@ export default function AuditPage() {
             <CardContent>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 <div>
-                  <div className="text-sm text-gray-600">Total Log</div>
-                  <div className="text-xl sm:text-2xl font-bold">{logs.length}</div>
+                  <div className="text-sm text-muted">Total Log</div>
+                  <div className="text-xl sm:text-2xl font-bold font-display">{logs.length}</div>
                 </div>
                 <div>
-                  <div className="text-sm text-gray-600">Create Actions</div>
-                  <div className="text-2xl font-bold text-green-600">
+                  <div className="text-sm text-muted">Create Actions</div>
+                  <div className="text-2xl font-bold font-display text-terra">
                     {logs.filter(l => l.action.includes('CREATE')).length}
                   </div>
                 </div>
                 <div>
-                  <div className="text-sm text-gray-600">Update Actions</div>
-                  <div className="text-2xl font-bold text-blue-600">
+                  <div className="text-sm text-muted">Update Actions</div>
+                  <div className="text-2xl font-bold font-display text-terra">
                     {logs.filter(l => l.action.includes('UPDATE')).length}
                   </div>
                 </div>
                 <div>
-                  <div className="text-sm text-gray-600">Delete Actions</div>
+                  <div className="text-sm text-muted">Delete Actions</div>
                   <div className="text-2xl font-bold text-red-600">
                     {logs.filter(l => l.action.includes('DELETE')).length}
                   </div>

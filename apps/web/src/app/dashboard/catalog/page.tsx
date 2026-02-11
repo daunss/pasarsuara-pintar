@@ -116,19 +116,19 @@ function CatalogPageContent() {
   }, {} as Record<string, ProductCatalog[]>)
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="page-bg">
       {/* Header */}
-      <header className="bg-white shadow-sm">
+      <header className="page-header">
         <div className="max-w-7xl mx-auto px-4 py-4">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
             <div className="flex items-center gap-4">
-              <Link href="/dashboard" className="text-xl sm:text-2xl font-bold text-green-700">
+              <Link href="/dashboard" className="text-xl sm:text-2xl font-bold font-display text-forest">
                 🗣️ Suara Niaga
               </Link>
-              <span className="text-gray-400 hidden sm:inline">|</span>
-              <span className="text-gray-600 hidden sm:inline">Katalog Produk</span>
+              <span className="text-muted/70 hidden sm:inline">|</span>
+              <span className="text-muted hidden sm:inline">Katalog Produk</span>
             </div>
-            <Link href="/dashboard" className="text-sm text-blue-600 hover:underline">
+            <Link href="/dashboard" className="text-sm text-terra hover:text-terra-dark transition">
               ← Kembali ke Dashboard
             </Link>
           </div>
@@ -138,10 +138,10 @@ function CatalogPageContent() {
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 py-4 sm:py-8">
         <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 mb-6">
-          <h1 className="text-xl sm:text-3xl font-bold text-gray-800">📦 Katalog Produk</h1>
+          <h1 className="text-xl sm:text-3xl font-bold font-display text-charcoal">📦 Katalog Produk</h1>
           <button
             onClick={() => setShowAddForm(!showAddForm)}
-            className="bg-green-600 text-white px-4 sm:px-6 py-2 rounded-lg hover:bg-green-700 transition w-full sm:w-auto"
+            className="bg-forest text-white px-4 sm:px-6 py-2 rounded-2xl hover:bg-forest-dark transition w-full sm:w-auto"
           >
             {showAddForm ? '✕ Batal' : '+ Tambah Produk'}
           </button>
@@ -163,7 +163,7 @@ function CatalogPageContent() {
                       required
                       value={formData.product_name}
                       onChange={(e) => setFormData({...formData, product_name: e.target.value})}
-                      className="w-full px-3 py-2 border rounded-lg"
+                      className="input-warm"
                       placeholder="Nasi Goreng"
                     />
                   </div>
@@ -173,7 +173,7 @@ function CatalogPageContent() {
                       type="text"
                       value={formData.category}
                       onChange={(e) => setFormData({...formData, category: e.target.value})}
-                      className="w-full px-3 py-2 border rounded-lg"
+                      className="input-warm"
                       placeholder="Makanan"
                     />
                   </div>
@@ -183,7 +183,7 @@ function CatalogPageContent() {
                       type="number"
                       value={formData.default_price}
                       onChange={(e) => setFormData({...formData, default_price: e.target.value})}
-                      className="w-full px-3 py-2 border rounded-lg"
+                      className="input-warm"
                       placeholder="15000"
                     />
                   </div>
@@ -193,7 +193,7 @@ function CatalogPageContent() {
                       type="text"
                       value={formData.default_unit}
                       onChange={(e) => setFormData({...formData, default_unit: e.target.value})}
-                      className="w-full px-3 py-2 border rounded-lg"
+                      className="input-warm"
                       placeholder="porsi"
                     />
                   </div>
@@ -203,7 +203,7 @@ function CatalogPageContent() {
                       type="text"
                       value={formData.sku}
                       onChange={(e) => setFormData({...formData, sku: e.target.value})}
-                      className="w-full px-3 py-2 border rounded-lg"
+                      className="input-warm"
                       placeholder="NG-001"
                     />
                   </div>
@@ -213,14 +213,14 @@ function CatalogPageContent() {
                       type="text"
                       value={formData.description}
                       onChange={(e) => setFormData({...formData, description: e.target.value})}
-                      className="w-full px-3 py-2 border rounded-lg"
+                      className="input-warm"
                       placeholder="Nasi goreng spesial dengan telur"
                     />
                   </div>
                 </div>
                 <button
                   type="submit"
-                  className="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700"
+                  className="bg-forest text-white px-6 py-2 rounded-2xl hover:bg-forest-dark"
                 >
                   Simpan Produk
                 </button>
@@ -232,14 +232,14 @@ function CatalogPageContent() {
         {/* Products List */}
         {loading ? (
           <div className="text-center py-12">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 mx-auto"></div>
-            <p className="mt-4 text-gray-600">Memuat katalog...</p>
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-terra mx-auto"></div>
+            <p className="mt-4 text-muted">Memuat katalog...</p>
           </div>
         ) : products.length === 0 ? (
           <Card>
             <CardContent className="py-12 text-center">
-              <p className="text-gray-500 text-lg mb-4">📦 Katalog masih kosong</p>
-              <p className="text-gray-400">Klik "Tambah Produk" untuk mulai menambahkan produk</p>
+              <p className="text-muted text-lg mb-4">📦 Katalog masih kosong</p>
+              <p className="text-muted/70">Klik "Tambah Produk" untuk mulai menambahkan produk</p>
             </CardContent>
           </Card>
         ) : (
@@ -252,7 +252,7 @@ function CatalogPageContent() {
                 <CardContent>
                   <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
                     {items.map((product) => (
-                      <div key={product.id} className="border rounded-lg p-4 hover:shadow-md transition">
+                      <div key={product.id} className="border rounded-2xl p-4 hover:shadow-warm transition">
                         <div className="flex justify-between items-start mb-2">
                           <h3 className="font-semibold text-lg">{product.product_name}</h3>
                           <button
@@ -263,17 +263,17 @@ function CatalogPageContent() {
                           </button>
                         </div>
                         {product.description && (
-                          <p className="text-sm text-gray-600 mb-2">{product.description}</p>
+                          <p className="text-sm text-muted mb-2">{product.description}</p>
                         )}
                         <div className="space-y-1 text-sm">
                           {product.default_price && (
-                            <p className="text-green-600 font-semibold">
+                            <p className="text-terra font-semibold">
                               {formatCurrency(product.default_price)}
                               {product.default_unit && `/${product.default_unit}`}
                             </p>
                           )}
                           {product.sku && (
-                            <p className="text-gray-500">SKU: {product.sku}</p>
+                            <p className="text-muted">SKU: {product.sku}</p>
                           )}
                         </div>
                       </div>

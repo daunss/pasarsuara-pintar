@@ -32,21 +32,21 @@ export default function ResetPasswordPage() {
 
   if (success) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50 flex items-center justify-center p-4">
-        <div className="max-w-md w-full bg-white rounded-2xl shadow-xl p-8 text-center">
+      <div className="page-bg flex items-center justify-center p-4">
+        <div className="max-w-md w-full card-warm p-8 text-center">
           <div className="text-6xl mb-4">📧</div>
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">
+          <h2 className="text-2xl font-bold font-display text-charcoal mb-2">
             Email Terkirim!
           </h2>
-          <p className="text-gray-600 mb-6">
+          <p className="text-muted mb-6">
             Kami telah mengirim link reset password ke <strong>{email}</strong>
           </p>
-          <p className="text-sm text-gray-500 mb-6">
+          <p className="text-sm text-muted mb-6">
             Silakan cek inbox atau folder spam Anda.
           </p>
           <Link
             href="/login"
-            className="inline-block bg-green-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-green-700 transition"
+            className="btn-primary inline-block px-6"
           >
             Kembali ke Login
           </Link>
@@ -56,21 +56,21 @@ export default function ResetPasswordPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50 flex items-center justify-center p-4">
+    <div className="page-bg flex items-center justify-center p-4">
       <div className="max-w-md w-full">
         {/* Logo & Title */}
         <div className="text-center mb-8">
           <div className="text-5xl mb-4">🔐</div>
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">
+          <h1 className="text-3xl font-bold font-display text-charcoal mb-2">
             Reset Password
           </h1>
-          <p className="text-gray-600">
+          <p className="text-muted">
             Masukkan email Anda untuk reset password
           </p>
         </div>
 
         {/* Reset Card */}
-        <div className="bg-white rounded-2xl shadow-xl p-8">
+        <div className="card-warm p-8">
           {error && (
             <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
               <p className="text-red-800 text-sm">{error}</p>
@@ -79,7 +79,7 @@ export default function ResetPasswordPage() {
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="email" className="block text-sm font-medium text-charcoal mb-2">
                 Email
               </label>
               <input
@@ -88,7 +88,7 @@ export default function ResetPasswordPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                className="input-warm"
                 placeholder="nama@email.com"
                 disabled={loading}
               />
@@ -97,7 +97,7 @@ export default function ResetPasswordPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-green-600 text-white py-3 rounded-lg font-semibold hover:bg-green-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
+              className="btn-primary w-full disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading ? 'Mengirim...' : 'Kirim Link Reset'}
             </button>
@@ -106,7 +106,7 @@ export default function ResetPasswordPage() {
           <div className="mt-6 text-center">
             <Link
               href="/login"
-              className="text-sm text-green-600 hover:text-green-700"
+              className="text-sm text-terra hover:text-terra-dark"
             >
               ← Kembali ke Login
             </Link>

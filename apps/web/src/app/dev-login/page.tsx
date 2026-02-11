@@ -93,38 +93,38 @@ export default function DevLoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50 flex items-center justify-center p-4">
-      <div className="bg-white rounded-lg shadow-xl p-8 max-w-md w-full">
+    <div className="page-bg flex items-center justify-center p-4">
+      <div className="card-warm p-8 max-w-md w-full">
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-green-700 mb-2">
+          <h1 className="text-3xl font-bold font-display text-terra-dark mb-2">
             🗣️ Suara Niaga
           </h1>
-          <p className="text-gray-600">Dev Login - Quick Access</p>
+          <p className="text-muted">Dev Login - Quick Access</p>
         </div>
 
         <div className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-charcoal mb-2">
               Email
             </label>
             <input
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+              className="input-warm"
               placeholder="test@pasarsuara.com"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-charcoal mb-2">
               Password
             </label>
             <input
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+              className="input-warm"
               placeholder="password123"
             />
           </div>
@@ -136,7 +136,7 @@ export default function DevLoginPage() {
           )}
 
           {message && (
-            <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg">
+            <div className="bg-green-50 border border-green-200 text-terra-dark px-4 py-3 rounded-lg">
               {message}
             </div>
           )}
@@ -145,7 +145,7 @@ export default function DevLoginPage() {
             <button
               onClick={handleQuickSignup}
               disabled={loading}
-              className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-4 rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed"
+              className="btn-primary w-full disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading ? 'Processing...' : '🚀 Quick Signup/Login'}
             </button>
@@ -153,21 +153,21 @@ export default function DevLoginPage() {
             <button
               onClick={handleLogin}
               disabled={loading}
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-4 rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-4 rounded-2xl transition disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading ? 'Processing...' : '🔑 Login Only'}
             </button>
           </div>
 
-          <div className="text-center text-sm text-gray-600 mt-4">
+          <div className="text-center text-sm text-muted mt-4">
             <p>Default credentials:</p>
-            <p className="font-mono bg-gray-100 p-2 rounded mt-2">
+            <p className="font-mono bg-cream-dark p-2 rounded mt-2">
               test@pasarsuara.com / password123
             </p>
           </div>
 
           <div className="text-center mt-4">
-            <a href="/login" className="text-green-600 hover:text-green-700 text-sm">
+            <a href="/login" className="text-terra hover:text-terra-dark text-sm">
               ← Back to normal login
             </a>
           </div>

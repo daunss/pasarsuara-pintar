@@ -165,8 +165,8 @@ function AnalyticsContent() {
       {
         label: 'Penjualan',
         data: data.salesTrend.map(d => d.amount),
-        borderColor: 'rgb(34, 197, 94)',
-        backgroundColor: 'rgba(34, 197, 94, 0.1)',
+        borderColor: 'rgb(31, 91, 59)',
+        backgroundColor: 'rgba(31, 91, 59, 0.1)',
         fill: true,
         tension: 0.4
       }
@@ -180,16 +180,16 @@ function AnalyticsContent() {
         label: 'Revenue',
         data: data.productPerformance.map(p => p.revenue),
         backgroundColor: [
-          'rgba(34, 197, 94, 0.8)',
-          'rgba(59, 130, 246, 0.8)',
-          'rgba(251, 146, 60, 0.8)',
-          'rgba(168, 85, 247, 0.8)',
-          'rgba(236, 72, 153, 0.8)',
-          'rgba(14, 165, 233, 0.8)',
-          'rgba(132, 204, 22, 0.8)',
-          'rgba(249, 115, 22, 0.8)',
-          'rgba(139, 92, 246, 0.8)',
-          'rgba(244, 63, 94, 0.8)'
+          'rgba(31, 91, 59, 0.8)',
+          'rgba(195, 91, 60, 0.8)',
+          'rgba(159, 74, 48, 0.8)',
+          'rgba(90, 90, 90, 0.7)',
+          'rgba(42, 122, 80, 0.8)',
+          'rgba(212, 129, 106, 0.8)',
+          'rgba(237, 228, 214, 0.8)',
+          'rgba(21, 74, 46, 0.8)',
+          'rgba(245, 239, 230, 0.8)',
+          'rgba(195, 91, 60, 0.6)'
         ]
       }
     ]
@@ -201,9 +201,9 @@ function AnalyticsContent() {
       {
         data: data.revenueBreakdown.map(r => r.amount),
         backgroundColor: [
-          'rgba(34, 197, 94, 0.8)',
-          'rgba(239, 68, 68, 0.8)',
-          'rgba(251, 146, 60, 0.8)'
+          'rgba(31, 91, 59, 0.8)',
+          'rgba(195, 91, 60, 0.8)',
+          'rgba(159, 74, 48, 0.8)'
         ]
       }
     ]
@@ -221,41 +221,41 @@ function AnalyticsContent() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="page-bg flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-green-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Memuat analytics...</p>
+          <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-forest mx-auto mb-4"></div>
+          <p className="text-muted">Memuat analytics...</p>
         </div>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 overflow-x-hidden">
+    <div className="page-bg overflow-x-hidden">
       {/* Header */}
-      <header className="bg-white shadow-sm">
+      <header className="page-header">
         <div className="max-w-7xl mx-auto px-4 py-4">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
             <div className="min-w-0">
-              <h1 className="text-xl sm:text-2xl font-bold text-gray-900 truncate">📊 Advanced Analytics</h1>
-              <p className="text-sm text-gray-600">Business intelligence & insights</p>
+              <h1 className="text-xl sm:text-2xl font-bold font-display text-charcoal truncate">📊 Advanced Analytics</h1>
+              <p className="text-sm text-muted">Business intelligence & insights</p>
             </div>
             <div className="flex flex-wrap gap-2">
               <Link
                 href="/dashboard"
-                className="bg-white border-2 border-green-600 text-green-600 px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg text-sm sm:text-base font-semibold hover:bg-green-50 transition"
+                className="bg-white border-2 border-forest text-forest px-3 py-1.5 sm:px-4 sm:py-2 rounded-2xl text-sm sm:text-base font-semibold hover:bg-cream-light transition"
               >
                 ← Dashboard
               </Link>
               <button
                 onClick={() => exportAnalyticsToCSV(data, `analytics-${dateRange}.csv`)}
-                className="bg-blue-600 text-white px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg text-sm sm:text-base font-semibold hover:bg-blue-700 transition"
+                className="bg-terra text-white px-3 py-1.5 sm:px-4 sm:py-2 rounded-2xl text-sm sm:text-base font-semibold hover:bg-terra-dark transition"
               >
                 📊 Export Excel
               </button>
               <button
                 onClick={printPageAsPDF}
-                className="bg-green-600 text-white px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg text-sm sm:text-base font-semibold hover:bg-green-700 transition"
+                className="bg-forest text-white px-3 py-1.5 sm:px-4 sm:py-2 rounded-2xl text-sm sm:text-base font-semibold hover:bg-forest-dark transition"
               >
                 📄 Export PDF
               </button>
@@ -267,9 +267,9 @@ function AnalyticsContent() {
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 py-6 sm:py-8">
         {/* Date Range Filter */}
-        <div className="bg-white rounded-lg shadow p-4 mb-6">
+        <div className="card-warm p-4 mb-6">
           <div className="flex flex-wrap items-center gap-3 sm:gap-4">
-            <span className="text-gray-700 font-medium text-sm sm:text-base">Periode:</span>
+            <span className="text-charcoal font-medium text-sm sm:text-base">Periode:</span>
             <div className="flex flex-wrap gap-2">
               {['7d', '30d', '90d', 'all'].map(range => (
                 <button
@@ -277,8 +277,8 @@ function AnalyticsContent() {
                   onClick={() => setDateRange(range)}
                   className={`px-4 py-2 rounded-lg font-medium transition ${
                     dateRange === range
-                      ? 'bg-green-600 text-white'
-                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                      ? 'bg-forest text-white'
+                      : 'bg-cream text-charcoal hover:bg-cream-dark'
                   }`}
                 >
                   {range === '7d' && '7 Hari'}
@@ -293,44 +293,44 @@ function AnalyticsContent() {
 
         {/* Summary Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-8">
-          <div className="bg-white rounded-lg shadow p-4 sm:p-6">
+          <div className="card-warm p-4 sm:p-6">
             <div className="flex items-center justify-between mb-3 sm:mb-4">
-              <span className="text-gray-600 text-sm font-medium">Total Revenue</span>
+              <span className="text-muted text-sm font-medium">Total Revenue</span>
               <span className="text-2xl sm:text-3xl">💰</span>
             </div>
-            <div className="text-2xl sm:text-3xl font-bold text-green-600 break-all">{formatCurrency(totalRevenue)}</div>
-            <p className="text-sm text-gray-500 mt-2">Dari {totalTransactions} transaksi</p>
+            <div className="text-2xl sm:text-3xl font-bold text-forest break-all">{formatCurrency(totalRevenue)}</div>
+            <p className="text-sm text-muted mt-2">Dari {totalTransactions} transaksi</p>
           </div>
 
-          <div className="bg-white rounded-lg shadow p-4 sm:p-6">
+          <div className="card-warm p-4 sm:p-6">
             <div className="flex items-center justify-between mb-3 sm:mb-4">
-              <span className="text-gray-600 text-sm font-medium">Rata-rata Transaksi</span>
+              <span className="text-muted text-sm font-medium">Rata-rata Transaksi</span>
               <span className="text-2xl sm:text-3xl">📊</span>
             </div>
-            <div className="text-2xl sm:text-3xl font-bold text-blue-600 break-all">{formatCurrency(avgTransactionValue)}</div>
-            <p className="text-sm text-gray-500 mt-2">Per transaksi</p>
+            <div className="text-2xl sm:text-3xl font-bold text-terra break-all">{formatCurrency(avgTransactionValue)}</div>
+            <p className="text-sm text-muted mt-2">Per transaksi</p>
           </div>
 
-          <div className="bg-white rounded-lg shadow p-4 sm:p-6 sm:col-span-2 lg:col-span-1">
+          <div className="card-warm p-4 sm:p-6 sm:col-span-2 lg:col-span-1">
             <div className="flex items-center justify-between mb-3 sm:mb-4">
-              <span className="text-gray-600 text-sm font-medium">Total Transaksi</span>
+              <span className="text-muted text-sm font-medium">Total Transaksi</span>
               <span className="text-2xl sm:text-3xl">📝</span>
             </div>
-            <div className="text-2xl sm:text-3xl font-bold text-purple-600">{totalTransactions}</div>
-            <p className="text-sm text-gray-500 mt-2">Transaksi penjualan</p>
+            <div className="text-2xl sm:text-3xl font-bold text-terra-dark">{totalTransactions}</div>
+            <p className="text-sm text-muted mt-2">Transaksi penjualan</p>
           </div>
         </div>
 
         {/* Charts Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 mb-8">
           {/* Sales Trend Chart */}
-          <div className="bg-white rounded-lg shadow p-4 sm:p-6">
-            <h2 className="text-lg sm:text-xl font-bold mb-4">📈 Trend Penjualan</h2>
+          <div className="card-warm p-4 sm:p-6">
+            <h2 className="text-lg sm:text-xl font-bold font-display mb-4">📈 Trend Penjualan</h2>
             <div className="h-64 sm:h-80">
               {data.salesTrend.length > 0 ? (
                 <Line data={salesTrendChartData} options={chartOptions} />
               ) : (
-                <div className="flex items-center justify-center h-full text-gray-500">
+                <div className="flex items-center justify-center h-full text-muted">
                   Belum ada data penjualan
                 </div>
               )}
@@ -338,13 +338,13 @@ function AnalyticsContent() {
           </div>
 
           {/* Revenue Breakdown Chart */}
-          <div className="bg-white rounded-lg shadow p-4 sm:p-6">
-            <h2 className="text-lg sm:text-xl font-bold mb-4">🥧 Breakdown Revenue</h2>
+          <div className="card-warm p-4 sm:p-6">
+            <h2 className="text-lg sm:text-xl font-bold font-display mb-4">🥧 Breakdown Revenue</h2>
             <div className="h-64 sm:h-80">
               {data.revenueBreakdown.length > 0 ? (
                 <Pie data={revenueBreakdownChartData} options={chartOptions} />
               ) : (
-                <div className="flex items-center justify-center h-full text-gray-500">
+                <div className="flex items-center justify-center h-full text-muted">
                   Belum ada data
                 </div>
               )}
@@ -353,13 +353,13 @@ function AnalyticsContent() {
         </div>
 
         {/* Product Performance Chart */}
-        <div className="bg-white rounded-lg shadow p-4 sm:p-6 mb-8">
-          <h2 className="text-lg sm:text-xl font-bold mb-4">🏆 Top 10 Produk Terlaris</h2>
+        <div className="card-warm p-4 sm:p-6 mb-8">
+          <h2 className="text-lg sm:text-xl font-bold font-display mb-4">🏆 Top 10 Produk Terlaris</h2>
           <div className="h-72 sm:h-96">
             {data.productPerformance.length > 0 ? (
               <Bar data={productPerformanceChartData} options={chartOptions} />
             ) : (
-              <div className="flex items-center justify-center h-full text-gray-500">
+              <div className="flex items-center justify-center h-full text-muted">
                 Belum ada data produk
               </div>
             )}
@@ -367,34 +367,34 @@ function AnalyticsContent() {
         </div>
 
         {/* Product Performance Table */}
-        <div className="bg-white rounded-lg shadow">
-          <div className="p-6 border-b">
-            <h2 className="text-xl font-bold">📊 Detail Performa Produk</h2>
+        <div className="card-warm">
+          <div className="p-6 border-b border-cream-dark/40">
+            <h2 className="text-xl font-bold font-display">📊 Detail Performa Produk</h2>
           </div>
           <div className="overflow-x-auto">
             <table className="w-full">
-              <thead className="bg-gray-50">
+              <thead className="bg-cream-light">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-muted uppercase">
                     Rank
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-muted uppercase">
                     Produk
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-muted uppercase">
                     Quantity Sold
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-muted uppercase">
                     Revenue
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-muted uppercase">
                     Avg Price
                   </th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-200">
+              <tbody className="divide-y divide-cream-dark">
                 {data.productPerformance.map((product, index) => (
-                  <tr key={product.product} className="hover:bg-gray-50">
+                  <tr key={product.product} className="hover:bg-cream-light">
                     <td className="px-6 py-4 whitespace-nowrap">
                       <span className="text-2xl">
                         {index === 0 && '🥇'}
@@ -404,18 +404,18 @@ function AnalyticsContent() {
                       </span>
                     </td>
                     <td className="px-6 py-4">
-                      <span className="font-medium text-gray-900">{product.product}</span>
+                      <span className="font-medium text-charcoal">{product.product}</span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <span className="text-gray-900">{product.quantity} unit</span>
+                      <span className="text-charcoal">{product.quantity} unit</span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <span className="font-semibold text-green-600">
+                      <span className="font-semibold text-forest">
                         {formatCurrency(product.revenue)}
                       </span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <span className="text-gray-900">
+                      <span className="text-charcoal">
                         {formatCurrency(product.revenue / product.quantity)}
                       </span>
                     </td>

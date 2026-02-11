@@ -115,14 +115,14 @@ export default function RegisterPage() {
 
   if (success) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50 flex items-center justify-center p-4">
-        <div className="max-w-md w-full bg-white rounded-2xl shadow-xl p-8 text-center">
+      <div className="page-bg flex items-center justify-center p-4">
+        <div className="max-w-md w-full card-warm p-8 text-center">
           <div className="text-6xl mb-4">✅</div>
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">Registrasi Berhasil!</h2>
-          <p className="text-gray-600 mb-6">
+          <h2 className="text-2xl font-display font-bold text-charcoal mb-4">Registrasi Berhasil!</h2>
+          <p className="text-muted mb-6">
             Silakan cek email Anda untuk verifikasi akun.
           </p>
-          <p className="text-sm text-gray-500">
+          <p className="text-sm text-muted">
             Anda akan diarahkan ke halaman login...
           </p>
         </div>
@@ -131,23 +131,23 @@ export default function RegisterPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50 flex items-center justify-center p-4">
+    <div className="page-bg flex items-center justify-center p-4">
       <div className="max-w-md w-full">
         {/* Logo & Title */}
         <div className="text-center mb-8">
           <div className="flex justify-center mb-4">
             <Logo size="lg" showText={false} href={undefined} />
           </div>
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Daftar Suara Niaga Pintar</h1>
-          <p className="text-gray-600">Mulai kelola bisnis dengan suara</p>
+          <h1 className="text-3xl font-display font-bold text-charcoal mb-2">Daftar Suara Niaga Pintar</h1>
+          <p className="text-muted">Mulai kelola bisnis dengan suara</p>
         </div>
 
         {/* Register Card */}
-        <div className="bg-white rounded-2xl shadow-xl p-8">
-          <h2 className="text-2xl font-bold text-gray-900 mb-6">Buat Akun Baru</h2>
+        <div className="card-warm p-8">
+          <h2 className="text-2xl font-display font-bold text-charcoal mb-6">Buat Akun Baru</h2>
 
           {error && (
-            <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg">
+            <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-xl">
               <p className="text-red-600 text-sm">{error}</p>
             </div>
           )}
@@ -155,7 +155,7 @@ export default function RegisterPage() {
           {/* Registration Form */}
           <form onSubmit={handleRegister} className="space-y-4 mb-6">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-charcoal mb-2">
                 Nama Bisnis
               </label>
               <input
@@ -164,13 +164,13 @@ export default function RegisterPage() {
                 value={formData.businessName}
                 onChange={handleChange}
                 required
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                className="w-full px-4 py-3 input-warm"
                 placeholder="Warung Bu Siti"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-charcoal mb-2">
                 Email
               </label>
               <input
@@ -179,13 +179,13 @@ export default function RegisterPage() {
                 value={formData.email}
                 onChange={handleChange}
                 required
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                className="w-full px-4 py-3 input-warm"
                 placeholder="nama@email.com"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-charcoal mb-2">
                 Nomor WhatsApp
               </label>
               <input
@@ -194,13 +194,13 @@ export default function RegisterPage() {
                 value={formData.phone}
                 onChange={handleChange}
                 required
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                className="w-full px-4 py-3 input-warm"
                 placeholder="08123456789"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-charcoal mb-2">
                 Password
               </label>
               <input
@@ -210,13 +210,13 @@ export default function RegisterPage() {
                 onChange={handleChange}
                 required
                 minLength={6}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                className="w-full px-4 py-3 input-warm"
                 placeholder="Minimal 6 karakter"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-charcoal mb-2">
                 Konfirmasi Password
               </label>
               <input
@@ -225,7 +225,7 @@ export default function RegisterPage() {
                 value={formData.confirmPassword}
                 onChange={handleChange}
                 required
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                className="w-full px-4 py-3 input-warm"
                 placeholder="Ketik ulang password"
               />
             </div>
@@ -233,7 +233,7 @@ export default function RegisterPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-green-600 text-white py-3 rounded-lg font-semibold hover:bg-green-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full btn-primary py-3 rounded-2xl font-semibold transition disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading ? 'Memproses...' : 'Daftar Sekarang'}
             </button>
@@ -242,10 +242,10 @@ export default function RegisterPage() {
           {/* Divider */}
           <div className="relative mb-6">
             <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-gray-300"></div>
+              <div className="w-full border-t border-cream-dark"></div>
             </div>
             <div className="relative flex justify-center text-sm">
-              <span className="px-2 bg-white text-gray-500">Atau daftar dengan</span>
+              <span className="px-2 bg-white text-muted">Atau daftar dengan</span>
             </div>
           </div>
 
@@ -253,7 +253,7 @@ export default function RegisterPage() {
           <button
             onClick={handleGoogleRegister}
             disabled={loading}
-            className="w-full bg-white border-2 border-gray-300 text-gray-700 py-3 rounded-lg font-semibold hover:bg-gray-50 transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+            className="w-full bg-white border-2 border-cream-dark text-charcoal py-3 rounded-2xl font-semibold hover:bg-cream-light hover:border-terra/40 transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
           >
             <svg className="w-5 h-5" viewBox="0 0 24 24">
               <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
@@ -265,22 +265,22 @@ export default function RegisterPage() {
           </button>
 
           {/* Login Link */}
-          <p className="mt-6 text-center text-sm text-gray-600">
+          <p className="mt-6 text-center text-sm text-muted">
             Sudah punya akun?{' '}
-            <Link href="/login" className="text-green-600 hover:text-green-700 font-semibold">
+            <Link href="/login" className="text-terra hover:text-terra-dark transition font-semibold">
               Masuk di sini
             </Link>
           </p>
         </div>
 
         {/* Terms */}
-        <p className="mt-6 text-center text-xs text-gray-500">
+        <p className="mt-6 text-center text-xs text-muted">
           Dengan mendaftar, Anda menyetujui{' '}
-          <Link href="/terms" className="text-green-600 hover:underline">
+          <Link href="/terms" className="text-terra hover:text-terra-dark">
             Syarat & Ketentuan
           </Link>{' '}
           dan{' '}
-          <Link href="/privacy" className="text-green-600 hover:underline">
+          <Link href="/privacy" className="text-terra hover:text-terra-dark">
             Kebijakan Privasi
           </Link>
         </p>

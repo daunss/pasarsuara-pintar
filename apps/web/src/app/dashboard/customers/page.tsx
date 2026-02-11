@@ -89,26 +89,26 @@ export default function CustomersPage() {
 
   if (authLoading || loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="page-bg flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading customers...</p>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-terra mx-auto mb-4"></div>
+          <p className="text-muted">Loading customers...</p>
         </div>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="page-bg">
       {/* Header */}
-      <header className="bg-white shadow-sm">
+      <header className="page-header">
         <div className="max-w-7xl mx-auto px-4 py-4">
           <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
-            <Link href="/dashboard" className="text-green-600 hover:text-green-700">
+            <Link href="/dashboard" className="text-terra hover:text-forest">
               ← Dashboard
             </Link>
-            <span className="text-gray-400 hidden sm:inline">|</span>
-            <h1 className="text-lg sm:text-xl font-bold text-gray-900">👥 Manajemen Pelanggan</h1>
+            <span className="text-muted/70 hidden sm:inline">|</span>
+            <h1 className="text-lg sm:text-xl font-bold font-display text-charcoal">👥 Manajemen Pelanggan</h1>
           </div>
         </div>
       </header>
@@ -116,25 +116,25 @@ export default function CustomersPage() {
       <main className="max-w-7xl mx-auto px-4 py-4 sm:py-8">
         {/* Stats */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-6 mb-8">
-          <div className="bg-white p-4 sm:p-6 rounded-lg shadow">
-            <p className="text-sm text-gray-600 mb-1">Total Pelanggan</p>
-            <p className="text-xl sm:text-3xl font-bold text-gray-900">{customers.length}</p>
+          <div className="card-warm p-4 sm:p-6">
+            <p className="text-sm text-muted mb-1">Total Pelanggan</p>
+            <p className="text-xl sm:text-3xl font-bold font-display text-charcoal">{customers.length}</p>
           </div>
-          <div className="bg-white p-4 sm:p-6 rounded-lg shadow">
-            <p className="text-sm text-gray-600 mb-1">Total Transaksi</p>
-            <p className="text-xl sm:text-3xl font-bold text-gray-900">
+          <div className="card-warm p-4 sm:p-6">
+            <p className="text-sm text-muted mb-1">Total Transaksi</p>
+            <p className="text-xl sm:text-3xl font-bold font-display text-charcoal">
               {customers.reduce((sum, c) => sum + c.total_transactions, 0)}
             </p>
           </div>
-          <div className="bg-white p-4 sm:p-6 rounded-lg shadow">
-            <p className="text-sm text-gray-600 mb-1">Total Pendapatan</p>
-            <p className="text-lg sm:text-2xl font-bold text-green-600">
+          <div className="card-warm p-4 sm:p-6">
+            <p className="text-sm text-muted mb-1">Total Pendapatan</p>
+            <p className="text-lg sm:text-2xl font-bold font-display text-terra">
               {formatCurrency(customers.reduce((sum, c) => sum + c.total_spent, 0))}
             </p>
           </div>
-          <div className="bg-white p-4 sm:p-6 rounded-lg shadow">
-            <p className="text-sm text-gray-600 mb-1">Rata-rata per Pelanggan</p>
-            <p className="text-lg sm:text-2xl font-bold text-blue-600">
+          <div className="card-warm p-4 sm:p-6">
+            <p className="text-sm text-muted mb-1">Rata-rata per Pelanggan</p>
+            <p className="text-lg sm:text-2xl font-bold font-display text-terra">
               {formatCurrency(
                 customers.length > 0
                   ? customers.reduce((sum, c) => sum + c.total_spent, 0) / customers.length
@@ -145,7 +145,7 @@ export default function CustomersPage() {
         </div>
 
         {/* Filters */}
-        <div className="bg-white p-4 rounded-lg shadow mb-6">
+        <div className="card-warm p-4 mb-6">
           <div className="flex flex-col md:flex-row gap-4">
             <div className="flex-1">
               <input
@@ -153,13 +153,13 @@ export default function CustomersPage() {
                 placeholder="Cari nama atau nomor telepon..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                className="input-warm"
               />
             </div>
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value as any)}
-              className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+              className="input-warm"
             >
               <option value="recent">Terbaru</option>
               <option value="name">Nama A-Z</option>
@@ -169,55 +169,55 @@ export default function CustomersPage() {
         </div>
 
         {/* Customer List */}
-        <div className="bg-white rounded-lg shadow overflow-hidden">
+        <div className="card-warm overflow-hidden">
           {filteredCustomers.length === 0 ? (
             <div className="text-center py-12">
               <span className="text-6xl mb-4 block">👥</span>
-              <p className="text-gray-600">
+              <p className="text-muted">
                 {searchQuery ? 'Tidak ada pelanggan yang cocok' : 'Belum ada pelanggan'}
               </p>
             </div>
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full">
-                <thead className="bg-gray-50 border-b border-gray-200">
+                <thead className="bg-cream-light border-b border-cream-dark/40">
                   <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-muted uppercase tracking-wider">
                       Pelanggan
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-muted uppercase tracking-wider">
                       Kontak
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-muted uppercase tracking-wider">
                       Transaksi
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-muted uppercase tracking-wider">
                       Total Belanja
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-muted uppercase tracking-wider">
                       Terakhir Transaksi
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-muted uppercase tracking-wider">
                       Aksi
                     </th>
                   </tr>
                 </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
+                <tbody className="bg-white divide-y divide-cream-dark/40">
                   {filteredCustomers.map((customer) => (
-                    <tr key={customer.id} className="hover:bg-gray-50">
+                    <tr key={customer.id} className="hover:bg-cream-light">
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex items-center">
-                          <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
-                            <span className="text-green-600 font-semibold">
+                          <div className="w-10 h-10 bg-forest/10 rounded-full flex items-center justify-center">
+                            <span className="text-terra font-semibold">
                               {customer.name.charAt(0).toUpperCase()}
                             </span>
                           </div>
                           <div className="ml-4">
-                            <div className="text-sm font-medium text-gray-900">{customer.name}</div>
+                            <div className="text-sm font-medium text-charcoal">{customer.name}</div>
                             {customer.tags && customer.tags.length > 0 && (
                               <div className="flex gap-1 mt-1">
                                 {customer.tags.map((tag, i) => (
-                                  <span key={i} className="text-xs bg-blue-100 text-blue-600 px-2 py-0.5 rounded">
+                                  <span key={i} className="text-xs bg-terra/5 text-terra px-2 py-0.5 rounded">
                                     {tag}
                                   </span>
                                 ))}
@@ -227,21 +227,21 @@ export default function CustomersPage() {
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm text-gray-900">{customer.phone}</div>
+                        <div className="text-sm text-charcoal">{customer.phone}</div>
                         {customer.email && (
-                          <div className="text-sm text-gray-500">{customer.email}</div>
+                          <div className="text-sm text-muted">{customer.email}</div>
                         )}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm text-gray-900">{customer.total_transactions}x</div>
+                        <div className="text-sm text-charcoal">{customer.total_transactions}x</div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm font-medium text-green-600">
+                        <div className="text-sm font-medium text-terra">
                           {formatCurrency(customer.total_spent)}
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm text-gray-900">
+                        <div className="text-sm text-charcoal">
                           {customer.last_transaction_date
                             ? formatDate(customer.last_transaction_date)
                             : '-'}
@@ -250,7 +250,7 @@ export default function CustomersPage() {
                       <td className="px-6 py-4 whitespace-nowrap text-sm">
                         <Link
                           href={`/dashboard/customers/${customer.id}`}
-                          className="text-green-600 hover:text-green-700 font-medium"
+                          className="text-terra hover:text-forest font-medium"
                         >
                           Detail →
                         </Link>

@@ -32,16 +32,16 @@ export default function ForgotPasswordPage() {
 
   if (success) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50 flex items-center justify-center p-4">
-        <div className="max-w-md w-full bg-white rounded-2xl shadow-xl p-8 text-center">
+      <div className="page-bg flex items-center justify-center p-4">
+        <div className="max-w-md w-full card-warm p-8 text-center">
           <div className="text-6xl mb-4">📧</div>
-          <h2 className="text-2xl font-bold text-gray-800 mb-4">Email Terkirim!</h2>
-          <p className="text-gray-600 mb-6">
+          <h2 className="text-2xl font-bold font-display text-charcoal mb-4">Email Terkirim!</h2>
+          <p className="text-muted mb-6">
             Kami telah mengirim link reset password ke email Anda. Silakan cek inbox atau folder spam.
           </p>
           <Link
             href="/login"
-            className="inline-block bg-green-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-green-700 transition"
+            className="btn-primary inline-block px-6"
           >
             Kembali ke Login
           </Link>
@@ -51,22 +51,22 @@ export default function ForgotPasswordPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50 flex items-center justify-center p-4">
+    <div className="page-bg flex items-center justify-center p-4">
       <div className="max-w-md w-full">
         {/* Logo & Title */}
         <div className="text-center mb-8">
           <Link href="/" className="inline-block">
-            <h1 className="text-2xl sm:text-4xl font-bold text-green-700 mb-2">
+            <h1 className="text-2xl sm:text-4xl font-bold font-display text-terra-dark mb-2">
               🗣️ Suara Niaga
             </h1>
           </Link>
-          <p className="text-gray-600">Reset Password</p>
+          <p className="text-muted">Reset Password</p>
         </div>
 
         {/* Reset Card */}
-        <div className="bg-white rounded-2xl shadow-xl p-8">
-          <h2 className="text-2xl font-bold text-gray-800 mb-2">Lupa Password?</h2>
-          <p className="text-gray-600 mb-6 text-sm">
+        <div className="card-warm p-8">
+          <h2 className="text-2xl font-bold font-display text-charcoal mb-2">Lupa Password?</h2>
+          <p className="text-muted mb-6 text-sm">
             Masukkan email Anda dan kami akan mengirim link untuk reset password.
           </p>
 
@@ -78,7 +78,7 @@ export default function ForgotPasswordPage() {
 
           <form onSubmit={handleResetPassword} className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-charcoal mb-1">
                 Email
               </label>
               <input
@@ -86,7 +86,7 @@ export default function ForgotPasswordPage() {
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                className="input-warm"
                 placeholder="nama@email.com"
               />
             </div>
@@ -94,15 +94,15 @@ export default function ForgotPasswordPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-green-600 text-white py-3 rounded-lg font-semibold hover:bg-green-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
+              className="btn-primary w-full disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading ? 'Mengirim...' : 'Kirim Link Reset'}
             </button>
           </form>
 
           {/* Back to Login */}
-          <p className="mt-6 text-center text-sm text-gray-600">
-            <Link href="/login" className="text-green-600 font-semibold hover:underline">
+          <p className="mt-6 text-center text-sm text-muted">
+            <Link href="/login" className="text-terra font-semibold transition">
               ← Kembali ke Login
             </Link>
           </p>

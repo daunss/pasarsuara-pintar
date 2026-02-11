@@ -78,13 +78,13 @@ export default function PaymentsPage() {
 
   const getStatusBadge = (status: string) => {
     const badges = {
-      PAID: 'bg-green-100 text-green-800',
-      PENDING: 'bg-yellow-100 text-yellow-800',
-      PARTIAL: 'bg-blue-100 text-blue-800',
+      PAID: 'bg-forest/10 text-forest',
+      PENDING: 'bg-amber-100 text-amber-800',
+      PARTIAL: 'bg-terra/5 text-terra',
       FAILED: 'bg-red-100 text-red-800',
-      REFUNDED: 'bg-gray-100 text-gray-800'
+      REFUNDED: 'bg-cream text-charcoal'
     }
-    return badges[status as keyof typeof badges] || 'bg-gray-100 text-gray-800'
+    return badges[status as keyof typeof badges] || 'bg-cream text-charcoal'
   }
 
   const getPaymentMethodIcon = (method: string | null) => {
@@ -112,19 +112,19 @@ export default function PaymentsPage() {
     .reduce((sum, p) => sum + p.amount, 0)
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="page-bg">
       {/* Header */}
-      <header className="bg-white shadow-sm">
+      <header className="page-header">
         <div className="max-w-7xl mx-auto px-4 py-4">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
             <div className="flex items-center gap-4">
-              <Link href="/dashboard" className="text-xl sm:text-2xl font-bold text-green-700">
+              <Link href="/dashboard" className="text-xl sm:text-2xl font-bold font-display text-forest">
                 🗣️ Suara Niaga
               </Link>
-              <span className="text-gray-400 hidden sm:inline">|</span>
-              <span className="text-gray-600 hidden sm:inline">Riwayat Pembayaran</span>
+              <span className="text-muted/70 hidden sm:inline">|</span>
+              <span className="text-muted hidden sm:inline">Riwayat Pembayaran</span>
             </div>
-            <Link href="/dashboard" className="text-sm text-blue-600 hover:underline">
+            <Link href="/dashboard" className="text-sm text-terra hover:text-terra-dark transition">
               ← Kembali ke Dashboard
             </Link>
           </div>
@@ -133,26 +133,26 @@ export default function PaymentsPage() {
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 py-4 sm:py-8">
-        <h1 className="text-xl sm:text-3xl font-bold text-gray-800 mb-6">💳 Riwayat Pembayaran</h1>
+        <h1 className="text-xl sm:text-3xl font-bold font-display text-charcoal mb-6">💳 Riwayat Pembayaran</h1>
 
         {/* Summary Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
           <Card>
             <CardContent className="pt-6">
-              <div className="text-sm text-gray-600 mb-1">Total Terbayar</div>
-              <div className="text-xl sm:text-2xl font-bold text-green-600">{formatCurrency(totalPaid)}</div>
+              <div className="text-sm text-muted mb-1">Total Terbayar</div>
+              <div className="text-xl sm:text-2xl font-bold font-display text-terra">{formatCurrency(totalPaid)}</div>
             </CardContent>
           </Card>
           <Card>
             <CardContent className="pt-6">
-              <div className="text-sm text-gray-600 mb-1">Total Pending</div>
-              <div className="text-xl sm:text-2xl font-bold text-yellow-600">{formatCurrency(totalPending)}</div>
+              <div className="text-sm text-muted mb-1">Total Pending</div>
+              <div className="text-xl sm:text-2xl font-bold font-display text-yellow-600">{formatCurrency(totalPending)}</div>
             </CardContent>
           </Card>
           <Card>
             <CardContent className="pt-6">
-              <div className="text-sm text-gray-600 mb-1">Total Transaksi</div>
-              <div className="text-xl sm:text-2xl font-bold text-blue-600">{payments.length}</div>
+              <div className="text-sm text-muted mb-1">Total Transaksi</div>
+              <div className="text-xl sm:text-2xl font-bold font-display text-terra">{payments.length}</div>
             </CardContent>
           </Card>
         </div>
@@ -163,10 +163,10 @@ export default function PaymentsPage() {
             <button
               key={status}
               onClick={() => setFilterStatus(status)}
-              className={`px-4 py-2 rounded-lg font-medium whitespace-nowrap transition ${
+              className={`px-4 py-2 rounded-2xl font-medium whitespace-nowrap transition ${
                 filterStatus === status
-                  ? 'bg-green-600 text-white'
-                  : 'bg-white text-gray-600 hover:bg-gray-100'
+                  ? 'bg-forest text-white'
+                  : 'bg-white text-muted hover:bg-cream'
               }`}
             >
               {status === 'ALL' ? 'Semua' : status}
@@ -177,14 +177,14 @@ export default function PaymentsPage() {
         {/* Payments List */}
         {loading ? (
           <div className="text-center py-12">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 mx-auto"></div>
-            <p className="mt-4 text-gray-600">Memuat pembayaran...</p>
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-terra mx-auto"></div>
+            <p className="mt-4 text-muted">Memuat pembayaran...</p>
           </div>
         ) : filteredPayments.length === 0 ? (
           <Card>
             <CardContent className="py-12 text-center">
-              <p className="text-gray-500 text-lg mb-4">💳 Belum ada riwayat pembayaran</p>
-              <p className="text-gray-400">Pembayaran akan muncul di sini setelah transaksi dicatat</p>
+              <p className="text-muted text-lg mb-4">💳 Belum ada riwayat pembayaran</p>
+              <p className="text-muted/70">Pembayaran akan muncul di sini setelah transaksi dicatat</p>
             </CardContent>
           </Card>
         ) : (
@@ -192,25 +192,25 @@ export default function PaymentsPage() {
             <CardContent className="p-0">
               <div className="overflow-x-auto">
                 <table className="w-full">
-                  <thead className="bg-gray-50 border-b">
+                  <thead className="bg-cream-light border-b">
                     <tr>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Tanggal</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Produk</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Jumlah</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Metode</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Ref</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-muted uppercase">Tanggal</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-muted uppercase">Produk</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-muted uppercase">Jumlah</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-muted uppercase">Metode</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-muted uppercase">Status</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-muted uppercase">Ref</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y">
                     {filteredPayments.map((payment) => (
-                      <tr key={payment.id} className="hover:bg-gray-50">
+                      <tr key={payment.id} className="hover:bg-cream-light">
                         <td className="px-6 py-4 whitespace-nowrap text-sm">
                           {formatDate(payment.created_at)}
                         </td>
                         <td className="px-6 py-4 text-sm">
                           <div className="font-medium">{payment.transaction?.product_name || '-'}</div>
-                          <div className="text-gray-500 text-xs">{payment.transaction?.type}</div>
+                          <div className="text-muted text-xs">{payment.transaction?.type}</div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold">
                           {formatCurrency(payment.amount)}
@@ -226,7 +226,7 @@ export default function PaymentsPage() {
                             {payment.status}
                           </span>
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-muted">
                           {payment.reference_number || '-'}
                         </td>
                       </tr>

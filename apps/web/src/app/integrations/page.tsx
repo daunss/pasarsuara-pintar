@@ -16,7 +16,7 @@ function IntegrationsLoading() {
       
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {[1, 2, 3].map((i) => (
-          <div key={i} className="border rounded-lg p-6">
+          <div key={i} className="border border-cream-dark/50 rounded-2xl p-6">
             <Skeleton className="h-32 w-full" />
           </div>
         ))}

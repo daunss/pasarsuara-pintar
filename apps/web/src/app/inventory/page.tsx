@@ -128,7 +128,7 @@ function InventoryContent() {
     } else if (item.stock_qty <= 10) {
       return { label: 'Stok Rendah', color: 'bg-yellow-100 text-yellow-800' }
     } else {
-      return { label: 'Tersedia', color: 'bg-green-100 text-green-800' }
+      return { label: 'Tersedia', color: 'bg-forest/10 text-forest-dark' }
     }
   }
 
@@ -139,31 +139,31 @@ function InventoryContent() {
   })
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="page-bg">
       {/* Header */}
-      <header className="bg-white shadow-sm">
+      <header className="page-header">
         <div className="max-w-7xl mx-auto px-4 py-4">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
-              <h1 className="text-xl sm:text-2xl font-bold text-gray-900">📦 Inventory Management</h1>
-              <p className="text-sm sm:text-base text-gray-600">Kelola stok produk Anda</p>
+              <h1 className="text-xl sm:text-2xl font-bold font-display text-charcoal">📦 Inventory Management</h1>
+              <p className="text-sm sm:text-base text-muted">Kelola stok produk Anda</p>
             </div>
             <div className="flex flex-wrap gap-2 sm:gap-3">
               <button
                 onClick={() => setShowShopeeImport(true)}
-                className="bg-orange-500 text-white px-3 sm:px-4 py-2 rounded-lg text-sm sm:text-base font-semibold hover:bg-orange-600 transition flex items-center gap-1"
+                className="bg-terra text-white px-3 sm:px-4 py-2 rounded-2xl text-sm sm:text-base font-semibold hover:bg-terra-dark transition flex items-center gap-1"
               >
                 🛒 Import Shopee
               </button>
               <button
                 onClick={() => setShowPhotoImport(true)}
-                className="bg-purple-500 text-white px-3 sm:px-4 py-2 rounded-lg text-sm sm:text-base font-semibold hover:bg-purple-600 transition flex items-center gap-1"
+                className="bg-terra-dark text-white px-3 sm:px-4 py-2 rounded-2xl text-sm sm:text-base font-semibold hover:bg-terra transition flex items-center gap-1"
               >
                 📸 Foto Nota
               </button>
               <button
                 onClick={() => setShowBulkImport(true)}
-                className="bg-white border-2 border-blue-600 text-blue-600 px-3 sm:px-4 py-2 rounded-lg text-sm sm:text-base font-semibold hover:bg-blue-50 transition"
+                className="bg-white border-2 border-terra text-terra px-3 sm:px-4 py-2 rounded-2xl text-sm sm:text-base font-semibold hover:bg-cream-light transition"
               >
                 📥 Bulk Import
               </button>
@@ -173,7 +173,7 @@ function InventoryContent() {
                   setFormMode('create')
                   setShowForm(true)
                 }}
-                className="bg-green-600 text-white px-3 sm:px-4 py-2 rounded-lg text-sm sm:text-base font-semibold hover:bg-green-700 transition"
+                className="bg-forest text-white px-3 sm:px-4 py-2 rounded-2xl text-sm sm:text-base font-semibold hover:bg-forest-dark transition"
               >
                 + Tambah Produk
               </button>
@@ -185,10 +185,10 @@ function InventoryContent() {
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 py-4 sm:py-8">
         {/* Filters */}
-        <div className="bg-white rounded-lg shadow p-6 mb-6">
+        <div className="card-warm p-6 mb-6">
           <div className="grid md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-charcoal mb-2">
                 Cari Produk
               </label>
               <input
@@ -196,11 +196,11 @@ function InventoryContent() {
                 placeholder="Nama produk..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                className="w-full input-warm focus:ring-2 focus:ring-terra/30 focus:border-transparent"
               />
             </div>
             <div className="flex items-end">
-              <p className="text-sm text-gray-500">
+              <p className="text-sm text-muted">
                 Total: {filteredInventory.length} produk
               </p>
             </div>
@@ -209,15 +209,15 @@ function InventoryContent() {
 
         {/* Inventory List */}
         {loading ? (
-          <div className="bg-white rounded-lg shadow p-12 text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 mx-auto mb-4"></div>
-            <p className="text-gray-600">Memuat inventory...</p>
+          <div className="card-warm p-12 text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-forest mx-auto mb-4"></div>
+            <p className="text-muted">Memuat inventory...</p>
           </div>
         ) : filteredInventory.length === 0 ? (
-          <div className="bg-white rounded-lg shadow p-12 text-center">
+          <div className="card-warm p-12 text-center">
             <div className="text-6xl mb-4">📦</div>
             <h3 className="text-xl font-semibold mb-2">Tidak ada produk</h3>
-            <p className="text-gray-600 mb-4">
+            <p className="text-muted mb-4">
               {searchTerm
                 ? 'Tidak ada produk yang sesuai dengan pencarian'
                 : 'Belum ada produk dalam inventory'}
@@ -228,57 +228,57 @@ function InventoryContent() {
                 setFormMode('create')
                 setShowForm(true)
               }}
-              className="bg-green-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-green-700 transition"
+              className="bg-forest text-white px-6 py-3 rounded-2xl font-semibold hover:bg-forest-dark transition"
             >
               Tambah Produk Pertama
             </button>
           </div>
         ) : (
-          <div className="bg-white rounded-lg shadow overflow-hidden">
+          <div className="card-warm overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full">
-                <thead className="bg-gray-50">
+                <thead className="bg-cream-light">
                   <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-muted uppercase">
                       Produk
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-muted uppercase">
                       Stok
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-muted uppercase">
                       Satuan
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-muted uppercase">
                       Harga Jual
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-muted uppercase">
                       Status
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-muted uppercase">
                       Aksi
                     </th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-200">
+                <tbody className="divide-y divide-cream-dark">
                   {filteredInventory.map((item) => {
                     const status = getStockStatus(item)
                     return (
-                      <tr key={item.id} className="hover:bg-gray-50">
+                      <tr key={item.id} className="hover:bg-cream-light">
                         <td className="px-6 py-4">
-                          <div className="font-medium text-gray-900">{item.product_name}</div>
+                          <div className="font-medium text-charcoal">{item.product_name}</div>
                           {item.description && (
-                            <div className="text-sm text-gray-500 truncate max-w-md">{item.description}</div>
+                            <div className="text-sm text-muted truncate max-w-md">{item.description}</div>
                           )}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
-                          <span className="text-lg font-semibold text-gray-900">
+                          <span className="text-lg font-semibold text-charcoal">
                             {item.stock_qty}
                           </span>
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-muted">
                           {item.unit || 'pcs'}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-charcoal">
                           {item.min_sell_price ? formatCurrency(item.min_sell_price) : '-'}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
@@ -290,7 +290,7 @@ function InventoryContent() {
                           <div className="flex gap-2">
                             <button
                               onClick={() => handleEdit(item)}
-                              className="text-blue-600 hover:text-blue-700 font-medium"
+                              className="text-terra hover:text-terra-dark font-medium"
                             >
                               Edit
                             </button>

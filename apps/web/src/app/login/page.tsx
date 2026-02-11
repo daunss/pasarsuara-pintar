@@ -69,23 +69,23 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50 flex items-center justify-center p-4">
+    <div className="page-bg flex items-center justify-center p-4">
       <div className="max-w-md w-full">
         {/* Logo & Title */}
-        <div className="text-center mb-8">
+        <div className="text-center mb-10">
           <div className="flex justify-center mb-4">
             <Logo size="lg" showText={false} href={undefined} />
           </div>
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Suara Niaga Pintar</h1>
-          <p className="text-gray-600">Voice-First AI OS untuk UMKM</p>
+          <h1 className="text-4xl font-display font-bold text-charcoal mb-2">Suara Niaga</h1>
+          <p className="text-muted font-body text-lg">Voice-First AI OS untuk UMKM</p>
         </div>
 
         {/* Login Card */}
-        <div className="bg-white rounded-2xl shadow-xl p-8">
-          <h2 className="text-2xl font-bold text-gray-900 mb-6">Masuk ke Akun</h2>
+        <div className="card-warm p-8">
+          <h2 className="text-2xl font-display font-bold text-charcoal mb-6">Masuk ke Akun</h2>
 
           {error && (
-            <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg">
+            <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-xl">
               <p className="text-red-600 text-sm">{error}</p>
             </div>
           )}
@@ -93,7 +93,7 @@ export default function LoginPage() {
           {/* Email/Password Form */}
           <form onSubmit={handleEmailLogin} className="space-y-4 mb-6">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-charcoal mb-2">
                 Email
               </label>
               <input
@@ -102,13 +102,13 @@ export default function LoginPage() {
                 value={formData.email}
                 onChange={handleChange}
                 required
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                className="input-warm"
                 placeholder="nama@email.com"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-charcoal mb-2">
                 Password
               </label>
               <input
@@ -117,17 +117,17 @@ export default function LoginPage() {
                 value={formData.password}
                 onChange={handleChange}
                 required
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                className="input-warm"
                 placeholder="••••••••"
               />
             </div>
 
             <div className="flex items-center justify-between">
               <label className="flex items-center">
-                <input type="checkbox" className="rounded border-gray-300 text-green-600 focus:ring-green-500" />
-                <span className="ml-2 text-sm text-gray-600">Ingat saya</span>
+                <input type="checkbox" className="rounded border-cream-dark text-forest focus:ring-terra" />
+                <span className="ml-2 text-sm text-muted">Ingat saya</span>
               </label>
-              <Link href="/forgot-password" className="text-sm text-green-600 hover:text-green-700">
+              <Link href="/forgot-password" className="text-sm text-terra hover:text-terra-dark transition">
                 Lupa password?
               </Link>
             </div>
@@ -135,7 +135,7 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-green-600 text-white py-3 rounded-lg font-semibold hover:bg-green-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full btn-primary disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading ? 'Memproses...' : 'Masuk'}
             </button>
@@ -144,10 +144,10 @@ export default function LoginPage() {
           {/* Divider */}
           <div className="relative mb-6">
             <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-gray-300"></div>
+              <div className="w-full border-t border-cream-dark"></div>
             </div>
             <div className="relative flex justify-center text-sm">
-              <span className="px-2 bg-white text-gray-500">Atau masuk dengan</span>
+              <span className="px-3 bg-white text-muted">Atau masuk dengan</span>
             </div>
           </div>
 
@@ -155,7 +155,7 @@ export default function LoginPage() {
           <button
             onClick={handleGoogleLogin}
             disabled={loading}
-            className="w-full bg-white border-2 border-gray-300 text-gray-700 py-3 rounded-lg font-semibold hover:bg-gray-50 transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+            className="w-full bg-white border-2 border-cream-dark text-charcoal py-3 rounded-2xl font-semibold hover:bg-cream-light hover:border-terra/40 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
           >
             <svg className="w-5 h-5" viewBox="0 0 24 24">
               <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
@@ -167,9 +167,9 @@ export default function LoginPage() {
           </button>
 
           {/* Register Link */}
-          <p className="mt-6 text-center text-sm text-gray-600">
+          <p className="mt-6 text-center text-sm text-muted">
             Belum punya akun?{' '}
-            <Link href="/register" className="text-green-600 hover:text-green-700 font-semibold">
+            <Link href="/register" className="text-terra hover:text-terra-dark font-semibold transition">
               Daftar sekarang
             </Link>
           </p>
@@ -177,18 +177,18 @@ export default function LoginPage() {
 
         {/* Features */}
         <div className="mt-8 text-center">
-          <p className="text-sm text-gray-600 mb-4">Kenapa Suara Niaga Pintar?</p>
-          <div className="flex justify-center gap-6 text-xs text-gray-500">
+          <p className="text-sm text-muted mb-4 font-body">Kenapa Suara Niaga Pintar?</p>
+          <div className="flex justify-center gap-6 text-xs text-muted font-mono">
             <div className="flex items-center gap-1">
-              <span>✅</span>
+              <span className="text-forest">✓</span>
               <span>Voice-First</span>
             </div>
             <div className="flex items-center gap-1">
-              <span>✅</span>
+              <span className="text-forest">✓</span>
               <span>AI-Powered</span>
             </div>
             <div className="flex items-center gap-1">
-              <span>✅</span>
+              <span className="text-forest">✓</span>
               <span>Gratis</span>
             </div>
           </div>

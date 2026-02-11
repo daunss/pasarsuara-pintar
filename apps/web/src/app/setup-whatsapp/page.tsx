@@ -97,18 +97,18 @@ export default function SetupWhatsAppPage() {
 
   if (hasPhone) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50 flex items-center justify-center p-4">
-        <div className="max-w-md w-full bg-white rounded-2xl shadow-xl p-8 text-center">
+      <div className="page-bg flex items-center justify-center p-4">
+        <div className="max-w-md w-full card-warm p-8 text-center">
           <div className="text-6xl mb-4">✅</div>
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">
+          <h2 className="text-2xl font-bold font-display text-charcoal mb-4">
             Nomor WhatsApp Sudah Terdaftar
           </h2>
-          <p className="text-gray-600 mb-6">
+          <p className="text-muted mb-6">
             Nomor WhatsApp Anda: <strong>{phone}</strong>
           </p>
           <button
             onClick={() => router.push('/dashboard')}
-            className="w-full bg-green-600 text-white py-3 rounded-lg font-semibold hover:bg-green-700 transition"
+            className="btn-primary w-full"
           >
             Lanjut ke Dashboard
           </button>
@@ -118,22 +118,22 @@ export default function SetupWhatsAppPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50 flex items-center justify-center p-4">
+    <div className="page-bg flex items-center justify-center p-4">
       <div className="max-w-md w-full">
         {/* Header */}
         <div className="text-center mb-8">
           <div className="text-6xl mb-4">📱</div>
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">
+          <h1 className="text-3xl font-bold font-display text-charcoal mb-2">
             Setup WhatsApp
           </h1>
-          <p className="text-gray-600">
+          <p className="text-muted">
             Tambahkan nomor WhatsApp untuk menggunakan fitur voice recording
           </p>
         </div>
 
         {/* Setup Card */}
-        <div className="bg-white rounded-2xl shadow-xl p-8">
-          <h2 className="text-xl font-bold text-gray-900 mb-6">
+        <div className="card-warm p-8">
+          <h2 className="text-xl font-bold font-display text-charcoal mb-6">
             Nomor WhatsApp Anda
           </h2>
 
@@ -154,7 +154,7 @@ export default function SetupWhatsAppPage() {
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-charcoal mb-2">
                 Nomor WhatsApp
               </label>
               <input
@@ -162,10 +162,10 @@ export default function SetupWhatsAppPage() {
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
                 placeholder="08123456789 atau 628123456789"
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                className="input-warm"
                 required
               />
-              <p className="mt-2 text-xs text-gray-500">
+              <p className="mt-2 text-xs text-muted">
                 Format: 08xxx atau 628xxx (tanpa spasi atau tanda hubung)
               </p>
             </div>
@@ -173,7 +173,7 @@ export default function SetupWhatsAppPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-green-600 text-white py-3 rounded-lg font-semibold hover:bg-green-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
+              className="btn-primary w-full disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading ? 'Menyimpan...' : 'Simpan & Lanjutkan'}
             </button>
@@ -181,32 +181,32 @@ export default function SetupWhatsAppPage() {
             <button
               type="button"
               onClick={handleSkip}
-              className="w-full bg-white border-2 border-gray-300 text-gray-700 py-3 rounded-lg font-semibold hover:bg-gray-50 transition"
+              className="w-full bg-white border-2 border-cream-dark text-charcoal py-3 rounded-2xl font-semibold hover:bg-cream-light transition"
             >
               Lewati (Nanti Saja)
             </button>
           </form>
 
           {/* Features */}
-          <div className="mt-6 pt-6 border-t border-gray-200">
-            <p className="text-sm font-medium text-gray-700 mb-3">
+          <div className="mt-6 pt-6 border-t border-cream-dark/40">
+            <p className="text-sm font-medium text-charcoal mb-3">
               Dengan WhatsApp, Anda bisa:
             </p>
-            <ul className="space-y-2 text-sm text-gray-600">
+            <ul className="space-y-2 text-sm text-muted">
               <li className="flex items-start gap-2">
-                <span className="text-green-600">✓</span>
+                <span className="text-terra">✓</span>
                 <span>Catat transaksi dengan voice note</span>
               </li>
               <li className="flex items-start gap-2">
-                <span className="text-green-600">✓</span>
+                <span className="text-terra">✓</span>
                 <span>Terima notifikasi stock menipis</span>
               </li>
               <li className="flex items-start gap-2">
-                <span className="text-green-600">✓</span>
+                <span className="text-terra">✓</span>
                 <span>Laporan harian otomatis</span>
               </li>
               <li className="flex items-start gap-2">
-                <span className="text-green-600">✓</span>
+                <span className="text-terra">✓</span>
                 <span>Negosiasi dengan supplier</span>
               </li>
             </ul>
@@ -214,7 +214,7 @@ export default function SetupWhatsAppPage() {
         </div>
 
         {/* Privacy Note */}
-        <p className="mt-6 text-center text-xs text-gray-500">
+        <p className="mt-6 text-center text-xs text-muted">
           🔒 Nomor WhatsApp Anda aman dan tidak akan dibagikan ke pihak ketiga
         </p>
       </div>
