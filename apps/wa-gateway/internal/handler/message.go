@@ -66,10 +66,10 @@ func (h *MessageHandler) Handle(evt *events.Message) {
 	}
 
 	msg := evt.Message
-	sender := evt.Info.Sender.User
+	sender := h.waClient.ResolvePhoneNumber(context.Background(), evt.Info.Sender)
 	senderJID := evt.Info.Sender
 
-	log.Printf("📩 Message from %s", sender)
+	log.Printf("📩 Message from %s (JID: %s)", sender, senderJID.String())
 
 	// Determine message type and extract content
 	var payload WebhookPayload

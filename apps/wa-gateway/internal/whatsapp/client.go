@@ -10,6 +10,7 @@ import (
 	"go.mau.fi/whatsmeow"
 	"go.mau.fi/whatsmeow/proto/waE2E"
 	"go.mau.fi/whatsmeow/store/sqlstore"
+	"go.mau.fi/whatsmeow/types"
 	"go.mau.fi/whatsmeow/types/events"
 	waLog "go.mau.fi/whatsmeow/util/log"
 
@@ -166,4 +167,21 @@ func (c *Client) GetPhoneNumber() string {
 		return ""
 	}
 	return c.wa.Store.ID.User
+}
+
+// ResolvePhoneNumber resolves a sender JID to a phone number string.
+// For LID-based JIDs (Meta's new Linked ID format), it looks up the
+// phone number from the local whatsmeow LID→PN mapping store.
+// Falls back to jid.User if resolution fails.
+func (c *Client) ResolvePhoneNumber(ctx context.Context, jid types.JID) string {
+	if jid.Server == types.HiddenUserServer {
+		// LID JID — try to resolve to phone number via local store
+		pn, err := c.wa.Store.LIDs.GetPNForLID(ctx, jid.ToNonAD())
+		if err == nil && !pn.IsEmpty() {
+			fmt.Printf("✅ Resolved LID %s -> PN %s\n", jid.User, pn.User)
+			return pn.User
+		}
+		fmt.Printf("⚠️ Could not resolve LID %s to phone number (err=%v), using raw LID\n", jid.User, err)
+	}
+	return jid.User
 }

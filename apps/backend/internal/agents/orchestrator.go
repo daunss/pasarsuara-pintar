@@ -247,15 +247,16 @@ func (o *AgentOrchestrator) HandleSupplierMessage(ctx context.Context, phone, me
 
 func (o *AgentOrchestrator) getUserID(ctx context.Context, phone string) string {
 	if o.db == nil {
-		// Return demo user ID based on phone
+		log.Printf("⚠️ Database not configured, using demo user ID for phone: %s", phone)
 		return "11111111-1111-1111-1111-111111111111"
 	}
 
 	user, err := o.db.GetUserByPhone(ctx, phone)
 	if err != nil || user == nil {
-		// Return demo user if not found
+		log.Printf("⚠️ User not found for phone: %s (err=%v), using demo user ID", phone, err)
 		return "11111111-1111-1111-1111-111111111111"
 	}
+	log.Printf("✅ Matched phone %s to user %s (%s)", phone, user.ID, user.Email)
 	return user.ID
 }
 
