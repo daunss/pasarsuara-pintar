@@ -21,9 +21,18 @@ type KolosalClient struct {
 type Intent struct {
 	Action    string         `json:"action"`    // ORDER_RESTOCK, RECORD_SALE, REQUEST_PROMO, ASK_MARKET, UNKNOWN
 	Entities  map[string]any `json:"entities"`  // product, qty, price, time, etc
+	Items     []IntentItem   `json:"items"`     // multiple products in one message
 	Sentiment string         `json:"sentiment"` // positive, negative, neutral
 	Language  string         `json:"language"`  // id, jv, su
 	RawText   string         `json:"raw_text"`
+}
+
+// IntentItem represents a single product item in a multi-product intent
+type IntentItem struct {
+	Product string  `json:"product"`
+	Qty     float64 `json:"qty"`
+	Unit    string  `json:"unit"`
+	Price   float64 `json:"price"`
 }
 
 type KolosalRequest struct {
@@ -53,6 +62,7 @@ const intentSystemPrompt = `You are an Intent Extraction Engine for Suara Niaga 
 Your task is to analyze informal Indonesian/Javanese/Sundanese text and extract structured intent.
 
 IMPORTANT: Always respond with valid JSON only, no other text.
+IMPORTANT: A single message may mention MULTIPLE products. Always extract ALL products into the "items" array.
 
 Available intents:
 - ORDER_RESTOCK: User wants to order/buy supplies (e.g., "cari beras 25 kilo", "butuh minyak goreng")
@@ -69,26 +79,47 @@ Response format:
 {
   "action": "INTENT_NAME",
   "entities": {
-    "product": "product name if mentioned",
-    "qty": number if mentioned,
-    "unit": "kg/liter/porsi/etc if mentioned",
-    "price": number if mentioned,
-    "max_price": number if budget mentioned,
-    "time": "delivery time if mentioned"
+    "product": "first product name (for backward compat)",
+    "qty": number,
+    "unit": "kg/liter/porsi/etc",
+    "price": number
   },
+  "items": [
+    {"product": "product name", "qty": number, "unit": "unit", "price": number}
+  ],
   "sentiment": "positive/negative/neutral",
-  "language": "id/jv/su (detected language)"
+  "language": "id/jv/su"
 }
 
+Rules for "items" array:
+- ALWAYS populate "items" array, even for single product
+- If user mentions multiple products, create one entry per product
+- If user says "masing-masing" or shared qty/price, apply to ALL products
+- "entities" should contain the FIRST product's info for backward compatibility
+- Default qty=1 if not specified, default unit="pcs"
+
 Examples:
+
 Input: "Mas, cari beras 25 kilo maksimal 12 ribu ya"
-Output: {"action":"ORDER_RESTOCK","entities":{"product":"beras","qty":25,"unit":"kg","max_price":12000},"sentiment":"neutral","language":"id"}
+Output: {"action":"ORDER_RESTOCK","entities":{"product":"beras","qty":25,"unit":"kg","max_price":12000},"items":[{"product":"beras","qty":25,"unit":"kg","price":12000}],"sentiment":"neutral","language":"id"}
 
 Input: "Tadi laku nasi rames limolas porsi, rolas ewu siji"
-Output: {"action":"RECORD_SALE","entities":{"product":"nasi rames","qty":15,"unit":"porsi","price":12000},"sentiment":"positive","language":"jv"}
+Output: {"action":"RECORD_SALE","entities":{"product":"nasi rames","qty":15,"unit":"porsi","price":12000},"items":[{"product":"nasi rames","qty":15,"unit":"porsi","price":12000}],"sentiment":"positive","language":"jv"}
+
+Input: "Tadi laku nasi goreng 10 porsi harga 15 ribu dan batagor 10 porsi harga 10 ribu"
+Output: {"action":"RECORD_SALE","entities":{"product":"nasi goreng","qty":10,"unit":"porsi","price":15000},"items":[{"product":"nasi goreng","qty":10,"unit":"porsi","price":15000},{"product":"batagor","qty":10,"unit":"porsi","price":10000}],"sentiment":"positive","language":"id"}
+
+Input: "batagor mie ayam siomay masing-masing 10 pcs harga 10 ribu"
+Output: {"action":"RECORD_SALE","entities":{"product":"batagor","qty":10,"unit":"pcs","price":10000},"items":[{"product":"batagor","qty":10,"unit":"pcs","price":10000},{"product":"mie ayam","qty":10,"unit":"pcs","price":10000},{"product":"siomay","qty":10,"unit":"pcs","price":10000}],"sentiment":"positive","language":"id"}
+
+Input: "beli beras 50 kg sama minyak goreng 10 liter"
+Output: {"action":"RECORD_EXPENSE","entities":{"product":"beras","qty":50,"unit":"kg"},"items":[{"product":"beras","qty":50,"unit":"kg","price":0},{"product":"minyak goreng","qty":10,"unit":"liter","price":0}],"sentiment":"neutral","language":"id"}
+
+Input: "laku es teh 20 gelas 5 ribu, nasi goreng 15 porsi 15 ribu, gorengan 30 biji 2 ribu"
+Output: {"action":"RECORD_SALE","entities":{"product":"es teh","qty":20,"unit":"gelas","price":5000},"items":[{"product":"es teh","qty":20,"unit":"gelas","price":5000},{"product":"nasi goreng","qty":15,"unit":"porsi","price":15000},{"product":"gorengan","qty":30,"unit":"biji","price":2000}],"sentiment":"positive","language":"id"}
 
 Input: "Halo mas"
-Output: {"action":"GREETING","entities":{},"sentiment":"positive","language":"id"}`
+Output: {"action":"GREETING","entities":{},"items":[],"sentiment":"positive","language":"id"}`
 
 func NewKolosalClient(apiKey, baseURL string) *KolosalClient {
 	if baseURL == "" {

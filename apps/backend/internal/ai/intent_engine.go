@@ -129,6 +129,20 @@ func (e *IntentEngine) GenerateResponse(intent *Intent) string {
 		return response
 
 	case "RECORD_SALE":
+		// Multi-item support
+		if len(intent.Items) > 1 {
+			response := "✅ Penjualan tercatat!\n"
+			for _, item := range intent.Items {
+				total := item.Qty * item.Price
+				response += fmt.Sprintf("• %s x%.0f %s", item.Product, item.Qty, item.Unit)
+				if item.Price > 0 {
+					response += fmt.Sprintf(" @ Rp %s = Rp %s", formatNumber(item.Price), formatNumber(total))
+				}
+				response += "\n"
+			}
+			return response
+		}
+
 		product := getStringEntity(intent.Entities, "product")
 		qty := getFloatEntity(intent.Entities, "qty")
 		price := getFloatEntity(intent.Entities, "price")

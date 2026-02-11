@@ -199,6 +199,117 @@ func (o *AgentOrchestrator) ProcessImage(ctx context.Context, userPhone string, 
 	}
 }
 
+// processMultiItemIntent handles intents with multiple products (e.g., "laku nasi goreng 10 pcs dan batagor 10 pcs")
+func (o *AgentOrchestrator) processMultiItemIntent(ctx context.Context, userID string, intent *ai.Intent) *AgentResponse {
+	log.Printf("📦 Processing multi-item intent: %d items, action=%s", len(intent.Items), intent.Action)
+
+	var responseLines []string
+	var successCount, failCount int
+	var totalAmount float64
+
+	isSale := intent.Action == "RECORD_SALE"
+
+	if isSale {
+		responseLines = append(responseLines, "✅ *Penjualan tercatat!*\n")
+	} else {
+		responseLines = append(responseLines, "💸 *Pengeluaran tercatat!*\n")
+	}
+
+	for i, item := range intent.Items {
+		if item.Product == "" {
+			continue
+		}
+
+		// Build a single-item intent for each product
+		itemIntent := &ai.Intent{
+			Action: intent.Action,
+			Entities: map[string]any{
+				"product": item.Product,
+				"qty":     item.Qty,
+				"unit":    item.Unit,
+				"price":   item.Price,
+			},
+			RawText: intent.RawText,
+		}
+
+		qty := item.Qty
+		if qty <= 0 {
+			qty = 1
+		}
+		price := item.Price
+		itemTotal := qty * price
+
+		if isSale {
+			tx, err := o.finance.RecordSale(ctx, userID, itemIntent)
+			if err != nil {
+				log.Printf("❌ Failed to record sale for item %d (%s): %v", i+1, item.Product, err)
+				failCount++
+				responseLines = append(responseLines, fmt.Sprintf("❌ %s — gagal dicatat", item.Product))
+				continue
+			}
+			_ = tx
+
+			// Auto-update inventory
+			if o.inventory != nil {
+				alert, err := o.inventory.UpdateStockAfterSale(ctx, userID, itemIntent)
+				if err != nil {
+					log.Printf("⚠️ Failed to update inventory for %s: %v", item.Product, err)
+				} else if alert != nil {
+					responseLines = append(responseLines, fmt.Sprintf("✅ %s x%.0f %s @ Rp %.0f = Rp %.0f ⚠️%s",
+						item.Product, qty, item.Unit, price, itemTotal, o.inventory.FormatStockAlert(alert)))
+					successCount++
+					totalAmount += itemTotal
+					continue
+				}
+			}
+		} else {
+			tx, err := o.finance.RecordExpense(ctx, userID, itemIntent)
+			if err != nil {
+				log.Printf("❌ Failed to record expense for item %d (%s): %v", i+1, item.Product, err)
+				failCount++
+				responseLines = append(responseLines, fmt.Sprintf("❌ %s — gagal dicatat", item.Product))
+				continue
+			}
+			_ = tx
+
+			// Auto-update inventory for purchases
+			if o.inventory != nil && qty > 0 {
+				err := o.inventory.UpdateStockAfterPurchase(ctx, userID, itemIntent, qty)
+				if err != nil {
+					log.Printf("⚠️ Failed to update inventory for %s: %v", item.Product, err)
+				}
+			}
+		}
+
+		if price > 0 {
+			responseLines = append(responseLines, fmt.Sprintf("✅ %s x%.0f %s @ Rp %.0f = Rp %.0f",
+				item.Product, qty, item.Unit, price, itemTotal))
+		} else {
+			responseLines = append(responseLines, fmt.Sprintf("✅ %s x%.0f %s",
+				item.Product, qty, item.Unit))
+		}
+		successCount++
+		totalAmount += itemTotal
+	}
+
+	// Summary
+	responseLines = append(responseLines, "")
+	if totalAmount > 0 {
+		responseLines = append(responseLines, fmt.Sprintf("📊 Total: %d item, Rp %.0f", successCount, totalAmount))
+	} else {
+		responseLines = append(responseLines, fmt.Sprintf("📊 Total: %d item tercatat", successCount))
+	}
+	if failCount > 0 {
+		responseLines = append(responseLines, fmt.Sprintf("⚠️ %d item gagal diproses", failCount))
+	}
+
+	return &AgentResponse{
+		Success: successCount > 0,
+		Intent:  intent,
+		Message: strings.Join(responseLines, "\n"),
+	}
+}
+
 // ProcessMessage handles incoming message and routes to appropriate agent
 func (o *AgentOrchestrator) ProcessMessage(ctx context.Context, userPhone, text string) *AgentResponse {
 	log.Printf("🎯 Orchestrator processing message from %s: %s", userPhone, text)
@@ -270,6 +381,11 @@ func (o *AgentOrchestrator) processIntent(ctx context.Context, userPhone string,
 	response := &AgentResponse{
 		Success: true,
 		Intent:  intent,
+	}
+
+	// Check for multi-item intent (multiple products in one message)
+	if len(intent.Items) > 1 && (intent.Action == "RECORD_SALE" || intent.Action == "RECORD_EXPENSE") {
+		return o.processMultiItemIntent(ctx, userID, intent)
 	}
 
 	switch intent.Action {
