@@ -109,7 +109,7 @@ func main() {
 	// messageRouter := handlers.NewMessageRouter(db, intentEngine, contextMgr)
 
 	// Create router with integrations handler
-	router := api.NewRouter(orchestrator, catalogHandler, db, waSender, integrationsHandler)
+	router := api.NewRouter(orchestrator, catalogHandler, db, waSender, integrationsHandler, cfg.GeminiAPIKey)
 
 	// TODO: Set message router on webhook handler
 	// webhook.SetMessageRouter(messageRouter)

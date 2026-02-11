@@ -7,6 +7,7 @@ import { supabase } from '@/lib/supabase'
 import { InventoryForm } from '@/components/inventory/InventoryForm'
 import { BulkImport } from '@/components/inventory/BulkImport'
 import { ShopeeImport } from '@/components/inventory/ShopeeImport'
+import { PhotoImport } from '@/components/inventory/PhotoImport'
 
 interface InventoryItem {
   id: string
@@ -27,6 +28,7 @@ function InventoryContent() {
   const [showForm, setShowForm] = useState(false)
   const [showBulkImport, setShowBulkImport] = useState(false)
   const [showShopeeImport, setShowShopeeImport] = useState(false)
+  const [showPhotoImport, setShowPhotoImport] = useState(false)
   const [selectedItem, setSelectedItem] = useState<InventoryItem | null>(null)
   const [formMode, setFormMode] = useState<'create' | 'edit'>('create')
 
@@ -152,6 +154,12 @@ function InventoryContent() {
                 className="bg-orange-500 text-white px-4 py-2 rounded-lg font-semibold hover:bg-orange-600 transition flex items-center gap-1"
               >
                 🛒 Import Shopee
+              </button>
+              <button
+                onClick={() => setShowPhotoImport(true)}
+                className="bg-purple-500 text-white px-4 py-2 rounded-lg font-semibold hover:bg-purple-600 transition flex items-center gap-1"
+              >
+                📸 Foto Nota
               </button>
               <button
                 onClick={() => setShowBulkImport(true)}
@@ -335,6 +343,17 @@ function InventoryContent() {
             fetchInventory()
           }}
           onClose={() => setShowShopeeImport(false)}
+        />
+      )}
+
+      {/* Photo Import Modal */}
+      {showPhotoImport && (
+        <PhotoImport
+          onComplete={() => {
+            setShowPhotoImport(false)
+            fetchInventory()
+          }}
+          onClose={() => setShowPhotoImport(false)}
         />
       )}
     </div>

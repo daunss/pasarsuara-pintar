@@ -8,6 +8,7 @@ import { InventoryTable } from '@/components/dashboard/inventory-table'
 import { NegotiationChat } from '@/components/dashboard/negotiation-chat'
 import { ShopeeImport } from '@/components/inventory/ShopeeImport'
 import { BulkImport } from '@/components/inventory/BulkImport'
+import { PhotoImport } from '@/components/inventory/PhotoImport'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/lib/auth'
@@ -23,6 +24,7 @@ export default function DashboardPage() {
   const [loading, setLoading] = useState(true)
   const [showShopeeImport, setShowShopeeImport] = useState(false)
   const [showBulkImport, setShowBulkImport] = useState(false)
+  const [showPhotoImport, setShowPhotoImport] = useState(false)
 
   // Authentication guard
   useEffect(() => {
@@ -318,7 +320,7 @@ export default function DashboardPage() {
           <h2 className="text-xl font-bold text-gray-800 mb-1">Selamat Datang! 👋</h2>
           <p className="text-gray-500 mb-6">Mulai kelola bisnis Anda. Pilih cara untuk menambahkan produk &amp; transaksi:</p>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid md:grid-cols-2 lg:grid-cols-5 gap-4">
             {/* Import Shopee */}
             <button
               onClick={() => setShowShopeeImport(true)}
@@ -339,6 +341,16 @@ export default function DashboardPage() {
               <p className="text-xs text-gray-500">Import daftar produk dari file spreadsheet</p>
             </button>
 
+            {/* Import Foto Nota */}
+            <button
+              onClick={() => setShowPhotoImport(true)}
+              className="bg-white border-2 border-dashed border-purple-300 hover:border-purple-500 hover:bg-purple-50 rounded-xl p-6 text-left transition group"
+            >
+              <div className="text-4xl mb-3">📸</div>
+              <h3 className="font-bold text-gray-800 group-hover:text-purple-600 mb-1">Foto Nota / Struk</h3>
+              <p className="text-xs text-gray-500">Upload foto nota, AI otomatis baca &amp; catat item</p>
+            </button>
+
             {/* Manual Entry */}
             <Link
               href="/inventory"
@@ -356,18 +368,31 @@ export default function DashboardPage() {
             >
               <div className="text-4xl mb-3">💬</div>
               <h3 className="font-bold text-gray-800 group-hover:text-emerald-600 mb-1">Via WhatsApp</h3>
-              <p className="text-xs text-gray-500">Kirim voice message untuk catat transaksi otomatis</p>
+              <p className="text-xs text-gray-500">Kirim voice note atau foto nota untuk catat transaksi otomatis</p>
             </Link>
           </div>
         </div>
 
-        {/* Example WA prompt */}
+        {/* Tips WA */}
         <div className="bg-green-50 border border-green-200 rounded-lg p-6 max-w-lg">
-          <p className="text-sm font-semibold text-gray-700 mb-2">💡 Tips: Kirim voice message ke WhatsApp:</p>
-          <p className="font-mono text-sm bg-white p-3 rounded border">
-            &quot;Tadi laku nasi goreng 10 porsi harga 15 ribu&quot;
-          </p>
-          <p className="text-xs text-gray-500 mt-2">Transaksi akan tercatat otomatis di dashboard Anda.</p>
+          <p className="text-sm font-semibold text-gray-700 mb-3">💡 Tips: Catat transaksi via WhatsApp</p>
+          
+          <div className="space-y-3">
+            <div>
+              <p className="text-xs font-medium text-green-700 mb-1">🎤 Voice Note:</p>
+              <p className="font-mono text-sm bg-white p-3 rounded border">
+                &quot;Tadi laku nasi goreng 10 porsi harga 15 ribu&quot;
+              </p>
+            </div>
+            <div>
+              <p className="text-xs font-medium text-green-700 mb-1">📸 Foto Nota/Struk:</p>
+              <p className="text-sm bg-white p-3 rounded border text-gray-600">
+                Kirim foto nota belanja / struk penjualan, AI akan membaca &amp; mencatat semua item otomatis
+              </p>
+            </div>
+          </div>
+          
+          <p className="text-xs text-gray-500 mt-3">Transaksi akan tercatat otomatis di dashboard Anda.</p>
         </div>
       </main>
 
@@ -390,6 +415,17 @@ export default function DashboardPage() {
             window.location.reload()
           }}
           onClose={() => setShowBulkImport(false)}
+        />
+      )}
+
+      {/* Photo Import Modal */}
+      {showPhotoImport && (
+        <PhotoImport
+          onComplete={() => {
+            setShowPhotoImport(false)
+            window.location.reload()
+          }}
+          onClose={() => setShowPhotoImport(false)}
         />
       )}
     </div>

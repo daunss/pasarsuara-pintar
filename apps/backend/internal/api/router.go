@@ -10,7 +10,7 @@ import (
 	"github.com/pasarsuara/backend/internal/database"
 )
 
-func NewRouter(orchestrator *agents.AgentOrchestrator, catalogHandler *CatalogHandler, db *database.SupabaseClient, waSender WhatsAppSender, integrationsHandler interface{}) http.Handler {
+func NewRouter(orchestrator *agents.AgentOrchestrator, catalogHandler *CatalogHandler, db *database.SupabaseClient, waSender WhatsAppSender, integrationsHandler interface{}, geminiKey string) http.Handler {
 	r := chi.NewRouter()
 
 	// Middleware
@@ -97,6 +97,10 @@ func NewRouter(orchestrator *agents.AgentOrchestrator, catalogHandler *CatalogHa
 		shopeeHandler := NewShopeeImportHandler(db)
 		r.Post("/shopee/search", shopeeHandler.HandleSearchShop)
 		r.Post("/shopee/import", shopeeHandler.HandleImportProducts)
+
+		// Receipt photo analysis endpoint (web upload)
+		receiptHandler := NewReceiptHandler(geminiKey)
+		r.Post("/receipt/analyze", receiptHandler.HandleAnalyze)
 
 		// Intent/Agent test endpoint (for debugging)
 		r.Post("/intent/test", webhook.Handle)
