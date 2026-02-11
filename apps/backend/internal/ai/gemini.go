@@ -322,12 +322,12 @@ func (g *GeminiClient) GenerateText(ctx context.Context, prompt string) (string,
 
 // ReceiptItem represents a single item extracted from a receipt/financial photo
 type ReceiptItem struct {
-	Product  string  `json:"product"`
-	Qty      float64 `json:"qty"`
-	Unit     string  `json:"unit"`
-	Price    float64 `json:"price"`
-	Total    float64 `json:"total"`
-	Type     string  `json:"type"` // SALE, PURCHASE, EXPENSE
+	Product string  `json:"product"`
+	Qty     float64 `json:"qty"`
+	Unit    string  `json:"unit"`
+	Price   float64 `json:"price"`
+	Total   float64 `json:"total"`
+	Type    string  `json:"type"` // SALE, PURCHASE, EXPENSE
 }
 
 // ReceiptResult contains all items extracted from a receipt image
