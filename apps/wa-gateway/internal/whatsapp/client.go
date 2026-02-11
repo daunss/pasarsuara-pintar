@@ -36,7 +36,13 @@ func NewClient(ctx context.Context, sessionPath string) (*Client, error) {
 	dbPath := fmt.Sprintf("%s/store.db", sessionPath)
 	dbLog := waLog.Stdout("Database", "ERROR", true)
 
-	container, err := sqlstore.New(ctx, "sqlite", fmt.Sprintf("file:%s?_pragma=foreign_keys(1)", dbPath), dbLog)
+	// Use WAL + busy timeout to reduce lock/transaction errors on concurrent access.
+	container, err := sqlstore.New(
+		ctx,
+		"sqlite",
+		fmt.Sprintf("file:%s?_pragma=foreign_keys(1)&_pragma=journal_mode(WAL)&_pragma=busy_timeout(5000)", dbPath),
+		dbLog,
+	)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create store: %w", err)
 	}

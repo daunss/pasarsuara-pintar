@@ -219,6 +219,7 @@ func (h *MessageHandler) sendToBackend(payload WebhookPayload) (string, error) {
 	log.Printf("✅ Backend response: %s", resp.Status)
 
 	if resp.StatusCode >= 400 {
+		log.Printf("❌ Backend error body: %s", string(body))
 		return "", fmt.Errorf("backend error: %s", string(body))
 	}
 
