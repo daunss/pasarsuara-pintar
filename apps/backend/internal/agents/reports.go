@@ -88,18 +88,62 @@ func (r *ReportAgent) GenerateReportForDateRange(ctx context.Context, userID, st
 		}, nil
 	}
 
-	// TODO: Query real data from database
-	// For now, return demo data
-	return &DailyReport{
+	// Query real data from database
+	startDateTime := startDate + "T00:00:00Z"
+	endDateTime := endDate + "T23:59:59Z"
+	transactions, err := r.db.GetTransactionsByDateRange(ctx, userID, startDateTime, endDateTime)
+	if err != nil {
+		return nil, fmt.Errorf("failed to fetch transactions: %w", err)
+	}
+
+	report := &DailyReport{
 		Date:             startDate,
-		TotalSales:       0,
-		TotalPurchases:   0,
-		TotalExpenses:    0,
-		GrossProfit:      0,
-		NetProfit:        0,
-		TransactionCount: 0,
-		TopProducts:      []ProductSummary{},
-	}, nil
+		TransactionCount: len(transactions),
+	}
+
+	// Aggregate by type and track product performance
+	productMap := make(map[string]*ProductSummary)
+
+	for _, tx := range transactions {
+		switch tx.Type {
+		case "SALE":
+			report.TotalSales += tx.TotalAmount
+			// Track product performance for sales
+			key := tx.ProductName
+			if ps, exists := productMap[key]; exists {
+				ps.Quantity += tx.Qty
+				ps.Revenue += tx.TotalAmount
+			} else {
+				productMap[key] = &ProductSummary{
+					ProductName: tx.ProductName,
+					Quantity:    tx.Qty,
+					Revenue:     tx.TotalAmount,
+				}
+			}
+		case "PURCHASE":
+			report.TotalPurchases += tx.TotalAmount
+		case "EXPENSE":
+			report.TotalExpenses += tx.TotalAmount
+		}
+	}
+
+	report.GrossProfit = report.TotalSales - report.TotalPurchases
+	report.NetProfit = report.GrossProfit - report.TotalExpenses
+
+	// Convert product map to sorted slice (top products by revenue)
+	for _, ps := range productMap {
+		report.TopProducts = append(report.TopProducts, *ps)
+	}
+	// Sort by revenue descending
+	for i := 0; i < len(report.TopProducts); i++ {
+		for j := i + 1; j < len(report.TopProducts); j++ {
+			if report.TopProducts[j].Revenue > report.TopProducts[i].Revenue {
+				report.TopProducts[i], report.TopProducts[j] = report.TopProducts[j], report.TopProducts[i]
+			}
+		}
+	}
+
+	return report, nil
 }
 
 // FormatDailyReport formats report for WhatsApp
