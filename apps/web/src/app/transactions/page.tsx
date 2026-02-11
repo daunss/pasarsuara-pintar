@@ -78,7 +78,7 @@ function TransactionsContent() {
     // Search filter
     if (searchQuery) {
       filtered = filtered.filter(tx => 
-        tx.product_name.toLowerCase().includes(searchQuery.toLowerCase())
+        (tx.product_name || '').toLowerCase().includes(searchQuery.toLowerCase())
       )
     }
 

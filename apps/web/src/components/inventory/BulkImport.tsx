@@ -51,22 +51,12 @@ export function BulkImport({ onComplete, onClose }: BulkImportProps) {
 
   const validateRow = (row: any): { valid: boolean; error?: string } => {
     if (!row.product_name || !row.product_name.trim()) {
-      return { valid: false, error: 'Product name is required' }
+      return { valid: false, error: 'product_name is required' }
     }
 
-    const currentStock = parseFloat(row.current_stock)
-    if (isNaN(currentStock) || currentStock < 0) {
-      return { valid: false, error: 'Invalid current_stock value' }
-    }
-
-    const minStock = parseFloat(row.min_stock_level)
-    if (isNaN(minStock) || minStock < 0) {
-      return { valid: false, error: 'Invalid min_stock_level value' }
-    }
-
-    const unitPrice = parseFloat(row.unit_price)
-    if (isNaN(unitPrice) || unitPrice <= 0) {
-      return { valid: false, error: 'Invalid unit_price value' }
+    const stockQty = parseFloat(row.stock_qty)
+    if (isNaN(stockQty) || stockQty < 0) {
+      return { valid: false, error: 'Invalid stock_qty value' }
     }
 
     return { valid: true }
@@ -109,13 +99,11 @@ export function BulkImport({ onComplete, onClose }: BulkImportProps) {
             .insert({
               user_id: user?.id,
               product_name: row.product_name,
-              sku: row.sku || null,
-              current_stock: parseFloat(row.current_stock),
-              min_stock_level: parseFloat(row.min_stock_level),
-              max_stock_level: row.max_stock_level ? parseFloat(row.max_stock_level) : null,
-              unit_price: parseFloat(row.unit_price),
-              category: row.category || null,
-              supplier: row.supplier || null
+              stock_qty: parseFloat(row.stock_qty) || 0,
+              unit: row.unit || 'pcs',
+              min_sell_price: row.min_sell_price ? parseFloat(row.min_sell_price) : null,
+              max_buy_price: row.max_buy_price ? parseFloat(row.max_buy_price) : null,
+              description: row.description || null
             })
 
           if (error) throw error
@@ -144,9 +132,9 @@ export function BulkImport({ onComplete, onClose }: BulkImportProps) {
   }
 
   const downloadTemplate = () => {
-    const template = `product_name,sku,current_stock,min_stock_level,max_stock_level,unit_price,category,supplier
-Beras Premium 5kg,BRS-001,100,10,200,50000,Makanan,PT Supplier A
-Minyak Goreng 2L,MYK-001,50,5,100,30000,Makanan,PT Supplier B`
+    const template = `product_name,stock_qty,unit,min_sell_price,max_buy_price,description
+Beras Premium 5kg,100,kg,50000,40000,Beras kualitas premium
+Minyak Goreng 2L,50,pcs,30000,25000,Minyak goreng kemasan 2 liter`
 
     const blob = new Blob([template], { type: 'text/csv' })
     const url = URL.createObjectURL(blob)
