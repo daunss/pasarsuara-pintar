@@ -32,6 +32,21 @@ export default function SetupWhatsAppPage() {
       if (userPhone) {
         setHasPhone(true)
         setPhone(userPhone)
+        return
+      }
+
+      // Fallback: check from public.users table
+      if (user) {
+        const { data: dbUser } = await supabase
+          .from('users')
+          .select('phone_number')
+          .eq('id', user.id)
+          .limit(1)
+
+        if (dbUser?.[0]?.phone_number) {
+          setHasPhone(true)
+          setPhone(dbUser[0].phone_number)
+        }
       }
     } catch (error) {
       console.error('Error checking phone:', error)
@@ -62,23 +77,27 @@ export default function SetupWhatsAppPage() {
     }
 
     try {
-      // Update user metadata
+      // Try updating user metadata (best-effort, don't block on failure)
       const { error: authError } = await supabase.auth.updateUser({
         data: { phone: formattedPhone }
       })
 
-      if (authError) throw authError
+      if (authError) {
+        console.warn('Auth metadata update failed (non-blocking):', authError.message)
+      }
 
-      // Also upsert into public.users so WA bot can find this user
+      // Upsert into public.users so WA bot can find this user
       if (user) {
         const { data: userData } = await supabase.auth.getUser()
-        await supabase.from('users').upsert({
+        const { error: upsertError } = await supabase.from('users').upsert({
           id: user.id,
           email: userData.user?.email || '',
           phone_number: formattedPhone,
           name: userData.user?.user_metadata?.business_name || userData.user?.user_metadata?.full_name || '',
           role: 'umkm'
         }, { onConflict: 'id' })
+
+        if (upsertError) throw upsertError
       }
 
       // Redirect to dashboard
