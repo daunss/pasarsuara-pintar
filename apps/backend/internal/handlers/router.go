@@ -77,8 +77,9 @@ func (r *MessageRouter) RouteMessage(phoneNumber, message string) (string, error
 		return "Maaf, ada yang salah. Silakan coba lagi.", nil
 	}
 
-	// 4. Process as new transaction message
-	return r.processTransactionMessage(ctx, phoneNumber, message)
+	// 4. For all other messages, let the Agent Orchestrator handle them
+	// The orchestrator has full AI intent classification (ORDER_RESTOCK, RECORD_SALE, etc.)
+	return "", nil
 }
 
 // isRegistrationMessage checks if the message is a registration trigger

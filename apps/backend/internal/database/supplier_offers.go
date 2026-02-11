@@ -3,6 +3,8 @@ package database
 import (
 	"context"
 	"fmt"
+	"log"
+	"net/url"
 	"strings"
 )
 
@@ -44,18 +46,28 @@ func (s *SupabaseClient) GetSupplierOffers(ctx context.Context, ownerUserID, pro
 	product = strings.TrimSpace(product)
 	city = strings.TrimSpace(city)
 
+	log.Printf("🔍 GetSupplierOffers: userID=%s product=%q maxPrice=%.0f city=%q", ownerUserID, product, maxPrice, city)
+
 	endpoint := fmt.Sprintf("supplier_offers?owner_user_id=eq.%s&is_active=eq.true", ownerUserID)
 	if product != "" {
-		endpoint += fmt.Sprintf("&product_name=ilike.%%%s%%", product)
+		endpoint += "&product_name=ilike." + url.QueryEscape("%"+product+"%")
 	}
 	if maxPrice > 0 {
-		endpoint += fmt.Sprintf("&price=lte.%f", maxPrice)
+		endpoint += fmt.Sprintf("&price=lte.%.0f", maxPrice)
 	}
 	if city != "" {
-		endpoint += fmt.Sprintf("&city=ilike.%%%s%%", city)
+		endpoint += "&city=ilike." + url.QueryEscape("%"+city+"%")
 	}
 	endpoint += "&order=price.asc"
 
+	log.Printf("🔍 Supplier offers endpoint: %s", endpoint)
+
 	err := s.request(ctx, "GET", endpoint, nil, &offers)
-	return offers, err
+	if err != nil {
+		log.Printf("❌ GetSupplierOffers error: %v", err)
+		return nil, err
+	}
+
+	log.Printf("✅ GetSupplierOffers found %d offers", len(offers))
+	return offers, nil
 }
