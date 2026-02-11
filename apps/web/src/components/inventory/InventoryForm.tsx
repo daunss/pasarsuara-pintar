@@ -5,14 +5,11 @@ import { useState, useEffect } from 'react'
 interface InventoryItem {
   id: string
   product_name: string
-  sku?: string
-  current_stock: number
-  min_stock_level: number
-  max_stock_level?: number
-  unit_price: number
-  category?: string
-  supplier?: string
-  last_restocked?: string
+  stock_qty: number
+  unit: string
+  min_sell_price: number
+  max_buy_price?: number
+  description?: string
 }
 
 interface InventoryFormProps {
@@ -25,13 +22,11 @@ interface InventoryFormProps {
 export function InventoryForm({ item, mode, onSave, onClose }: InventoryFormProps) {
   const [formData, setFormData] = useState({
     product_name: '',
-    sku: '',
-    current_stock: 0,
-    min_stock_level: 10,
-    max_stock_level: 100,
-    unit_price: 0,
-    category: '',
-    supplier: ''
+    stock_qty: 0,
+    unit: 'pcs',
+    min_sell_price: 0,
+    max_buy_price: 0,
+    description: ''
   })
   const [errors, setErrors] = useState<Record<string, string>>({})
 
@@ -39,22 +34,20 @@ export function InventoryForm({ item, mode, onSave, onClose }: InventoryFormProp
     if (item && mode === 'edit') {
       setFormData({
         product_name: item.product_name,
-        sku: item.sku || '',
-        current_stock: item.current_stock,
-        min_stock_level: item.min_stock_level,
-        max_stock_level: item.max_stock_level || 100,
-        unit_price: item.unit_price,
-        category: item.category || '',
-        supplier: item.supplier || ''
+        stock_qty: item.stock_qty,
+        unit: item.unit || 'pcs',
+        min_sell_price: item.min_sell_price,
+        max_buy_price: item.max_buy_price || 0,
+        description: item.description || ''
       })
     }
   }, [item, mode])
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target
     setFormData(prev => ({
       ...prev,
-      [name]: ['current_stock', 'min_stock_level', 'max_stock_level', 'unit_price'].includes(name)
+      [name]: ['stock_qty', 'min_sell_price', 'max_buy_price'].includes(name)
         ? parseFloat(value) || 0
         : value
     }))
@@ -71,20 +64,12 @@ export function InventoryForm({ item, mode, onSave, onClose }: InventoryFormProp
       newErrors.product_name = 'Nama produk wajib diisi'
     }
 
-    if (formData.current_stock < 0) {
-      newErrors.current_stock = 'Stok tidak boleh negatif'
+    if (formData.stock_qty < 0) {
+      newErrors.stock_qty = 'Stok tidak boleh negatif'
     }
 
-    if (formData.min_stock_level < 0) {
-      newErrors.min_stock_level = 'Min stock tidak boleh negatif'
-    }
-
-    if (formData.unit_price <= 0) {
-      newErrors.unit_price = 'Harga harus lebih dari 0'
-    }
-
-    if (formData.max_stock_level && formData.max_stock_level < formData.min_stock_level) {
-      newErrors.max_stock_level = 'Max stock harus lebih besar dari min stock'
+    if (formData.min_sell_price < 0) {
+      newErrors.min_sell_price = 'Harga jual tidak boleh negatif'
     }
 
     setErrors(newErrors)
@@ -137,136 +122,100 @@ export function InventoryForm({ item, mode, onSave, onClose }: InventoryFormProp
                 )}
               </div>
 
-              {/* SKU */}
+              {/* Stock Qty */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  SKU (Opsional)
-                </label>
-                <input
-                  type="text"
-                  name="sku"
-                  value={formData.sku}
-                  onChange={handleChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                  placeholder="Contoh: BRS-001"
-                />
-              </div>
-
-              {/* Category */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Kategori
-                </label>
-                <input
-                  type="text"
-                  name="category"
-                  value={formData.category}
-                  onChange={handleChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                  placeholder="Contoh: Makanan"
-                />
-              </div>
-
-              {/* Current Stock */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Stok Saat Ini *
+                  Stok *
                 </label>
                 <input
                   type="number"
-                  name="current_stock"
-                  value={formData.current_stock}
+                  name="stock_qty"
+                  value={formData.stock_qty}
                   onChange={handleChange}
                   min="0"
                   step="1"
                   className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent ${
-                    errors.current_stock ? 'border-red-300' : 'border-gray-300'
+                    errors.stock_qty ? 'border-red-300' : 'border-gray-300'
                   }`}
                   placeholder="0"
                 />
-                {errors.current_stock && (
-                  <p className="text-red-600 text-sm mt-1">{errors.current_stock}</p>
+                {errors.stock_qty && (
+                  <p className="text-red-600 text-sm mt-1">{errors.stock_qty}</p>
                 )}
               </div>
 
-              {/* Min Stock Level */}
+              {/* Unit */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Min Stock Level *
+                  Satuan
                 </label>
-                <input
-                  type="number"
-                  name="min_stock_level"
-                  value={formData.min_stock_level}
+                <select
+                  name="unit"
+                  value={formData.unit}
                   onChange={handleChange}
-                  min="0"
-                  step="1"
-                  className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent ${
-                    errors.min_stock_level ? 'border-red-300' : 'border-gray-300'
-                  }`}
-                  placeholder="10"
-                />
-                {errors.min_stock_level && (
-                  <p className="text-red-600 text-sm mt-1">{errors.min_stock_level}</p>
-                )}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                >
+                  <option value="pcs">Pcs</option>
+                  <option value="kg">Kg</option>
+                  <option value="gram">Gram</option>
+                  <option value="liter">Liter</option>
+                  <option value="lusin">Lusin</option>
+                  <option value="box">Box</option>
+                  <option value="pack">Pack</option>
+                </select>
               </div>
 
-              {/* Max Stock Level */}
+              {/* Min Sell Price */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Max Stock Level
+                  Harga Jual Min (Rp)
                 </label>
                 <input
                   type="number"
-                  name="max_stock_level"
-                  value={formData.max_stock_level}
-                  onChange={handleChange}
-                  min="0"
-                  step="1"
-                  className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent ${
-                    errors.max_stock_level ? 'border-red-300' : 'border-gray-300'
-                  }`}
-                  placeholder="100"
-                />
-                {errors.max_stock_level && (
-                  <p className="text-red-600 text-sm mt-1">{errors.max_stock_level}</p>
-                )}
-              </div>
-
-              {/* Unit Price */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Harga per Unit (Rp) *
-                </label>
-                <input
-                  type="number"
-                  name="unit_price"
-                  value={formData.unit_price}
+                  name="min_sell_price"
+                  value={formData.min_sell_price}
                   onChange={handleChange}
                   min="0"
                   step="100"
                   className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent ${
-                    errors.unit_price ? 'border-red-300' : 'border-gray-300'
+                    errors.min_sell_price ? 'border-red-300' : 'border-gray-300'
                   }`}
                   placeholder="10000"
                 />
-                {errors.unit_price && (
-                  <p className="text-red-600 text-sm mt-1">{errors.unit_price}</p>
+                {errors.min_sell_price && (
+                  <p className="text-red-600 text-sm mt-1">{errors.min_sell_price}</p>
                 )}
               </div>
 
-              {/* Supplier */}
-              <div className="md:col-span-2">
+              {/* Max Buy Price */}
+              <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Supplier (Opsional)
+                  Harga Beli Max (Rp)
                 </label>
                 <input
-                  type="text"
-                  name="supplier"
-                  value={formData.supplier}
+                  type="number"
+                  name="max_buy_price"
+                  value={formData.max_buy_price}
                   onChange={handleChange}
+                  min="0"
+                  step="100"
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                  placeholder="Contoh: PT Supplier Jaya"
+                  placeholder="8000"
+                />
+              </div>
+
+              {/* Description */}
+              <div className="md:col-span-2">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Deskripsi (Opsional)
+                </label>
+                <textarea
+                  name="description"
+                  value={formData.description}
+                  onChange={handleChange}
+                  rows={3}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                  placeholder="Deskripsi produk..."
                 />
               </div>
             </div>

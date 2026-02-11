@@ -11,14 +11,11 @@ import { ShopeeImport } from '@/components/inventory/ShopeeImport'
 interface InventoryItem {
   id: string
   product_name: string
-  sku?: string
-  current_stock: number
-  min_stock_level: number
-  max_stock_level?: number
-  unit_price: number
-  category?: string
-  supplier?: string
-  last_restocked?: string
+  stock_qty: number
+  unit: string
+  min_sell_price: number
+  max_buy_price?: number
+  description?: string
   created_at: string
 }
 
@@ -27,7 +24,6 @@ function InventoryContent() {
   const [inventory, setInventory] = useState<InventoryItem[]>([])
   const [loading, setLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState('')
-  const [categoryFilter, setCategoryFilter] = useState<string>('ALL')
   const [showForm, setShowForm] = useState(false)
   const [showBulkImport, setShowBulkImport] = useState(false)
   const [showShopeeImport, setShowShopeeImport] = useState(false)
@@ -125,23 +121,20 @@ function InventoryContent() {
   }
 
   const getStockStatus = (item: InventoryItem) => {
-    if (item.current_stock === 0) {
-      return { label: 'Out of Stock', color: 'bg-red-100 text-red-800' }
-    } else if (item.current_stock <= item.min_stock_level) {
-      return { label: 'Low Stock', color: 'bg-yellow-100 text-yellow-800' }
+    if (item.stock_qty === 0) {
+      return { label: 'Habis', color: 'bg-red-100 text-red-800' }
+    } else if (item.stock_qty <= 10) {
+      return { label: 'Stok Rendah', color: 'bg-yellow-100 text-yellow-800' }
     } else {
-      return { label: 'In Stock', color: 'bg-green-100 text-green-800' }
+      return { label: 'Tersedia', color: 'bg-green-100 text-green-800' }
     }
   }
 
   const filteredInventory = inventory.filter(item => {
     const matchesSearch = item.product_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         item.sku?.toLowerCase().includes(searchTerm.toLowerCase())
-    const matchesCategory = categoryFilter === 'ALL' || item.category === categoryFilter
-    return matchesSearch && matchesCategory
+                         item.description?.toLowerCase().includes(searchTerm.toLowerCase())
+    return matchesSearch
   })
-
-  const categories = Array.from(new Set(inventory.map(item => item.category).filter(Boolean)))
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -192,26 +185,16 @@ function InventoryContent() {
               </label>
               <input
                 type="text"
-                placeholder="Nama produk atau SKU..."
+                placeholder="Nama produk..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
               />
             </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Kategori
-              </label>
-              <select
-                value={categoryFilter}
-                onChange={(e) => setCategoryFilter(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-              >
-                <option value="ALL">Semua Kategori</option>
-                {categories.map(cat => (
-                  <option key={cat} value={cat}>{cat}</option>
-                ))}
-              </select>
+            <div className="flex items-end">
+              <p className="text-sm text-gray-500">
+                Total: {filteredInventory.length} produk
+              </p>
             </div>
           </div>
         </div>
@@ -227,8 +210,8 @@ function InventoryContent() {
             <div className="text-6xl mb-4">📦</div>
             <h3 className="text-xl font-semibold mb-2">Tidak ada produk</h3>
             <p className="text-gray-600 mb-4">
-              {searchTerm || categoryFilter !== 'ALL'
-                ? 'Tidak ada produk yang sesuai dengan filter'
+              {searchTerm
+                ? 'Tidak ada produk yang sesuai dengan pencarian'
                 : 'Belum ada produk dalam inventory'}
             </p>
             <button
@@ -252,16 +235,13 @@ function InventoryContent() {
                       Produk
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                      SKU
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
                       Stok
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                      Min/Max
+                      Satuan
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                      Harga
+                      Harga Jual
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
                       Status
@@ -278,23 +258,20 @@ function InventoryContent() {
                       <tr key={item.id} className="hover:bg-gray-50">
                         <td className="px-6 py-4">
                           <div className="font-medium text-gray-900">{item.product_name}</div>
-                          {item.category && (
-                            <div className="text-sm text-gray-500">{item.category}</div>
+                          {item.description && (
+                            <div className="text-sm text-gray-500 truncate max-w-md">{item.description}</div>
                           )}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                          {item.sku || '-'}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
                           <span className="text-lg font-semibold text-gray-900">
-                            {item.current_stock}
+                            {item.stock_qty}
                           </span>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                          {item.min_stock_level} / {item.max_stock_level || '-'}
+                          {item.unit || 'pcs'}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                          {formatCurrency(item.unit_price)}
+                          {item.min_sell_price ? formatCurrency(item.min_sell_price) : '-'}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
                           <span className={`px-3 py-1 rounded-full text-xs font-medium ${status.color}`}>
