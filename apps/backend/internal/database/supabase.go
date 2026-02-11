@@ -218,11 +218,16 @@ func (s *SupabaseClient) RegisterPhoneMapping(phone, userID string) {
 }
 
 // GetUserByWASenderID finds a user by their WhatsApp sender ID (LID or raw phone)
+// Uses RPC function to bypass PostgREST schema cache issues with new columns
 func (s *SupabaseClient) GetUserByWASenderID(ctx context.Context, senderID string) (*User, error) {
 	var users []User
-	endpoint := fmt.Sprintf("users?wa_sender_id=eq.%s&select=id,email,phone_number,name,city,wa_sender_id", senderID)
-	err := s.request(ctx, "GET", endpoint, nil, &users)
-	if err != nil || len(users) == 0 {
+	rpcBody := map[string]string{"sender_id": senderID}
+	err := s.request(ctx, "POST", "rpc/get_user_by_wa_sender_id", rpcBody, &users)
+	if err != nil {
+		log.Printf("⚠️ RPC get_user_by_wa_sender_id error: %v", err)
+		return nil, fmt.Errorf("user not found for wa_sender_id: %s", senderID)
+	}
+	if len(users) == 0 {
 		return nil, fmt.Errorf("user not found for wa_sender_id: %s", senderID)
 	}
 	user := users[0]
