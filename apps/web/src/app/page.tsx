@@ -20,18 +20,20 @@ export default function Home() {
 
     revealItems.forEach((item) => observer.observe(item))
 
-    const magneticButtons = Array.from(document.querySelectorAll(".magnetic"))
-    const handleMove = (event: MouseEvent) => {
-      const target = event.currentTarget as HTMLElement
+    const magneticButtons = Array.from(document.querySelectorAll(".magnetic")) as HTMLElement[]
+    const handleMove = (event: Event) => {
+      const e = event as MouseEvent
+      const target = e.currentTarget as HTMLElement
       const rect = target.getBoundingClientRect()
-      const x = event.clientX - rect.left - rect.width / 2
-      const y = event.clientY - rect.top - rect.height / 2
+      const x = e.clientX - rect.left - rect.width / 2
+      const y = e.clientY - rect.top - rect.height / 2
       const strength = 0.18
       target.style.transform = `translate(${x * strength}px, ${y * strength}px)`
     }
-    const handleLeave = (event: MouseEvent) => {
-      const target = event.currentTarget as HTMLElement
-      target.style.transform = "translate(0, 0)"
+    const handleLeave = () => {
+      magneticButtons.forEach((btn) => {
+        btn.style.transform = "translate(0, 0)"
+      })
     }
 
     magneticButtons.forEach((button) => {
@@ -41,11 +43,12 @@ export default function Home() {
 
     const hero = document.querySelector(".hero") as HTMLElement | null
     const orbit = document.querySelector(".hero-orbit") as HTMLElement | null
-    const handleParallax = (event: MouseEvent) => {
+    const handleParallax = (event: Event) => {
+      const e = event as MouseEvent
       if (!hero || !orbit) return
       const rect = hero.getBoundingClientRect()
-      const x = (event.clientX - rect.left) / rect.width - 0.5
-      const y = (event.clientY - rect.top) / rect.height - 0.5
+      const x = (e.clientX - rect.left) / rect.width - 0.5
+      const y = (e.clientY - rect.top) / rect.height - 0.5
       orbit.style.transform = `translate(${x * 12}px, ${y * 16}px)`
     }
 
@@ -241,6 +244,7 @@ export default function Home() {
         .container {
           width: min(1100px, 90vw);
           margin: 0 auto;
+          padding: 0 16px;
         }
 
         .hero {
@@ -537,16 +541,129 @@ export default function Home() {
 
         @media (max-width: 768px) {
           .hero {
-            padding: 80px 0 56px;
+            padding: 56px 0 40px;
+          }
+
+          .hero-grid {
+            grid-template-columns: 1fr;
+            gap: 32px;
+          }
+
+          .hero-title {
+            font-size: 2.2rem;
+          }
+
+          .hero-subtitle {
+            font-size: 1.05rem;
+          }
+
+          .hero-description {
+            font-size: 0.95rem;
           }
 
           .cta-row {
             flex-direction: column;
-            align-items: flex-start;
+            align-items: stretch;
+          }
+
+          .cta {
+            text-align: center;
+            padding: 14px 20px;
           }
 
           .hero-visual {
             order: -1;
+          }
+
+          .voice-panel {
+            padding: 20px;
+            width: 100%;
+          }
+
+          .hero-orbit {
+            width: 180px;
+            height: 180px;
+          }
+
+          .features {
+            padding: 48px 0;
+          }
+
+          .feature-grid {
+            grid-template-columns: 1fr;
+            gap: 16px;
+          }
+
+          .feature-card {
+            padding: 22px;
+          }
+
+          .feature-icon {
+            font-size: 2rem;
+          }
+
+          .feature-card h3 {
+            font-size: 1.15rem;
+          }
+
+          .how {
+            padding: 48px 0 56px;
+          }
+
+          .how-header h2 {
+            font-size: 1.8rem;
+            margin-bottom: 32px;
+          }
+
+          .how-grid {
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+          }
+
+          .how-step {
+            padding: 18px 14px;
+          }
+
+          .step-badge {
+            width: 44px;
+            height: 44px;
+            font-size: 1.3rem;
+          }
+
+          .how-step h4 {
+            font-size: 0.95rem;
+          }
+
+          .how-step p {
+            font-size: 0.8rem;
+          }
+
+          .footer {
+            padding: 32px 0 40px;
+          }
+
+          .footer-inner {
+            font-size: 0.85rem;
+          }
+        }
+
+        @media (max-width: 420px) {
+          .container {
+            width: 100%;
+            padding: 0 16px;
+          }
+
+          .hero-title {
+            font-size: 1.8rem;
+          }
+
+          .how-grid {
+            grid-template-columns: 1fr;
+          }
+
+          .logo-wrap {
+            width: 56px;
+            height: 56px;
           }
         }
       `}</style>
