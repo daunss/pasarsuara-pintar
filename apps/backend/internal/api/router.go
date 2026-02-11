@@ -93,6 +93,11 @@ func NewRouter(orchestrator *agents.AgentOrchestrator, catalogHandler *CatalogHa
 			r.Post("/integrations/social-content/bulk", ih.HandleGenerateBulkSocialContent)
 		}
 
+		// Shopee Import endpoints
+		shopeeHandler := NewShopeeImportHandler(db)
+		r.Post("/shopee/search", shopeeHandler.HandleSearchShop)
+		r.Post("/shopee/import", shopeeHandler.HandleImportProducts)
+
 		// Intent/Agent test endpoint (for debugging)
 		r.Post("/intent/test", webhook.Handle)
 	})

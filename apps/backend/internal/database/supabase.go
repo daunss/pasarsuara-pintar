@@ -659,6 +659,19 @@ func (s *SupabaseClient) GetRecentTransactions(ctx context.Context, userID strin
 	return transactions, err
 }
 
+// CreateInventory inserts a new inventory item
+func (s *SupabaseClient) CreateInventory(ctx context.Context, item *Inventory) error {
+	var result []Inventory
+	err := s.request(ctx, "POST", "inventory", item, &result)
+	if err != nil {
+		return err
+	}
+	if len(result) > 0 {
+		*item = result[0]
+	}
+	return nil
+}
+
 // GetInventoryByUser gets all inventory items for a user
 func (s *SupabaseClient) GetInventoryByUser(ctx context.Context, userID string) ([]Inventory, error) {
 	var inventory []Inventory

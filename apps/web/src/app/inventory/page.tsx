@@ -6,6 +6,7 @@ import { ProtectedRoute } from '@/components/ProtectedRoute'
 import { supabase } from '@/lib/supabase'
 import { InventoryForm } from '@/components/inventory/InventoryForm'
 import { BulkImport } from '@/components/inventory/BulkImport'
+import { ShopeeImport } from '@/components/inventory/ShopeeImport'
 
 interface InventoryItem {
   id: string
@@ -29,6 +30,7 @@ function InventoryContent() {
   const [categoryFilter, setCategoryFilter] = useState<string>('ALL')
   const [showForm, setShowForm] = useState(false)
   const [showBulkImport, setShowBulkImport] = useState(false)
+  const [showShopeeImport, setShowShopeeImport] = useState(false)
   const [selectedItem, setSelectedItem] = useState<InventoryItem | null>(null)
   const [formMode, setFormMode] = useState<'create' | 'edit'>('create')
 
@@ -152,6 +154,12 @@ function InventoryContent() {
               <p className="text-gray-600">Kelola stok produk Anda</p>
             </div>
             <div className="flex gap-3">
+              <button
+                onClick={() => setShowShopeeImport(true)}
+                className="bg-orange-500 text-white px-4 py-2 rounded-lg font-semibold hover:bg-orange-600 transition flex items-center gap-1"
+              >
+                🛒 Import Shopee
+              </button>
               <button
                 onClick={() => setShowBulkImport(true)}
                 className="bg-white border-2 border-blue-600 text-blue-600 px-4 py-2 rounded-lg font-semibold hover:bg-blue-50 transition"
@@ -340,6 +348,16 @@ function InventoryContent() {
             fetchInventory()
           }}
           onClose={() => setShowBulkImport(false)}
+        />
+      )}
+
+      {/* Shopee Import Modal */}
+      {showShopeeImport && (
+        <ShopeeImport
+          onComplete={() => {
+            fetchInventory()
+          }}
+          onClose={() => setShowShopeeImport(false)}
         />
       )}
     </div>
