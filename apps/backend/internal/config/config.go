@@ -19,8 +19,14 @@ type Config struct {
 }
 
 func Load() *Config {
+	// Railway sets PORT, local dev uses BACKEND_PORT
+	port := getEnv("PORT", "")
+	if port == "" {
+		port = getEnv("BACKEND_PORT", "8080")
+	}
+
 	return &Config{
-		Port:                 getEnv("BACKEND_PORT", "8080"),
+		Port:                 port,
 		SupabaseURL:          getEnv("SUPABASE_URL", ""),
 		SupabaseKey:          getEnv("SUPABASE_SERVICE_ROLE_KEY", ""),
 		KolosalAPIKey:        getEnv("KOLOSAL_API_KEY", ""),
