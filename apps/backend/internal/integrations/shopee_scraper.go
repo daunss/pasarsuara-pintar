@@ -30,13 +30,13 @@ type ShopeeProduct struct {
 
 // ShopeeShopInfo represents basic shop information
 type ShopeeShopInfo struct {
-	ShopID       int64  `json:"shop_id"`
-	ShopName     string `json:"shop_name"`
-	ShopLocation string `json:"shop_location"`
-	ItemCount    int    `json:"item_count"`
-	FollowCount  int    `json:"follow_count"`
+	ShopID       int64   `json:"shop_id"`
+	ShopName     string  `json:"shop_name"`
+	ShopLocation string  `json:"shop_location"`
+	ItemCount    int     `json:"item_count"`
+	FollowCount  int     `json:"follow_count"`
 	RatingStar   float64 `json:"rating_star"`
-	Portrait     string `json:"portrait"`
+	Portrait     string  `json:"portrait"`
 }
 
 // ShopeeScraper handles scraping products from Shopee
@@ -70,16 +70,16 @@ type shopeeSearchShopResponse struct {
 type shopeeItemsResponse struct {
 	Items []struct {
 		ItemBasic struct {
-			ItemID    int64   `json:"itemid"`
-			ShopID    int64   `json:"shopid"`
-			Name      string  `json:"name"`
-			Image     string  `json:"image"`
-			Price     int64   `json:"price"`
-			PriceMin  int64   `json:"price_min"`
-			PriceMax  int64   `json:"price_max"`
-			Stock     int     `json:"stock"`
-			Sold      int     `json:"historical_sold"`
-			CatID     int64   `json:"catid"`
+			ItemID     int64   `json:"itemid"`
+			ShopID     int64   `json:"shopid"`
+			Name       string  `json:"name"`
+			Image      string  `json:"image"`
+			Price      int64   `json:"price"`
+			PriceMin   int64   `json:"price_min"`
+			PriceMax   int64   `json:"price_max"`
+			Stock      int     `json:"stock"`
+			Sold       int     `json:"historical_sold"`
+			CatID      int64   `json:"catid"`
 			RatingStar float64 `json:"item_rating"`
 		} `json:"item_basic"`
 	} `json:"items"`
@@ -89,7 +89,7 @@ type shopeeItemsResponse struct {
 
 // shopeeV4SearchResponse is the v4 API response
 type shopeeV4SearchResponse struct {
-	Error int    `json:"error"`
+	Error int `json:"error"`
 	Items []struct {
 		ItemBasic struct {
 			ItemID     int64  `json:"itemid"`
@@ -171,16 +171,16 @@ func (s *ShopeeScraper) getShopByUsername(ctx context.Context, username string) 
 
 	var result struct {
 		Data struct {
-			ShopID       int64   `json:"shopid"`
-			Name         string  `json:"name"`
-			Account      struct {
+			ShopID  int64  `json:"shopid"`
+			Name    string `json:"name"`
+			Account struct {
 				Username string `json:"username"`
 				Portrait string `json:"portrait"`
 			} `json:"account"`
-			ShopLocation string  `json:"shop_location"`
-			ItemCount    int     `json:"item_count"`
-			FollowerCount int   `json:"follower_count"`
-			RatingStar   float64 `json:"rating_star"`
+			ShopLocation  string  `json:"shop_location"`
+			ItemCount     int     `json:"item_count"`
+			FollowerCount int     `json:"follower_count"`
+			RatingStar    float64 `json:"rating_star"`
 		} `json:"data"`
 		Error int `json:"error"`
 	}

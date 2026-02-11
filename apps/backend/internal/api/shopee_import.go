@@ -75,10 +75,10 @@ func (h *ShopeeImportHandler) HandleSearchShop(w http.ResponseWriter, r *http.Re
 	preview, _ := h.scraper.GetShopProducts(r.Context(), shopInfo.ShopID, 5)
 
 	writeJSON(w, http.StatusOK, map[string]any{
-		"success":  true,
-		"shop":     shopInfo,
-		"preview":  preview,
-		"message":  fmt.Sprintf("Toko \"%s\" ditemukan dengan %d produk", shopInfo.ShopName, shopInfo.ItemCount),
+		"success": true,
+		"shop":    shopInfo,
+		"preview": preview,
+		"message": fmt.Sprintf("Toko \"%s\" ditemukan dengan %d produk", shopInfo.ShopName, shopInfo.ItemCount),
 	})
 }
 
