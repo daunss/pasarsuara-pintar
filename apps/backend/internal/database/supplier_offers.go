@@ -10,20 +10,20 @@ import (
 
 // SupplierOffer represents a supplier price offer for a product.
 type SupplierOffer struct {
-	ID           string  `json:"id,omitempty"`
-	OwnerUserID  string  `json:"owner_user_id"`
-	SupplierName string  `json:"supplier_name"`
-	SupplierPhone string `json:"supplier_phone"`
-	City         string  `json:"city,omitempty"`
-	ProductName  string  `json:"product_name"`
-	Unit         string  `json:"unit,omitempty"`
-	Price        float64 `json:"price"`
-	MinQty       float64 `json:"min_qty,omitempty"`
-	MaxQty       float64 `json:"max_qty,omitempty"`
-	StockQty     float64 `json:"stock_qty,omitempty"`
-	IsActive     bool    `json:"is_active"`
-	CreatedAt    string  `json:"created_at,omitempty"`
-	UpdatedAt    string  `json:"updated_at,omitempty"`
+	ID            string  `json:"id,omitempty"`
+	OwnerUserID   string  `json:"owner_user_id"`
+	SupplierName  string  `json:"supplier_name"`
+	SupplierPhone string  `json:"supplier_phone"`
+	City          string  `json:"city,omitempty"`
+	ProductName   string  `json:"product_name"`
+	Unit          string  `json:"unit,omitempty"`
+	Price         float64 `json:"price"`
+	MinQty        float64 `json:"min_qty,omitempty"`
+	MaxQty        float64 `json:"max_qty,omitempty"`
+	StockQty      float64 `json:"stock_qty,omitempty"`
+	IsActive      bool    `json:"is_active"`
+	CreatedAt     string  `json:"created_at,omitempty"`
+	UpdatedAt     string  `json:"updated_at,omitempty"`
 }
 
 // CreateSupplierOffer inserts a new supplier offer.

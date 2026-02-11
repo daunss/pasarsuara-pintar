@@ -277,14 +277,19 @@ func (s *SupplierNegotiationService) startWithNextSupplier(ctx context.Context, 
 	}
 
 	offer := session.Offers[session.CurrentIndex]
-	session.AwaitingSupplierPhone = normalizePhone(offer.SupplierPhone)
-	s.sessions[session.AwaitingSupplierPhone] = session
+	phoneForWA := normalizePhone(offer.SupplierPhone)
+	session.AwaitingSupplierPhone = phoneForWA
+	s.sessions[phoneForWA] = session
+
+	log.Printf("📞 Contacting supplier %s at %s (normalized: %s)", offer.SupplierName, offer.SupplierPhone, phoneForWA)
 
 	message := s.generateSupplierRequestMessage(ctx, session, offer)
-	if err := s.waSender.SendMessage(ctx, offer.SupplierPhone, message); err != nil {
+	if err := s.waSender.SendMessage(ctx, phoneForWA, message); err != nil {
+		log.Printf("❌ Failed to send WA to supplier %s (%s): %v", offer.SupplierName, phoneForWA, err)
 		return err
 	}
 
+	log.Printf("✅ Message sent to supplier %s at %s", offer.SupplierName, phoneForWA)
 	return nil
 }
 
@@ -643,6 +648,10 @@ func normalizePhone(phone string) string {
 	phone = strings.TrimPrefix(phone, "+")
 	phone = strings.ReplaceAll(phone, " ", "")
 	phone = strings.ReplaceAll(phone, "-", "")
+	// Convert local format 08xxx to international 628xxx
+	if strings.HasPrefix(phone, "0") {
+		phone = "62" + phone[1:]
+	}
 	return phone
 }
 

@@ -20,6 +20,11 @@ func parseJID(phone string) (types.JID, error) {
 	phone = strings.ReplaceAll(phone, "-", "")
 	phone = strings.ReplaceAll(phone, " ", "")
 
+	// Convert local format 08xxx to international 628xxx
+	if strings.HasPrefix(phone, "0") {
+		phone = "62" + phone[1:]
+	}
+
 	return types.NewJID(phone, types.DefaultUserServer), nil
 }
 
