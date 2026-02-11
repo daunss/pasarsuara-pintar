@@ -22,10 +22,11 @@ type MessageRouterInterface interface {
 
 // WebhookPayload matches the payload from WA Gateway
 type WebhookPayload struct {
-	Event   string         `json:"event"`
-	From    string         `json:"from"`
-	Type    string         `json:"type"`
-	Payload MessagePayload `json:"payload"`
+	Event     string         `json:"event"`
+	From      string         `json:"from"`
+	SenderJID string         `json:"sender_jid,omitempty"`
+	Type      string         `json:"type"`
+	Payload   MessagePayload `json:"payload"`
 }
 
 type MessagePayload struct {
@@ -64,12 +65,17 @@ func (w *WhatsAppWebhook) Handle(rw http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	log.Printf("📨 Webhook received: %s from %s", payload.Type, payload.From)
+	// Determine sender JID: use sender_jid if present, otherwise fall back to from
+	senderJID := payload.SenderJID
+	if senderJID == "" {
+		senderJID = payload.From
+	}
+	log.Printf("📨 Webhook received: %s from %s (JID: %s)", payload.Type, payload.From, senderJID)
 
 	var response WebhookResponse
 	response.Success = true
 
-	ctx := r.Context()
+	ctx := agents.WithSenderJID(r.Context(), senderJID)
 
 	switch payload.Type {
 	case "text":

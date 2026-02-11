@@ -16,10 +16,11 @@ import (
 
 // WebhookPayload is the payload sent to backend
 type WebhookPayload struct {
-	Event   string         `json:"event"`
-	From    string         `json:"from"`
-	Type    string         `json:"type"`
-	Payload MessagePayload `json:"payload"`
+	Event     string         `json:"event"`
+	From      string         `json:"from"`
+	SenderJID string         `json:"sender_jid,omitempty"`
+	Type      string         `json:"type"`
+	Payload   MessagePayload `json:"payload"`
 }
 
 type MessagePayload struct {
@@ -75,6 +76,7 @@ func (h *MessageHandler) Handle(evt *events.Message) {
 	var payload WebhookPayload
 	payload.Event = "message"
 	payload.From = sender
+	payload.SenderJID = senderJID.User
 
 	if whatsapp.IsAudioMessage(msg) {
 		// Audio/Voice message

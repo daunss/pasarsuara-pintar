@@ -11,6 +11,24 @@ import (
 	"github.com/pasarsuara/backend/internal/database"
 )
 
+// senderJIDKey is a context key for passing the raw WA sender JID
+type senderJIDKeyType struct{}
+
+var senderJIDKey = senderJIDKeyType{}
+
+// WithSenderJID attaches the raw WA sender JID to the context
+func WithSenderJID(ctx context.Context, jid string) context.Context {
+	return context.WithValue(ctx, senderJIDKey, jid)
+}
+
+// GetSenderJID retrieves the raw WA sender JID from context
+func GetSenderJID(ctx context.Context) string {
+	if v, ok := ctx.Value(senderJIDKey).(string); ok {
+		return v
+	}
+	return ""
+}
+
 // AgentOrchestrator coordinates all agents based on intent
 type AgentOrchestrator struct {
 	db            *database.SupabaseClient
@@ -497,28 +515,43 @@ func (o *AgentOrchestrator) getUserID(ctx context.Context, phone string) string 
 		return "11111111-1111-1111-1111-111111111111"
 	}
 
+	// Get the raw sender JID from context (may differ from phone for LID users)
+	senderJID := GetSenderJID(ctx)
+
 	// Try phone lookup first
 	user, err := o.db.GetUserByPhone(ctx, phone)
 	if err == nil && user != nil {
-		// If the sender identifier differs from stored phone, save it as WA sender ID
-		// so future LID-based messages can be matched
-		normalizedPhone := strings.ReplaceAll(strings.ReplaceAll(phone, "+", ""), " ", "")
-		storedPhone := strings.ReplaceAll(strings.ReplaceAll(user.Phone, "+", ""), " ", "")
-		if normalizedPhone != storedPhone {
-			go o.db.SaveWASenderID(context.Background(), user.ID, phone)
+		// Auto-save the WA sender JID so future LID-based lookups work
+		if senderJID != "" && senderJID != user.WASenderID {
+			go o.db.SaveWASenderID(context.Background(), user.ID, senderJID)
+			log.Printf("💾 Auto-saved WA sender JID %s for user %s", senderJID, user.ID)
 		}
 		log.Printf("✅ Matched phone %s to user %s (%s)", phone, user.ID, user.Email)
 		return user.ID
 	}
 
 	// Try WA sender ID lookup (for LID-based senders)
+	if senderJID != "" && senderJID != phone {
+		user, err = o.db.GetUserByWASenderID(ctx, senderJID)
+		if err == nil && user != nil {
+			log.Printf("✅ Matched WA sender JID %s to user %s (%s)", senderJID, user.ID, user.Email)
+			return user.ID
+		}
+	}
+
+	// Also try the phone value as WA sender ID
 	user, err = o.db.GetUserByWASenderID(ctx, phone)
 	if err == nil && user != nil {
+		// Auto-save the real sender JID if available
+		if senderJID != "" && senderJID != phone && senderJID != user.WASenderID {
+			go o.db.SaveWASenderID(context.Background(), user.ID, senderJID)
+			log.Printf("💾 Auto-saved WA sender JID %s for user %s", senderJID, user.ID)
+		}
 		log.Printf("✅ Matched WA sender ID %s to user %s (%s)", phone, user.ID, user.Email)
 		return user.ID
 	}
 
-	log.Printf("⚠️ User not found for phone/sender: %s (err=%v), using demo user ID", phone, err)
+	log.Printf("⚠️ User not found for phone/sender: %s (JID: %s, err=%v), using demo user ID", phone, senderJID, err)
 	return "11111111-1111-1111-1111-111111111111"
 }
 

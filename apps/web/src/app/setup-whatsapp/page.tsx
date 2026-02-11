@@ -76,6 +76,7 @@ export default function SetupWhatsAppPage() {
           id: user.id,
           email: userData.user?.email || '',
           phone_number: formattedPhone,
+          wa_sender_id: formattedPhone, // Will be auto-updated with real WA JID on first message
           name: userData.user?.user_metadata?.business_name || userData.user?.user_metadata?.full_name || '',
           role: 'umkm'
         }, { onConflict: 'id' })
