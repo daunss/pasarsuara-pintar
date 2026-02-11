@@ -69,6 +69,19 @@ BEGIN
   )
   ON CONFLICT DO NOTHING;
 
+  -- Auto-seed default supplier contact (Daun) for contacts page
+  INSERT INTO public.contacts (user_id, type, name, phone, is_active, rating, total_transactions)
+  VALUES (
+    NEW.id,
+    'SUPPLIER',
+    'Daun',
+    '089521914717',
+    true,
+    0,
+    0
+  )
+  ON CONFLICT DO NOTHING;
+
   RETURN NEW;
 END;
 $$;
