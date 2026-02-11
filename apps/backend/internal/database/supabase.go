@@ -118,12 +118,11 @@ type NegotiationLog struct {
 type User struct {
 	ID               string `json:"id,omitempty"`
 	Email            string `json:"email,omitempty"`
-	Phone            string `json:"phone,omitempty"`
+	Phone            string `json:"phone_number,omitempty"`
 	Name             string `json:"name,omitempty"`
 	City             string `json:"city,omitempty"`
 	Role             string `json:"role,omitempty"`
 	PreferredDialect string `json:"preferred_dialect,omitempty"`
-	PasswordHash     string `json:"password_hash,omitempty"`
 	CreatedAt        string `json:"created_at,omitempty"`
 }
 
@@ -196,11 +195,25 @@ func (s *SupabaseClient) GetUserByPhone(ctx context.Context, phone string) (*Use
 // Phone to user ID cache for quick lookups
 var phoneToUserCache = make(map[string]string)
 
-// RegisterPhoneMapping adds phone to user ID mapping
+// RegisterPhoneMapping adds phone to user ID mapping and persists to public.users
 // Call this after user registration
 func (s *SupabaseClient) RegisterPhoneMapping(phone, userID string) {
 	phoneToUserCache[phone] = userID
 	log.Printf("✅ Registered phone mapping: %s -> %s", phone, userID)
+
+	// Also upsert into public.users so GetUserByPhone can find this user
+	ctx := context.Background()
+	userData := map[string]string{
+		"id":           userID,
+		"phone_number": phone,
+		"role":         "umkm",
+	}
+	err := s.request(ctx, "POST", "users?on_conflict=id", userData, nil)
+	if err != nil {
+		log.Printf("⚠️ Failed to persist phone mapping to DB: %v", err)
+	} else {
+		log.Printf("✅ Phone mapping persisted to public.users: %s -> %s", phone, userID)
+	}
 }
 
 // GetInventoryByProduct finds inventory by product name for a user

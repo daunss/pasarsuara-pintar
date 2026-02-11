@@ -46,19 +46,38 @@ export default function RegisterPage() {
     }
 
     try {
+      // Format phone number: 08xxx → 628xxx
+      let formattedPhone = formData.phone.replace(/[^0-9]/g, '')
+      if (formattedPhone.startsWith('0')) {
+        formattedPhone = '62' + formattedPhone.substring(1)
+      } else if (!formattedPhone.startsWith('62')) {
+        formattedPhone = '62' + formattedPhone
+      }
+
       const { data, error } = await supabase.auth.signUp({
         email: formData.email,
         password: formData.password,
         options: {
           data: {
             business_name: formData.businessName,
-            phone: formData.phone,
+            phone: formattedPhone,
             role: 'umkm'
           }
         }
       })
 
       if (error) throw error
+
+      // Also insert into public.users so WA bot can find this user
+      if (data.user) {
+        await supabase.from('users').upsert({
+          id: data.user.id,
+          email: formData.email,
+          phone_number: formattedPhone,
+          name: formData.businessName,
+          role: 'umkm'
+        }, { onConflict: 'id' })
+      }
 
       setSuccess(true)
       

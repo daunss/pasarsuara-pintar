@@ -62,12 +62,24 @@ export default function SetupWhatsAppPage() {
     }
 
     try {
-      // Update user metadata only (no users table needed)
+      // Update user metadata
       const { error: authError } = await supabase.auth.updateUser({
         data: { phone: formattedPhone }
       })
 
       if (authError) throw authError
+
+      // Also upsert into public.users so WA bot can find this user
+      if (user) {
+        const { data: userData } = await supabase.auth.getUser()
+        await supabase.from('users').upsert({
+          id: user.id,
+          email: userData.user?.email || '',
+          phone_number: formattedPhone,
+          name: userData.user?.user_metadata?.business_name || userData.user?.user_metadata?.full_name || '',
+          role: 'umkm'
+        }, { onConflict: 'id' })
+      }
 
       // Redirect to dashboard
       router.push('/dashboard')
