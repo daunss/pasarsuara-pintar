@@ -14,7 +14,6 @@ export default function ContactsPage() {
   const [loading, setLoading] = useState(true)
   const [activeTab, setActiveTab] = useState<'SUPPLIER' | 'CUSTOMER'>('SUPPLIER')
   const [showAddForm, setShowAddForm] = useState(false)
-  const [didAutoCreateSupplier, setDidAutoCreateSupplier] = useState(false)
   const [formData, setFormData] = useState({
     name: '',
     phone: '',
@@ -49,28 +48,6 @@ export default function ContactsPage() {
         .order('name', { ascending: true })
 
       if (error) throw error
-
-      if (activeTab === 'SUPPLIER' && !didAutoCreateSupplier && (data?.length ?? 0) === 0) {
-        const metadata = user.user_metadata as Record<string, string>
-        const phone = metadata?.phone || '085179720499'
-        const name = metadata?.business_name || metadata?.name || 'Supplier'
-
-        const { error: insertError } = await supabase
-          .from('contacts')
-          .insert([{
-            user_id: user.id,
-            type: 'SUPPLIER',
-            name,
-            phone,
-            is_active: true
-          }])
-
-        if (!insertError) {
-          setDidAutoCreateSupplier(true)
-          return fetchContacts()
-        }
-        setDidAutoCreateSupplier(true)
-      }
 
       setContacts(data || [])
     } catch (error) {
@@ -171,12 +148,14 @@ export default function ContactsPage() {
           <h1 className="text-xl sm:text-3xl font-bold text-gray-800">
             {activeTab === 'SUPPLIER' ? '🏭 Supplier' : '👥 Pelanggan'}
           </h1>
-          <button
-            onClick={() => setShowAddForm(!showAddForm)}
-            className="bg-green-600 text-white px-4 sm:px-6 py-2 rounded-lg hover:bg-green-700 transition w-full sm:w-auto"
-          >
-            {showAddForm ? '✕ Batal' : `+ Tambah ${activeTab === 'SUPPLIER' ? 'Supplier' : 'Pelanggan'}`}
-          </button>
+          {activeTab === 'CUSTOMER' && (
+            <button
+              onClick={() => setShowAddForm(!showAddForm)}
+              className="bg-green-600 text-white px-4 sm:px-6 py-2 rounded-lg hover:bg-green-700 transition w-full sm:w-auto"
+            >
+              {showAddForm ? '✕ Batal' : '+ Tambah Pelanggan'}
+            </button>
+          )}
         </div>
 
         {/* Tabs */}
@@ -209,8 +188,8 @@ export default function ContactsPage() {
           </button>
         </div>
 
-        {/* Add Form */}
-        {showAddForm && (
+        {/* Add Form - Only for Customer tab */}
+        {showAddForm && activeTab === 'CUSTOMER' && (
           <Card className="mb-6">
             <CardHeader>
               <CardTitle>Tambah {activeTab === 'SUPPLIER' ? 'Supplier' : 'Pelanggan'} Baru</CardTitle>
@@ -304,7 +283,9 @@ export default function ContactsPage() {
                 {activeTab === 'SUPPLIER' ? '🏭 Belum ada supplier' : '👥 Belum ada pelanggan'}
               </p>
               <p className="text-gray-400">
-                Klik "Tambah {activeTab === 'SUPPLIER' ? 'Supplier' : 'Pelanggan'}" untuk mulai menambahkan kontak
+                {activeTab === 'SUPPLIER'
+                  ? 'Supplier ditambahkan oleh admin melalui database'
+                  : 'Klik "Tambah Pelanggan" untuk mulai menambahkan kontak'}
               </p>
             </CardContent>
           </Card>
@@ -315,12 +296,14 @@ export default function ContactsPage() {
                 <CardContent className="pt-6">
                   <div className="flex justify-between items-start mb-4">
                     <h3 className="font-bold text-lg">{contact.name}</h3>
-                    <button
-                      onClick={() => handleDelete(contact.id)}
-                      className="text-red-500 hover:text-red-700 text-sm"
-                    >
-                      🗑️
-                    </button>
+                    {activeTab === 'CUSTOMER' && (
+                      <button
+                        onClick={() => handleDelete(contact.id)}
+                        className="text-red-500 hover:text-red-700 text-sm"
+                      >
+                        🗑️
+                      </button>
+                    )}
                   </div>
                   
                   <div className="space-y-2 text-sm">

@@ -67,7 +67,7 @@ export default function DashboardPage() {
           .or(`buyer_id.eq.${user.id},seller_id.eq.${user.id}`)
           .order('created_at', { ascending: false })
           .limit(1)
-          .single()
+          .maybeSingle()
 
         if (!negError && negData) {
           setNegotiation(negData)

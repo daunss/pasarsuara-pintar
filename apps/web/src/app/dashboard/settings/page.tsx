@@ -36,7 +36,7 @@ function SettingsPageContent() {
         .from('user_preferences')
         .select('*')
         .eq('user_id', user.id)
-        .single()
+        .maybeSingle()
 
       if (error) throw error
 
@@ -66,7 +66,8 @@ function SettingsPageContent() {
     try {
       const { error } = await supabase
         .from('user_preferences')
-        .update({
+        .upsert({
+          user_id: user.id,
           language: formData.language,
           currency: formData.currency,
           timezone: formData.timezone,
@@ -75,8 +76,7 @@ function SettingsPageContent() {
           report_frequency: formData.report_frequency,
           theme: formData.theme,
           updated_at: new Date().toISOString()
-        })
-        .eq('user_id', user.id)
+        }, { onConflict: 'user_id' })
 
       if (error) throw error
 
