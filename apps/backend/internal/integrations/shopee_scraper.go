@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"math/rand"
 	"net/http"
 	"net/http/cookiejar"
 	"net/url"
@@ -43,6 +44,14 @@ type ShopeeShopInfo struct {
 	Portrait     string  `json:"portrait"`
 }
 
+// Bot/crawler user agents that Shopee serves SSR content to
+var ssrUserAgents = []string{
+	"Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)",
+	"Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko; compatible; Googlebot/2.1; +http://www.google.com/bot.html) Chrome/120.0.0.0 Safari/537.36",
+	"Mozilla/5.0 (Linux; Android 6.0.1; Nexus 5X Build/MMB29P) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Mobile Safari/537.36 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)",
+	"Mozilla/5.0 (compatible; Bingbot/2.0; +http://www.bing.com/bingbot.htm)",
+}
+
 // ShopeeScraper handles scraping products from Shopee
 type ShopeeScraper struct {
 	client *http.Client
@@ -57,6 +66,11 @@ func NewShopeeScraper() *ShopeeScraper {
 			Jar:     jar,
 		},
 	}
+}
+
+// randomSSRUserAgent picks a random crawler UA
+func randomSSRUserAgent() string {
+	return ssrUserAgents[rand.Intn(len(ssrUserAgents))]
 }
 
 // SearchShop searches for a shop by name and returns basic info
@@ -201,7 +215,9 @@ func (s *ShopeeScraper) GetShopProducts(ctx context.Context, shopID int64, limit
 		log.Printf("📦 Page %d: %d products (total: %d)", page, len(products), len(allProducts))
 
 		if page < maxPages-1 {
-			time.Sleep(500 * time.Millisecond)
+			// Random delay between 500ms-1.5s to avoid rate limiting
+			delay := 500 + rand.Intn(1000)
+			time.Sleep(time.Duration(delay) * time.Millisecond)
 		}
 	}
 
@@ -214,37 +230,84 @@ func (s *ShopeeScraper) GetShopProducts(ctx context.Context, shopID int64, limit
 }
 
 // scrapeShopPage scrapes a single page of products from the shop SSR page
+// Includes retry logic with UA rotation for cloud deployment resilience
 func (s *ShopeeScraper) scrapeShopPage(ctx context.Context, username string, shopID int64, page int) ([]ShopeeProduct, error) {
 	shopURL := fmt.Sprintf("https://shopee.co.id/%s?page=%d&sortBy=pop", url.PathEscape(username), page)
 
-	req, err := http.NewRequestWithContext(ctx, "GET", shopURL, nil)
-	if err != nil {
-		return nil, err
+	maxRetries := 3
+	var lastErr error
+
+	for attempt := 0; attempt < maxRetries; attempt++ {
+		if attempt > 0 {
+			// Exponential backoff: 1s, 2s, 4s
+			backoff := time.Duration(1<<uint(attempt-1)) * time.Second
+			log.Printf("🔄 Retry %d/%d after %v...", attempt, maxRetries-1, backoff)
+			time.Sleep(backoff)
+		}
+
+		req, err := http.NewRequestWithContext(ctx, "GET", shopURL, nil)
+		if err != nil {
+			return nil, err
+		}
+
+		// Rotate UA on retries for better resilience on cloud IPs
+		ua := ssrUserAgents[attempt%len(ssrUserAgents)]
+		req.Header.Set("User-Agent", ua)
+		req.Header.Set("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8")
+		req.Header.Set("Accept-Language", "id-ID,id;q=0.9,en;q=0.8")
+		req.Header.Set("Connection", "keep-alive")
+
+		resp, err := s.client.Do(req)
+		if err != nil {
+			lastErr = fmt.Errorf("request failed: %w", err)
+			continue
+		}
+
+		body, err := io.ReadAll(resp.Body)
+		resp.Body.Close()
+		if err != nil {
+			lastErr = fmt.Errorf("read body failed: %w", err)
+			continue
+		}
+
+		pageContent := string(body)
+		log.Printf("📡 Shop page %d fetched (status: %d, size: %d, attempt: %d)", page, resp.StatusCode, len(body), attempt+1)
+
+		if resp.StatusCode == 429 {
+			// Rate limited — wait longer
+			lastErr = fmt.Errorf("rate limited (429)")
+			time.Sleep(3 * time.Second)
+			continue
+		}
+
+		if resp.StatusCode == 403 {
+			// Blocked — try different UA
+			lastErr = fmt.Errorf("blocked (403)")
+			continue
+		}
+
+		if resp.StatusCode != 200 {
+			lastErr = fmt.Errorf("page returned status %d", resp.StatusCode)
+			continue
+		}
+
+		// Verify we got actual SSR content (not empty/blocked page)
+		if len(body) < 5000 {
+			lastErr = fmt.Errorf("response too small (%d bytes), likely blocked", len(body))
+			continue
+		}
+
+		products := s.parseProductCards(pageContent, shopID)
+		if len(products) == 0 && page == 0 {
+			// First page should have products — might be blocked, retry
+			lastErr = fmt.Errorf("no products found on page 0, possibly blocked")
+			continue
+		}
+
+		return products, nil
 	}
-	// Use Googlebot UA to get SSR content with product data
-	req.Header.Set("User-Agent", "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)")
-	req.Header.Set("Accept", "text/html,application/xhtml+xml")
-	req.Header.Set("Accept-Language", "id-ID,id;q=0.9")
 
-	resp, err := s.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("request failed: %w", err)
-	}
-	defer resp.Body.Close()
-
-	body, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return nil, fmt.Errorf("read body failed: %w", err)
-	}
-
-	pageContent := string(body)
-	log.Printf("📡 Shop page %d fetched (status: %d, size: %d)", page, resp.StatusCode, len(body))
-
-	if resp.StatusCode != 200 {
-		return nil, fmt.Errorf("page returned status %d", resp.StatusCode)
-	}
-
-	return s.parseProductCards(pageContent, shopID), nil
+	return nil, fmt.Errorf("scraping failed after %d attempts: %w", maxRetries, lastErr)
 }
 
 // Regex patterns for parsing product cards
