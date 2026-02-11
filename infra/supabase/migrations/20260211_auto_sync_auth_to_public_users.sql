@@ -53,6 +53,22 @@ BEGIN
     email = COALESCE(EXCLUDED.email, public.users.email),
     name = COALESCE(EXCLUDED.name, public.users.name);
 
+  -- Auto-seed default supplier offer (Daun - beras Rp 12.000)
+  INSERT INTO public.supplier_offers (owner_user_id, supplier_name, supplier_phone, product_name, unit, price, min_qty, max_qty, stock_qty, is_active)
+  VALUES (
+    NEW.id,
+    'Daun',
+    '089521914717',
+    'beras',
+    'kg',
+    12000,
+    1,
+    1000,
+    5000,
+    true
+  )
+  ON CONFLICT DO NOTHING;
+
   RETURN NEW;
 END;
 $$;
