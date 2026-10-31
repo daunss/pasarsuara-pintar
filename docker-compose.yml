@@ -43,6 +43,9 @@ services:
     build:
       context: ./apps/web
       dockerfile: Dockerfile
+      args:
+        - NEXT_PUBLIC_SUPABASE_URL=https://placeholder.supabase.co
+        - NEXT_PUBLIC_SUPABASE_ANON_KEY=placeholder-anon-key
     container_name: pasarsuara-web
     restart: unless-stopped
     ports:
