@@ -31,14 +31,15 @@ jobs:
             
             # 2. Sinkronisasi source code dari GitHub
             if [ ! -d "$TARGET_DIR/.git" ]; then
-              echo "📦 Cloning repository into $TARGET_DIR..."
-              git clone https://github.com/daunss/pasarsuara-pintar.git $TARGET_DIR
-            else
-              echo "🔄 Pulling latest changes from main branch..."
-              cd $TARGET_DIR
-              git fetch origin main
-              git reset --hard origin/main
+              echo "📦 Initializing git repository in $TARGET_DIR..."
+              git -C $TARGET_DIR init
+              git -C $TARGET_DIR remote add origin https://github.com/daunss/pasarsuara-pintar.git 2>/dev/null || git -C $TARGET_DIR remote set-url origin https://github.com/daunss/pasarsuara-pintar.git
             fi
+
+            cd $TARGET_DIR
+            echo "🔄 Pulling latest changes from main branch..."
+            git fetch origin main
+            git reset --hard origin/main
 
             cd $TARGET_DIR
 
