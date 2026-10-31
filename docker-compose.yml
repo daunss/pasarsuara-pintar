@@ -1,0 +1,59 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: ./apps/backend
+      dockerfile: Dockerfile
+    container_name: pasarsuara-backend
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    environment:
+      - PORT=8080
+      - BACKEND_PORT=8080
+      - WA_GATEWAY_URL=http://wa-gateway:8081
+    env_file:
+      - .env
+    networks:
+      - pasarsuara-net
+
+  wa-gateway:
+    build:
+      context: ./apps/wa-gateway
+      dockerfile: Dockerfile
+    container_name: pasarsuara-wa-gateway
+    restart: unless-stopped
+    ports:
+      - "8081:8081"
+    environment:
+      - WA_GATEWAY_PORT=8081
+      - WA_SESSION_PATH=/app/session
+      - BACKEND_URL=http://backend:8080
+    volumes:
+      - ./data/wa-session:/app/session
+    env_file:
+      - .env
+    depends_on:
+      - backend
+    networks:
+      - pasarsuara-net
+
+  web:
+    build:
+      context: ./apps/web
+      dockerfile: Dockerfile
+    container_name: pasarsuara-web
+    restart: unless-stopped
+    ports:
+      - "3002:3000"
+    env_file:
+      - .env
+    depends_on:
+      - backend
+    networks:
+      - pasarsuara-net
+
+networks:
+  pasarsuara-net:
+    driver: bridge

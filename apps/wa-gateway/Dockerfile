@@ -31,7 +31,7 @@ COPY --from=builder /app/wa-gateway .
 RUN mkdir -p /app/session
 
 # Expose port
-EXPOSE 8080
+EXPOSE 8081
 
 # Run the application
 CMD ["./wa-gateway"]

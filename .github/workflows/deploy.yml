@@ -1,0 +1,64 @@
+name: CD - Deploy to VPS
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    name: Deploy PasarSuara Pintar to VPS
+    runs-on: ubuntu-latest
+    steps:
+      - name: Executing remote deployment via SSH
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          port: ${{ secrets.VPS_PORT }}
+          username: ${{ secrets.VPS_USER }}
+          password: ${{ secrets.VPS_PASS }}
+          script_stop: true
+          command_timeout: 30m
+          script: |
+            echo "=========================================="
+            echo "🚀 Starting PasarSuara Pintar Deployment"
+            echo "=========================================="
+            
+            TARGET_DIR="/opt/pasarsuara-pintar"
+            
+            # 1. Pastikan direktori target dan direktori sesi WA tersedia
+            mkdir -p $TARGET_DIR/data/wa-session
+            
+            # 2. Sinkronisasi source code dari GitHub
+            if [ ! -d "$TARGET_DIR/.git" ]; then
+              echo "📦 Cloning repository into $TARGET_DIR..."
+              git clone https://github.com/daunss/pasarsuara-pintar.git $TARGET_DIR
+            else
+              echo "🔄 Pulling latest changes from main branch..."
+              cd $TARGET_DIR
+              git fetch origin main
+              git reset --hard origin/main
+            fi
+
+            cd $TARGET_DIR
+
+            # 3. Setup file konfigurasi .env
+            if [ ! -f .env ]; then
+              echo "⚠️ File .env belum ada. Menggunakan template .env.example..."
+              cp .env.example .env
+            fi
+
+            # 4. Build dan restart Docker containers
+            echo "🐳 Building & starting containers..."
+            /usr/local/bin/docker-compose down --remove-orphans || true
+            /usr/local/bin/docker-compose up -d --build
+
+            # 5. Bersihkan dangling image untuk hemat ruang disk VPS
+            echo "🧹 Cleaning up dangling images..."
+            docker image prune -f
+
+            # 6. Status akhir container
+            echo "=========================================="
+            echo "✅ Deployment Selesai! Status Container:"
+            echo "=========================================="
+            /usr/local/bin/docker-compose ps
