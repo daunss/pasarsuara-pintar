@@ -14,7 +14,9 @@ type Message = {
 }
 
 export function NegotiationChat({ negotiation }: NegotiationChatProps) {
-  const messages: Message[] = negotiation.transcript?.messages || []
+  const messages: Message[] = Array.isArray(negotiation.transcript)
+    ? negotiation.transcript
+    : (negotiation.transcript?.messages || [])
 
   const formatCurrency = (amount: number | null) => {
     if (!amount) return 'Rp 0'

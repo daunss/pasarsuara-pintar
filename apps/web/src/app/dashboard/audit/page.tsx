@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { supabase, type AuditLog } from '@/lib/supabase'
+import { useAuth } from '@/lib/auth'
 import Link from 'next/link'
 import { Logo } from '@/components/ui/logo'
 import {
@@ -17,23 +18,24 @@ import {
 } from 'lucide-react'
 
 export default function AuditPage() {
+  const { user } = useAuth()
   const [logs, setLogs] = useState<AuditLog[]>([])
   const [loading, setLoading] = useState(true)
   const [filterAction, setFilterAction] = useState<string>('ALL')
   const [expandedLog, setExpandedLog] = useState<string | null>(null)
 
-  const demoUserId = '11111111-1111-1111-1111-111111111111'
+  const targetUserId = user?.id || '11111111-1111-1111-1111-111111111111'
 
   useEffect(() => {
     fetchLogs()
-  }, [])
+  }, [user])
 
   const fetchLogs = async () => {
     try {
       const { data, error } = await supabase
         .from('audit_logs')
         .select('*')
-        .eq('user_id', demoUserId)
+        .eq('user_id', targetUserId)
         .order('created_at', { ascending: false })
         .limit(100)
 

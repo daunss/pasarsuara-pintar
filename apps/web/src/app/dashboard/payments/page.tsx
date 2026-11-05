@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { supabase, type Payment, type Transaction } from '@/lib/supabase'
+import { useAuth } from '@/lib/auth'
 import Link from 'next/link'
 import { Logo } from '@/components/ui/logo'
 import { CreditCard, Banknote, Building2, Smartphone, Wallet, ArrowLeft } from 'lucide-react'
@@ -12,15 +13,16 @@ type PaymentWithTransaction = Payment & {
 }
 
 export default function PaymentsPage() {
+  const { user } = useAuth()
   const [payments, setPayments] = useState<PaymentWithTransaction[]>([])
   const [loading, setLoading] = useState(true)
   const [filterStatus, setFilterStatus] = useState<string>('ALL')
 
-  const demoUserId = '11111111-1111-1111-1111-111111111111'
+  const targetUserId = user?.id || '11111111-1111-1111-1111-111111111111'
 
   useEffect(() => {
     fetchPayments()
-  }, [])
+  }, [user])
 
   const fetchPayments = async () => {
     try {
@@ -28,7 +30,7 @@ export default function PaymentsPage() {
       const { data: transactions, error: txError } = await supabase
         .from('transactions')
         .select('id')
-        .eq('user_id', demoUserId)
+        .eq('user_id', targetUserId)
 
       if (txError) throw txError
 
