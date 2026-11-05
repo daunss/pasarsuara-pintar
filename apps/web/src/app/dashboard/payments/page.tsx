@@ -26,34 +26,10 @@ export default function PaymentsPage() {
 
   const fetchPayments = async () => {
     try {
-      // First get all transactions for this user
-      const { data: transactions, error: txError } = await supabase
-        .from('transactions')
-        .select('id')
-        .eq('user_id', targetUserId)
-
-      if (txError) throw txError
-
-      const transactionIds = transactions?.map(t => t.id) || []
-
-      if (transactionIds.length === 0) {
-        setPayments([])
-        setLoading(false)
-        return
-      }
-
-      // Then get payments for those transactions
-      const { data: paymentsData, error: payError } = await supabase
-        .from('payments')
-        .select(`
-          *,
-          transaction:transactions(*)
-        `)
-        .in('transaction_id', transactionIds)
-        .order('created_at', { ascending: false })
-
-      if (payError) throw payError
-      setPayments(paymentsData || [])
+      const res = await fetch(`/api/payments?userId=${targetUserId}`)
+      const data = await res.json()
+      if (data.error) throw new Error(data.error)
+      setPayments(data.payments || [])
     } catch (error) {
       console.error('Error fetching payments:', error)
     } finally {
