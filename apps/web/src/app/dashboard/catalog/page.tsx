@@ -33,15 +33,10 @@ function CatalogPageContent() {
 
   const fetchProducts = async () => {
     try {
-      const { data, error } = await supabase
-        .from('product_catalog')
-        .select('*')
-        .eq('user_id', userId)
-        .eq('is_active', true)
-        .order('product_name', { ascending: true })
-
-      if (error) throw error
-      setProducts(data || [])
+      const res = await fetch(`/api/catalog?userId=${userId}`)
+      const data = await res.json()
+      if (data.error) throw new Error(data.error)
+      setProducts(data.products || [])
     } catch (error) {
       console.error('Error fetching products:', error)
     } finally {
