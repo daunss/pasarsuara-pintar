@@ -4,6 +4,8 @@ import { useState, useEffect } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { supabase, type Payment, type Transaction } from '@/lib/supabase'
 import Link from 'next/link'
+import { Logo } from '@/components/ui/logo'
+import { CreditCard, Banknote, Building2, Smartphone, Wallet, ArrowLeft } from 'lucide-react'
 
 type PaymentWithTransaction = Payment & {
   transaction?: Transaction
@@ -88,14 +90,19 @@ export default function PaymentsPage() {
   }
 
   const getPaymentMethodIcon = (method: string | null) => {
-    const icons = {
-      CASH: '💵',
-      TRANSFER: '🏦',
-      CREDIT: '💳',
-      DEBIT: '💳',
-      EWALLET: '📱'
+    switch (method) {
+      case 'CASH':
+        return <Banknote size={15} className="text-forest shrink-0" />
+      case 'TRANSFER':
+        return <Building2 size={15} className="text-terra shrink-0" />
+      case 'CREDIT':
+      case 'DEBIT':
+        return <CreditCard size={15} className="text-blue-600 shrink-0" />
+      case 'EWALLET':
+        return <Smartphone size={15} className="text-purple-600 shrink-0" />
+      default:
+        return <Wallet size={15} className="text-muted shrink-0" />
     }
-    return icons[method as keyof typeof icons] || '💰'
   }
 
   const filteredPayments = filterStatus === 'ALL' 
@@ -118,14 +125,14 @@ export default function PaymentsPage() {
         <div className="max-w-7xl mx-auto px-4 py-4">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
             <div className="flex items-center gap-4">
-              <Link href="/dashboard" className="text-xl sm:text-2xl font-bold font-display text-forest">
-                🗣️ Suara Niaga
+              <Link href="/dashboard" className="flex items-center">
+                <Logo size="sm" />
               </Link>
               <span className="text-muted/70 hidden sm:inline">|</span>
               <span className="text-muted hidden sm:inline">Riwayat Pembayaran</span>
             </div>
-            <Link href="/dashboard" className="text-sm text-terra hover:text-terra-dark transition">
-              ← Kembali ke Dashboard
+            <Link href="/dashboard" className="text-sm text-terra hover:text-terra-dark transition flex items-center gap-1">
+              <ArrowLeft size={14} /> Kembali ke Dashboard
             </Link>
           </div>
         </div>
@@ -133,7 +140,9 @@ export default function PaymentsPage() {
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 py-4 sm:py-8">
-        <h1 className="text-xl sm:text-3xl font-bold font-display text-charcoal mb-6">💳 Riwayat Pembayaran</h1>
+        <h1 className="text-xl sm:text-3xl font-bold font-display text-charcoal mb-6 flex items-center gap-2">
+          <CreditCard className="text-forest" size={26} /> Riwayat Pembayaran
+        </h1>
 
         {/* Summary Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
@@ -183,8 +192,11 @@ export default function PaymentsPage() {
         ) : filteredPayments.length === 0 ? (
           <Card>
             <CardContent className="py-12 text-center">
-              <p className="text-muted text-lg mb-4">💳 Belum ada riwayat pembayaran</p>
-              <p className="text-muted/70">Pembayaran akan muncul di sini setelah transaksi dicatat</p>
+              <div className="w-16 h-16 rounded-2xl bg-forest/10 flex items-center justify-center text-forest mx-auto mb-4">
+                <CreditCard size={32} />
+              </div>
+              <p className="text-charcoal font-semibold text-lg mb-2">Belum ada riwayat pembayaran</p>
+              <p className="text-muted/70 text-sm">Pembayaran akan muncul di sini setelah transaksi dicatat</p>
             </CardContent>
           </Card>
         ) : (

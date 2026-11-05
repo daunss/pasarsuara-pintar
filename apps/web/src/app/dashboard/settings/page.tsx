@@ -6,6 +6,8 @@ import { supabase, type UserPreferences } from '@/lib/supabase'
 import { useAuth } from '@/lib/auth'
 import { ProtectedRoute } from '@/components/ProtectedRoute'
 import Link from 'next/link'
+import { Logo } from '@/components/ui/logo'
+import { Settings, User, ArrowLeft } from 'lucide-react'
 
 function SettingsPageContent() {
   const { user, signOut } = useAuth()
@@ -102,14 +104,14 @@ function SettingsPageContent() {
         <div className="max-w-7xl mx-auto px-4 py-4">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
             <div className="flex items-center gap-4">
-              <Link href="/dashboard" className="text-xl sm:text-2xl font-bold font-display text-forest">
-                🗣️ Suara Niaga
+              <Link href="/dashboard" className="flex items-center">
+                <Logo size="sm" />
               </Link>
               <span className="text-muted/70 hidden sm:inline">|</span>
               <span className="text-muted hidden sm:inline">Pengaturan</span>
             </div>
-            <Link href="/dashboard" className="text-sm text-terra hover:text-terra-dark transition">
-              ← Kembali ke Dashboard
+            <Link href="/dashboard" className="text-sm text-terra hover:text-terra-dark transition flex items-center gap-1">
+              <ArrowLeft size={14} /> Kembali ke Dashboard
             </Link>
           </div>
         </div>
@@ -117,7 +119,9 @@ function SettingsPageContent() {
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 py-4 sm:py-8">
-        <h1 className="text-xl sm:text-3xl font-bold font-display text-charcoal mb-6">⚙️ Pengaturan</h1>
+        <h1 className="text-xl sm:text-3xl font-bold font-display text-charcoal mb-6 flex items-center gap-2">
+          <Settings className="text-forest" size={26} /> Pengaturan
+        </h1>
 
         {loading ? (
           <div className="text-center py-12">
@@ -133,8 +137,8 @@ function SettingsPageContent() {
               </CardHeader>
               <CardContent>
                 <div className="text-center mb-4">
-                  <div className="w-20 h-20 bg-forest/10 rounded-full flex items-center justify-center mx-auto mb-3">
-                    <span className="text-3xl">👤</span>
+                  <div className="w-20 h-20 bg-forest/10 rounded-full flex items-center justify-center mx-auto mb-3 text-forest">
+                    <User size={36} />
                   </div>
                   <h3 className="font-semibold text-lg">{user?.user_metadata?.name || 'User'}</h3>
                   <p className="text-sm text-muted">{user?.email}</p>

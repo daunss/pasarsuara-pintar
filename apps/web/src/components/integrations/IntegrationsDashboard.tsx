@@ -9,7 +9,22 @@ import { Badge } from '@/components/ui/badge'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Label } from '@/components/ui/label'
 import { Select } from '@/components/ui/select'
-import { FileSpreadsheet, Send, Sparkles, Copy, CheckCircle } from 'lucide-react'
+import {
+  FileSpreadsheet,
+  Send,
+  Sparkles,
+  Copy,
+  CheckCircle,
+  CheckCircle2,
+  Instagram,
+  Facebook,
+  Twitter,
+  Music,
+  Link2,
+  Radio,
+  BarChart3,
+  Loader2,
+} from 'lucide-react'
 
 interface SocialContent {
   platform: string
@@ -102,10 +117,10 @@ export default function IntegrationsDashboard({ userID }: { userID: string }) {
         throw new Error(`Request failed (status ${response.status})`)
       }
       const data = await readJson(response)
-      alert(`✅ Export berhasil! File: ${data.file_name}\nTotal: ${data.record_count} records`)
+      alert(`Export berhasil! File: ${data.file_name}\nTotal: ${data.record_count} records`)
     } catch (error) {
       console.error('Error exporting:', error)
-      alert('❌ Export gagal')
+      alert('Export gagal')
     }
     setExportLoading(false)
   }
@@ -134,27 +149,43 @@ export default function IntegrationsDashboard({ userID }: { userID: string }) {
     setLoading(false)
   }
 
-  const platformIcons: Record<string, string> = {
-    instagram: '📸',
-    facebook: '👥',
-    twitter: '🐦',
-    tiktok: '🎵'
+  const renderPlatformIcon = (plat: string) => {
+    switch (plat) {
+      case 'instagram':
+        return <Instagram className="h-5 w-5 text-pink-600" />
+      case 'facebook':
+        return <Facebook className="h-5 w-5 text-blue-600" />
+      case 'twitter':
+        return <Twitter className="h-5 w-5 text-sky-500" />
+      case 'tiktok':
+        return <Music className="h-5 w-5 text-gray-900" />
+      default:
+        return <Sparkles className="h-5 w-5 text-purple-600" />
+    }
   }
 
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-3xl font-bold tracking-tight">🔗 Multi-Channel Integration</h2>
+          <h2 className="text-3xl font-bold tracking-tight flex items-center gap-2">
+            <Link2 className="h-8 w-8 text-forest" /> Multi-Channel Integration
+          </h2>
           <p className="text-muted-foreground">Export data, broadcast messages, and generate social content</p>
         </div>
       </div>
 
       <Tabs defaultValue="social" className="space-y-4">
         <TabsList>
-          <TabsTrigger value="social">✨ Social Media</TabsTrigger>
-          <TabsTrigger value="broadcast">📢 WhatsApp Broadcast</TabsTrigger>
-          <TabsTrigger value="export">📊 Export Data</TabsTrigger>
+          <TabsTrigger value="social" className="flex items-center gap-1.5">
+            <Sparkles className="h-4 w-4" /> Social Media
+          </TabsTrigger>
+          <TabsTrigger value="broadcast" className="flex items-center gap-1.5">
+            <Radio className="h-4 w-4" /> WhatsApp Broadcast
+          </TabsTrigger>
+          <TabsTrigger value="export" className="flex items-center gap-1.5">
+            <BarChart3 className="h-4 w-4" /> Export Data
+          </TabsTrigger>
         </TabsList>
 
         <TabsContent value="social" className="space-y-4">
@@ -208,10 +239,10 @@ export default function IntegrationsDashboard({ userID }: { userID: string }) {
 
               <div className="flex gap-2">
                 <Select value={platform} onChange={(e) => setPlatform(e.target.value)} className="w-48">
-                  <option value="instagram">📸 Instagram</option>
-                  <option value="facebook">👥 Facebook</option>
-                  <option value="twitter">🐦 Twitter</option>
-                  <option value="tiktok">🎵 TikTok</option>
+                  <option value="instagram">Instagram</option>
+                  <option value="facebook">Facebook</option>
+                  <option value="twitter">Twitter</option>
+                  <option value="tiktok">TikTok</option>
                 </Select>
                 <Button onClick={() => generateSocialContent(false)} disabled={loading}>
                   {loading ? 'Generating...' : 'Generate Single'}
@@ -228,7 +259,7 @@ export default function IntegrationsDashboard({ userID }: { userID: string }) {
                       <CardHeader>
                         <CardTitle className="flex items-center justify-between">
                           <span className="flex items-center gap-2">
-                            <span className="text-2xl">{platformIcons[plat]}</span>
+                            {renderPlatformIcon(plat)}
                             {plat.charAt(0).toUpperCase() + plat.slice(1)}
                           </span>
                           <Button
@@ -306,8 +337,10 @@ export default function IntegrationsDashboard({ userID }: { userID: string }) {
               </Button>
 
               {broadcastResult && (
-                <div className="p-4 bg-green-50 rounded-lg">
-                  <h4 className="font-semibold mb-2">✅ Broadcast Sent!</h4>
+                <div className="p-4 bg-green-50 rounded-lg border border-green-200">
+                  <h4 className="font-semibold mb-2 flex items-center gap-2 text-green-800">
+                    <CheckCircle2 className="h-5 w-5 text-green-600" /> Broadcast Sent!
+                  </h4>
                   <p className="text-sm">Total Sent: {broadcastResult.total_sent}</p>
                   <p className="text-sm">Total Failed: {broadcastResult.total_failed}</p>
                   <p className="text-sm">Status: {broadcastResult.status}</p>
@@ -362,8 +395,9 @@ export default function IntegrationsDashboard({ userID }: { userID: string }) {
               </div>
 
               {exportLoading && (
-                <div className="p-4 bg-blue-50 rounded-lg text-center">
-                  <p className="text-sm">⏳ Generating Excel file...</p>
+                <div className="p-4 bg-blue-50 rounded-lg text-center flex items-center justify-center gap-2">
+                  <Loader2 className="h-4 w-4 animate-spin text-blue-600" />
+                  <p className="text-sm text-blue-800">Generating Excel file...</p>
                 </div>
               )}
             </CardContent>

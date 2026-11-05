@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from 'recharts'
 import { supabase } from '@/lib/supabase'
 import { useAuth } from '@/lib/auth'
+import { Target } from 'lucide-react'
 
 interface CategoryData {
   name: string
@@ -87,7 +88,9 @@ export function CategoryBreakdownChart({ dateRange }: CategoryBreakdownChartProp
     return (
       <div className="h-64 flex items-center justify-center text-gray-500">
         <div className="text-center">
-          <div className="text-4xl mb-2">🎯</div>
+          <div className="w-12 h-12 rounded-xl bg-gray-100 flex items-center justify-center text-gray-400 mx-auto mb-2">
+            <Target size={24} />
+          </div>
           <p>Tidak ada data kategori</p>
         </div>
       </div>

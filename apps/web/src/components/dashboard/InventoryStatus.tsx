@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { supabase } from '@/lib/supabase'
 import { useAuth } from '@/lib/auth'
 import Link from 'next/link'
+import { AlertTriangle, XCircle, ArrowRight, Package } from 'lucide-react'
 
 interface InventoryItem {
   id: string
@@ -62,9 +63,9 @@ export function InventoryStatus({ lowStockThreshold = 10 }: { lowStockThreshold?
         <h3 className="text-lg font-semibold">Status Inventori</h3>
         <Link
           href="/inventory"
-          className="text-sm text-green-600 hover:text-green-700 font-medium"
+          className="text-sm text-green-600 hover:text-green-700 font-medium inline-flex items-center gap-1"
         >
-          Kelola →
+          Kelola <ArrowRight size={14} />
         </Link>
       </div>
 
@@ -88,7 +89,9 @@ export function InventoryStatus({ lowStockThreshold = 10 }: { lowStockThreshold?
         {/* Low Stock Alerts */}
         {lowStockItems.length > 0 && (
           <div className="border-t pt-4">
-            <h4 className="text-sm font-medium text-gray-700 mb-2">⚠️ Perlu Restock</h4>
+            <h4 className="text-sm font-medium text-gray-700 mb-2 flex items-center gap-1.5">
+              <AlertTriangle size={15} className="text-yellow-600" /> Perlu Restock
+            </h4>
             <div className="space-y-2">
               {lowStockItems.slice(0, 3).map((item) => (
                 <div key={item.id} className="flex items-center justify-between text-sm">
@@ -113,7 +116,9 @@ export function InventoryStatus({ lowStockThreshold = 10 }: { lowStockThreshold?
         {/* Out of Stock Alerts */}
         {outOfStockItems.length > 0 && (
           <div className="border-t pt-4">
-            <h4 className="text-sm font-medium text-gray-700 mb-2">🚫 Stok Habis</h4>
+            <h4 className="text-sm font-medium text-gray-700 mb-2 flex items-center gap-1.5">
+              <XCircle size={15} className="text-red-600" /> Stok Habis
+            </h4>
             <div className="space-y-2">
               {outOfStockItems.slice(0, 3).map((item) => (
                 <div key={item.id} className="flex items-center justify-between text-sm">
@@ -135,7 +140,9 @@ export function InventoryStatus({ lowStockThreshold = 10 }: { lowStockThreshold?
 
         {totalProducts === 0 && (
           <div className="text-center py-4 text-gray-500">
-            <div className="text-3xl mb-2">📦</div>
+            <div className="w-12 h-12 rounded-2xl bg-gray-100 text-gray-400 mx-auto mb-2 flex items-center justify-center">
+              <Package size={22} />
+            </div>
             <p className="text-sm">Belum ada produk di inventori</p>
             <Link
               href="/inventory"

@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 import Link from 'next/link'
 import { Logo } from '@/components/ui/logo'
+import { CheckCircle2 } from 'lucide-react'
 
 export default function RegisterPage() {
   const router = useRouter()
@@ -46,7 +47,7 @@ export default function RegisterPage() {
     }
 
     try {
-      // Format phone number: 08xxx → 628xxx
+      // Format phone number: 08xxx -> 628xxx
       let formattedPhone = formData.phone.replace(/[^0-9]/g, '')
       if (formattedPhone.startsWith('0')) {
         formattedPhone = '62' + formattedPhone.substring(1)
@@ -117,7 +118,9 @@ export default function RegisterPage() {
     return (
       <div className="page-bg flex items-center justify-center p-4">
         <div className="max-w-md w-full card-warm p-8 text-center">
-          <div className="text-6xl mb-4">✅</div>
+          <div className="w-16 h-16 rounded-full bg-forest/10 flex items-center justify-center text-forest mx-auto mb-4">
+            <CheckCircle2 size={36} />
+          </div>
           <h2 className="text-2xl font-display font-bold text-charcoal mb-4">Registrasi Berhasil!</h2>
           <p className="text-muted mb-6">
             Silakan cek email Anda untuk verifikasi akun.

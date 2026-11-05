@@ -4,6 +4,17 @@ import { useState, useEffect } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { supabase, type AuditLog } from '@/lib/supabase'
 import Link from 'next/link'
+import { Logo } from '@/components/ui/logo'
+import {
+  ScrollText,
+  PlusCircle,
+  Edit3,
+  Trash2,
+  FileText,
+  RefreshCw,
+  Info,
+  ArrowLeft,
+} from 'lucide-react'
 
 export default function AuditPage() {
   const [logs, setLogs] = useState<AuditLog[]>([])
@@ -48,10 +59,10 @@ export default function AuditPage() {
   }
 
   const getActionIcon = (action: string) => {
-    if (action.includes('CREATE')) return '➕'
-    if (action.includes('UPDATE')) return '✏️'
-    if (action.includes('DELETE')) return '🗑️'
-    return '📝'
+    if (action.includes('CREATE')) return <PlusCircle size={18} className="text-forest shrink-0" />
+    if (action.includes('UPDATE')) return <Edit3 size={18} className="text-terra shrink-0" />
+    if (action.includes('DELETE')) return <Trash2 size={18} className="text-red-600 shrink-0" />
+    return <FileText size={18} className="text-muted shrink-0" />
   }
 
   const getActionColor = (action: string) => {
@@ -78,14 +89,14 @@ export default function AuditPage() {
         <div className="max-w-7xl mx-auto px-4 py-4">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
             <div className="flex items-center gap-4">
-              <Link href="/dashboard" className="text-xl sm:text-2xl font-bold font-display text-forest">
-                🗣️ Suara Niaga
+              <Link href="/dashboard" className="flex items-center">
+                <Logo size="sm" />
               </Link>
               <span className="text-muted/70 hidden sm:inline">|</span>
               <span className="text-muted hidden sm:inline">Audit Log</span>
             </div>
-            <Link href="/dashboard" className="text-sm text-terra hover:text-terra-dark transition">
-              ← Kembali ke Dashboard
+            <Link href="/dashboard" className="text-sm text-terra hover:text-terra-dark transition flex items-center gap-1">
+              <ArrowLeft size={14} /> Kembali ke Dashboard
             </Link>
           </div>
         </div>
@@ -94,21 +105,26 @@ export default function AuditPage() {
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 py-4 sm:py-8">
         <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 mb-6">
-          <h1 className="text-xl sm:text-3xl font-bold font-display text-charcoal">📜 Audit Log</h1>
+          <h1 className="text-xl sm:text-3xl font-bold font-display text-charcoal flex items-center gap-2">
+            <ScrollText className="text-forest" size={26} /> Audit Log
+          </h1>
           <button
             onClick={fetchLogs}
-            className="bg-forest text-white px-4 py-2 rounded-2xl hover:bg-forest-dark transition w-full sm:w-auto"
+            className="bg-forest text-white px-4 py-2 rounded-2xl hover:bg-forest-dark transition w-full sm:w-auto flex items-center justify-center gap-2"
           >
-            🔄 Refresh
+            <RefreshCw size={16} /> Refresh
           </button>
         </div>
 
         {/* Info Card */}
         <Card className="mb-6 bg-terra/5 border-terra/20">
           <CardContent className="pt-6">
-            <p className="text-sm text-charcoal">
-              <strong>ℹ️ Audit Log</strong> mencatat semua aktivitas penting dalam sistem untuk keamanan dan compliance.
-              Semua perubahan data tercatat dengan timestamp dan detail lengkap.
+            <p className="text-sm text-charcoal flex items-center gap-2">
+              <Info size={16} className="text-terra shrink-0" />
+              <span>
+                <strong>Audit Log</strong> mencatat semua aktivitas penting dalam sistem untuk keamanan dan compliance.
+                Semua perubahan data tercatat dengan timestamp dan detail lengkap.
+              </span>
             </p>
           </CardContent>
         </Card>
@@ -139,8 +155,11 @@ export default function AuditPage() {
         ) : filteredLogs.length === 0 ? (
           <Card>
             <CardContent className="py-12 text-center">
-              <p className="text-muted text-lg mb-4">📜 Belum ada audit log</p>
-              <p className="text-muted/70">Log aktivitas akan muncul di sini</p>
+              <div className="w-16 h-16 rounded-2xl bg-forest/10 flex items-center justify-center text-forest mx-auto mb-4">
+                <ScrollText size={32} />
+              </div>
+              <p className="text-charcoal font-semibold text-lg mb-2">Belum ada audit log</p>
+              <p className="text-muted/70 text-sm">Log aktivitas akan muncul di sini</p>
             </CardContent>
           </Card>
         ) : (

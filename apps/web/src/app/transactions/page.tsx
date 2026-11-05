@@ -5,6 +5,7 @@ import { useAuth } from '@/lib/auth'
 import { ProtectedRoute } from '@/components/ProtectedRoute'
 import { supabase } from '@/lib/supabase'
 import * as XLSX from 'xlsx'
+import { BarChart3, Download, FileText } from 'lucide-react'
 
 interface Transaction {
   id: string
@@ -184,7 +185,9 @@ function TransactionsContent() {
       {/* Header */}
       <header className="page-header">
         <div className="max-w-7xl mx-auto px-4 py-4">
-          <h1 className="text-xl sm:text-2xl font-bold font-display text-charcoal">📊 Riwayat Transaksi</h1>
+          <h1 className="text-xl sm:text-2xl font-bold font-display text-charcoal flex items-center gap-2">
+            <BarChart3 className="text-forest" size={24} /> Riwayat Transaksi
+          </h1>
           <p className="text-sm sm:text-base text-muted">Kelola dan analisis transaksi bisnis Anda</p>
         </div>
       </header>
@@ -265,9 +268,9 @@ function TransactionsContent() {
             </button>
             <button
               onClick={handleExport}
-              className="px-4 py-2 bg-forest text-white rounded-2xl hover:bg-forest-dark"
+              className="px-4 py-2 bg-forest text-white rounded-2xl hover:bg-forest-dark flex items-center gap-2 font-medium"
             >
-              📥 Export Excel
+              <Download size={16} /> Export Excel
             </button>
           </div>
         </div>
@@ -281,7 +284,9 @@ function TransactionsContent() {
             </div>
           ) : filteredTransactions.length === 0 ? (
             <div className="p-12 text-center text-muted">
-              <div className="text-6xl mb-4">📝</div>
+              <div className="w-16 h-16 rounded-2xl bg-forest/10 flex items-center justify-center text-forest mx-auto mb-4">
+                <FileText size={32} />
+              </div>
               <p className="text-lg">Tidak ada transaksi</p>
             </div>
           ) : (

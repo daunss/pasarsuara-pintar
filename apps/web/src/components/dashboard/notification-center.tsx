@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { supabase } from '@/lib/supabase'
+import { Bell, TrendingUp, CreditCard, Package, MessageCircle, Settings } from 'lucide-react'
 
 interface Notification {
   id: string
@@ -79,17 +80,17 @@ export function NotificationCenter() {
   const getIcon = (type: string) => {
     switch (type) {
       case 'transaction':
-        return '💰'
+        return <TrendingUp size={16} className="text-emerald-600" />
       case 'payment':
-        return '💳'
+        return <CreditCard size={16} className="text-blue-600" />
       case 'inventory':
-        return '📦'
+        return <Package size={16} className="text-amber-600" />
       case 'whatsapp':
-        return '📱'
+        return <MessageCircle size={16} className="text-green-600" />
       case 'system':
-        return '⚙️'
+        return <Settings size={16} className="text-gray-600" />
       default:
-        return '🔔'
+        return <Bell size={16} className="text-terra" />
     }
   }
 
@@ -142,7 +143,9 @@ export function NotificationCenter() {
               </div>
             ) : notifications.length === 0 ? (
               <div className="p-8 text-center text-gray-500">
-                <span className="text-4xl mb-2 block">🔔</span>
+                <div className="w-12 h-12 rounded-2xl bg-gray-100 text-gray-400 mx-auto mb-2 flex items-center justify-center">
+                  <Bell size={24} />
+                </div>
                 <p>Belum ada notifikasi</p>
               </div>
             ) : (
@@ -160,7 +163,9 @@ export function NotificationCenter() {
                     }}
                   >
                     <div className="flex items-start gap-3">
-                      <span className="text-2xl">{getIcon(notification.type)}</span>
+                      <div className="w-8 h-8 rounded-lg bg-gray-50 flex items-center justify-center border border-gray-100 shrink-0">
+                        {getIcon(notification.type)}
+                      </div>
                       <div className="flex-1 min-w-0">
                         <p className="font-medium text-gray-900 text-sm">
                           {notification.title}

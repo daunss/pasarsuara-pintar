@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
+import { KeyRound } from 'lucide-react'
 
 export default function UpdatePasswordPage() {
   const router = useRouter()
@@ -48,7 +49,9 @@ export default function UpdatePasswordPage() {
     <div className="page-bg flex items-center justify-center p-4">
       <div className="max-w-md w-full">
         <div className="text-center mb-8">
-          <div className="text-5xl mb-4">🔑</div>
+          <div className="w-16 h-16 rounded-2xl bg-terra/10 flex items-center justify-center text-terra mx-auto mb-4">
+            <KeyRound size={32} />
+          </div>
           <h1 className="text-3xl font-bold font-display text-charcoal mb-2">
             Buat Password Baru
           </h1>

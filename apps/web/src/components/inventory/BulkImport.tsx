@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { supabase } from '@/lib/supabase'
 import { useAuth } from '@/lib/auth'
+import { FileSpreadsheet, Download, ClipboardList, CheckCircle2, XCircle, X } from 'lucide-react'
 
 interface BulkImportProps {
   onComplete: () => void
@@ -150,19 +151,23 @@ Minyak Goreng 2L,50,pcs,30000,25000,Minyak goreng kemasan 2 liter`
       <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
         <div className="p-6">
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-xl font-bold">📥 Bulk Import Inventory</h2>
+            <h2 className="text-xl font-bold flex items-center gap-2">
+              <FileSpreadsheet className="text-blue-600" size={24} /> Bulk Import Inventory
+            </h2>
             <button
               onClick={onClose}
-              className="text-gray-400 hover:text-gray-600 text-2xl"
+              className="text-gray-400 hover:text-gray-600 p-1 rounded-lg hover:bg-gray-100 transition"
             >
-              ×
+              <X size={20} />
             </button>
           </div>
 
           <div className="space-y-6">
             {/* Instructions */}
             <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-              <h3 className="font-semibold text-blue-900 mb-2">📋 Instruksi:</h3>
+              <h3 className="font-semibold text-blue-900 mb-2 flex items-center gap-1.5">
+                <ClipboardList size={18} /> Instruksi:
+              </h3>
               <ol className="list-decimal list-inside space-y-1 text-sm text-blue-800">
                 <li>Download template CSV di bawah ini</li>
                 <li>Isi data produk sesuai format template</li>
@@ -175,9 +180,9 @@ Minyak Goreng 2L,50,pcs,30000,25000,Minyak goreng kemasan 2 liter`
             <div>
               <button
                 onClick={downloadTemplate}
-                className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition"
+                className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition flex items-center justify-center gap-2"
               >
-                📥 Download Template CSV
+                <Download size={18} /> Download Template CSV
               </button>
             </div>
 
@@ -206,10 +211,14 @@ Minyak Goreng 2L,50,pcs,30000,25000,Minyak goreng kemasan 2 liter`
               }`}>
                 <h3 className="font-semibold mb-2">Hasil Import:</h3>
                 <div className="space-y-1 text-sm">
-                  <p className="text-green-700">✅ Berhasil: {result.success} produk</p>
+                  <p className="text-green-700 flex items-center gap-1.5">
+                    <CheckCircle2 size={16} /> Berhasil: {result.success} produk
+                  </p>
                   {result.failed > 0 && (
                     <>
-                      <p className="text-red-700">❌ Gagal: {result.failed} produk</p>
+                      <p className="text-red-700 flex items-center gap-1.5">
+                        <XCircle size={16} /> Gagal: {result.failed} produk
+                      </p>
                       {result.errors.length > 0 && (
                         <div className="mt-2">
                           <p className="font-medium text-red-800">Error Details:</p>

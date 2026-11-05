@@ -2,6 +2,16 @@
 
 import { useEffect, useState } from 'react'
 import { AppError } from '@/lib/error-handler'
+import {
+  WifiOff,
+  Lock,
+  AlertTriangle,
+  Smartphone,
+  CreditCard,
+  Database,
+  AlertCircle,
+  CheckCircle2,
+} from 'lucide-react'
 
 interface ErrorToastProps {
   error: AppError | null
@@ -27,19 +37,19 @@ export function ErrorToast({ error, onClose }: ErrorToastProps) {
   const getIcon = () => {
     switch (error.type) {
       case 'NETWORK':
-        return '📡'
+        return <WifiOff className="text-red-500 shrink-0" size={20} />
       case 'AUTH':
-        return '🔐'
+        return <Lock className="text-amber-500 shrink-0" size={20} />
       case 'VALIDATION':
-        return '⚠️'
+        return <AlertTriangle className="text-yellow-500 shrink-0" size={20} />
       case 'WHATSAPP':
-        return '📱'
+        return <Smartphone className="text-green-600 shrink-0" size={20} />
       case 'PAYMENT':
-        return '💳'
+        return <CreditCard className="text-blue-500 shrink-0" size={20} />
       case 'DATABASE':
-        return '💾'
+        return <Database className="text-purple-500 shrink-0" size={20} />
       default:
-        return '❌'
+        return <AlertCircle className="text-red-500 shrink-0" size={20} />
     }
   }
 
@@ -105,7 +115,7 @@ export function SuccessToast({ message, onClose }: SuccessToastProps) {
     >
       <div className="bg-green-50 border-l-4 border-green-500 rounded-lg shadow-lg p-4">
         <div className="flex items-start gap-3">
-          <span className="text-2xl">✅</span>
+          <CheckCircle2 size={22} className="text-green-600 shrink-0 mt-0.5" />
           <div className="flex-1">
             <p className="text-sm text-green-700 font-medium">{message}</p>
           </div>

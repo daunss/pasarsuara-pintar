@@ -7,6 +7,18 @@ import { supabase } from '@/lib/supabase'
 import { exportAnalyticsToCSV, printPageAsPDF } from '@/lib/export'
 import Link from 'next/link'
 import {
+  BarChart3,
+  TrendingUp,
+  PieChart,
+  Trophy,
+  DollarSign,
+  Receipt,
+  FileSpreadsheet,
+  FileDown,
+  ArrowLeft,
+  Award,
+} from 'lucide-react'
+import {
   Chart as ChartJS,
   CategoryScale,
   LinearScale,
@@ -237,27 +249,29 @@ function AnalyticsContent() {
         <div className="max-w-7xl mx-auto px-4 py-4">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
             <div className="min-w-0">
-              <h1 className="text-xl sm:text-2xl font-bold font-display text-charcoal truncate">📊 Advanced Analytics</h1>
+              <h1 className="text-xl sm:text-2xl font-bold font-display text-charcoal truncate flex items-center gap-2">
+                <BarChart3 className="text-terra" size={24} /> Advanced Analytics
+              </h1>
               <p className="text-sm text-muted">Business intelligence & insights</p>
             </div>
             <div className="flex flex-wrap gap-2">
               <Link
                 href="/dashboard"
-                className="bg-white border-2 border-forest text-forest px-3 py-1.5 sm:px-4 sm:py-2 rounded-2xl text-sm sm:text-base font-semibold hover:bg-cream-light transition"
+                className="bg-white border-2 border-forest text-forest px-3 py-1.5 sm:px-4 sm:py-2 rounded-2xl text-sm sm:text-base font-semibold hover:bg-cream-light transition flex items-center gap-1.5"
               >
-                ← Dashboard
+                <ArrowLeft size={16} /> Dashboard
               </Link>
               <button
                 onClick={() => exportAnalyticsToCSV(data, `analytics-${dateRange}.csv`)}
-                className="bg-terra text-white px-3 py-1.5 sm:px-4 sm:py-2 rounded-2xl text-sm sm:text-base font-semibold hover:bg-terra-dark transition"
+                className="bg-terra text-white px-3 py-1.5 sm:px-4 sm:py-2 rounded-2xl text-sm sm:text-base font-semibold hover:bg-terra-dark transition flex items-center gap-1.5"
               >
-                📊 Export Excel
+                <FileSpreadsheet size={16} /> Export Excel
               </button>
               <button
                 onClick={printPageAsPDF}
-                className="bg-forest text-white px-3 py-1.5 sm:px-4 sm:py-2 rounded-2xl text-sm sm:text-base font-semibold hover:bg-forest-dark transition"
+                className="bg-forest text-white px-3 py-1.5 sm:px-4 sm:py-2 rounded-2xl text-sm sm:text-base font-semibold hover:bg-forest-dark transition flex items-center gap-1.5"
               >
-                📄 Export PDF
+                <FileDown size={16} /> Export PDF
               </button>
             </div>
           </div>
@@ -296,7 +310,9 @@ function AnalyticsContent() {
           <div className="card-warm p-4 sm:p-6">
             <div className="flex items-center justify-between mb-3 sm:mb-4">
               <span className="text-muted text-sm font-medium">Total Revenue</span>
-              <span className="text-2xl sm:text-3xl">💰</span>
+              <div className="w-10 h-10 rounded-xl bg-forest/10 flex items-center justify-center text-forest">
+                <DollarSign size={20} />
+              </div>
             </div>
             <div className="text-2xl sm:text-3xl font-bold text-forest break-all">{formatCurrency(totalRevenue)}</div>
             <p className="text-sm text-muted mt-2">Dari {totalTransactions} transaksi</p>
@@ -305,7 +321,9 @@ function AnalyticsContent() {
           <div className="card-warm p-4 sm:p-6">
             <div className="flex items-center justify-between mb-3 sm:mb-4">
               <span className="text-muted text-sm font-medium">Rata-rata Transaksi</span>
-              <span className="text-2xl sm:text-3xl">📊</span>
+              <div className="w-10 h-10 rounded-xl bg-terra/10 flex items-center justify-center text-terra">
+                <TrendingUp size={20} />
+              </div>
             </div>
             <div className="text-2xl sm:text-3xl font-bold text-terra break-all">{formatCurrency(avgTransactionValue)}</div>
             <p className="text-sm text-muted mt-2">Per transaksi</p>
@@ -314,7 +332,9 @@ function AnalyticsContent() {
           <div className="card-warm p-4 sm:p-6 sm:col-span-2 lg:col-span-1">
             <div className="flex items-center justify-between mb-3 sm:mb-4">
               <span className="text-muted text-sm font-medium">Total Transaksi</span>
-              <span className="text-2xl sm:text-3xl">📝</span>
+              <div className="w-10 h-10 rounded-xl bg-terra-dark/10 flex items-center justify-center text-terra-dark">
+                <Receipt size={20} />
+              </div>
             </div>
             <div className="text-2xl sm:text-3xl font-bold text-terra-dark">{totalTransactions}</div>
             <p className="text-sm text-muted mt-2">Transaksi penjualan</p>
@@ -325,7 +345,9 @@ function AnalyticsContent() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 mb-8">
           {/* Sales Trend Chart */}
           <div className="card-warm p-4 sm:p-6">
-            <h2 className="text-lg sm:text-xl font-bold font-display mb-4">📈 Trend Penjualan</h2>
+            <h2 className="text-lg sm:text-xl font-bold font-display mb-4 flex items-center gap-2">
+              <TrendingUp className="text-forest" size={20} /> Trend Penjualan
+            </h2>
             <div className="h-64 sm:h-80">
               {data.salesTrend.length > 0 ? (
                 <Line data={salesTrendChartData} options={chartOptions} />
@@ -339,7 +361,9 @@ function AnalyticsContent() {
 
           {/* Revenue Breakdown Chart */}
           <div className="card-warm p-4 sm:p-6">
-            <h2 className="text-lg sm:text-xl font-bold font-display mb-4">🥧 Breakdown Revenue</h2>
+            <h2 className="text-lg sm:text-xl font-bold font-display mb-4 flex items-center gap-2">
+              <PieChart className="text-terra" size={20} /> Breakdown Revenue
+            </h2>
             <div className="h-64 sm:h-80">
               {data.revenueBreakdown.length > 0 ? (
                 <Pie data={revenueBreakdownChartData} options={chartOptions} />
@@ -354,7 +378,9 @@ function AnalyticsContent() {
 
         {/* Product Performance Chart */}
         <div className="card-warm p-4 sm:p-6 mb-8">
-          <h2 className="text-lg sm:text-xl font-bold font-display mb-4">🏆 Top 10 Produk Terlaris</h2>
+          <h2 className="text-lg sm:text-xl font-bold font-display mb-4 flex items-center gap-2">
+            <Trophy className="text-amber-500" size={20} /> Top 10 Produk Terlaris
+          </h2>
           <div className="h-72 sm:h-96">
             {data.productPerformance.length > 0 ? (
               <Bar data={productPerformanceChartData} options={chartOptions} />
@@ -369,7 +395,9 @@ function AnalyticsContent() {
         {/* Product Performance Table */}
         <div className="card-warm">
           <div className="p-6 border-b border-cream-dark/40">
-            <h2 className="text-xl font-bold font-display">📊 Detail Performa Produk</h2>
+            <h2 className="text-xl font-bold font-display flex items-center gap-2">
+              <BarChart3 className="text-forest" size={22} /> Detail Performa Produk
+            </h2>
           </div>
           <div className="overflow-x-auto">
             <table className="w-full">
@@ -396,12 +424,26 @@ function AnalyticsContent() {
                 {data.productPerformance.map((product, index) => (
                   <tr key={product.product} className="hover:bg-cream-light">
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <span className="text-2xl">
-                        {index === 0 && '🥇'}
-                        {index === 1 && '🥈'}
-                        {index === 2 && '🥉'}
-                        {index > 2 && `#${index + 1}`}
-                      </span>
+                      {index === 0 && (
+                        <span className="inline-flex items-center justify-center w-7 h-7 rounded-full bg-amber-100 text-amber-700 font-bold text-xs" title="Juara 1">
+                          <Award size={15} />
+                        </span>
+                      )}
+                      {index === 1 && (
+                        <span className="inline-flex items-center justify-center w-7 h-7 rounded-full bg-slate-200 text-slate-700 font-bold text-xs" title="Juara 2">
+                          2
+                        </span>
+                      )}
+                      {index === 2 && (
+                        <span className="inline-flex items-center justify-center w-7 h-7 rounded-full bg-amber-700/10 text-amber-800 font-bold text-xs" title="Juara 3">
+                          3
+                        </span>
+                      )}
+                      {index > 2 && (
+                        <span className="text-muted text-sm font-medium pl-2">
+                          #{index + 1}
+                        </span>
+                      )}
                     </td>
                     <td className="px-6 py-4">
                       <span className="font-medium text-charcoal">{product.product}</span>

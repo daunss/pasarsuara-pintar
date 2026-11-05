@@ -3,6 +3,8 @@
 import { useState } from 'react'
 import { supabase } from '@/lib/supabase'
 import { useRouter } from 'next/navigation'
+import { Logo } from '@/components/ui/logo'
+import { Rocket, KeyRound, AlertTriangle, ArrowLeft } from 'lucide-react'
 
 export default function DevLoginPage() {
   const router = useRouter()
@@ -48,7 +50,7 @@ export default function DevLoginPage() {
             return
           }
 
-          setMessage('✅ Login berhasil!')
+          setMessage('Login berhasil!')
           setTimeout(() => router.push('/dashboard'), 1000)
         } else {
           throw signupError
@@ -56,10 +58,10 @@ export default function DevLoginPage() {
       } else {
         // Check if email confirmation is required
         if (signupData.user && !signupData.session) {
-          setMessage('⚠️ Email confirmation required. Check your email or contact admin to confirm your account.')
+          setMessage('Email confirmation required. Check your email or contact admin to confirm your account.')
           setError('Note: For dev, you may need to disable email confirmation in Supabase Dashboard → Authentication → Settings')
         } else {
-          setMessage('✅ Akun dibuat! Redirecting...')
+          setMessage('Akun dibuat! Redirecting...')
           setTimeout(() => router.push('/dashboard'), 1000)
         }
       }
@@ -95,11 +97,9 @@ export default function DevLoginPage() {
   return (
     <div className="page-bg flex items-center justify-center p-4">
       <div className="card-warm p-8 max-w-md w-full">
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold font-display text-terra-dark mb-2">
-            🗣️ Suara Niaga
-          </h1>
-          <p className="text-muted">Dev Login - Quick Access</p>
+        <div className="text-center mb-8 flex flex-col items-center">
+          <Logo size="md" />
+          <p className="text-muted mt-2 text-sm">Dev Login - Quick Access</p>
         </div>
 
         <div className="space-y-4">
@@ -145,17 +145,19 @@ export default function DevLoginPage() {
             <button
               onClick={handleQuickSignup}
               disabled={loading}
-              className="btn-primary w-full disabled:opacity-50 disabled:cursor-not-allowed"
+              className="btn-primary w-full disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
-              {loading ? 'Processing...' : '🚀 Quick Signup/Login'}
+              <Rocket size={16} />
+              <span>{loading ? 'Processing...' : 'Quick Signup/Login'}</span>
             </button>
 
             <button
               onClick={handleLogin}
               disabled={loading}
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-4 rounded-2xl transition disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-4 rounded-2xl transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
-              {loading ? 'Processing...' : '🔑 Login Only'}
+              <KeyRound size={16} />
+              <span>{loading ? 'Processing...' : 'Login Only'}</span>
             </button>
           </div>
 
@@ -167,16 +169,19 @@ export default function DevLoginPage() {
           </div>
 
           <div className="text-center mt-4">
-            <a href="/login" className="text-terra hover:text-terra-dark text-sm">
-              ← Back to normal login
+            <a href="/login" className="text-terra hover:text-terra-dark text-sm inline-flex items-center gap-1">
+              <ArrowLeft size={14} /> Back to normal login
             </a>
           </div>
         </div>
 
         <div className="mt-8 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
-          <p className="text-xs text-yellow-800">
-            <strong>⚠️ Development Only</strong><br />
-            This page is for quick testing. Remove in production!
+          <p className="text-xs text-yellow-800 flex items-start gap-1.5">
+            <AlertTriangle size={14} className="text-amber-600 shrink-0 mt-0.5" />
+            <span>
+              <strong>Development Only</strong><br />
+              This page is for quick testing. Remove in production!
+            </span>
           </p>
         </div>
       </div>

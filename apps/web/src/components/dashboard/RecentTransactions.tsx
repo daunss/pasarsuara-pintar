@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { supabase } from '@/lib/supabase'
 import { useAuth } from '@/lib/auth'
 import Link from 'next/link'
+import { TrendingUp, ShoppingCart, ArrowDownRight, FileText, ArrowRight } from 'lucide-react'
 
 interface Transaction {
   id: string
@@ -72,16 +73,16 @@ export function RecentTransactions({ limit = 10 }: { limit?: number }) {
     }
   }
 
-  const getTypeIcon = (type: string) => {
+  const renderTypeIcon = (type: string) => {
     switch (type) {
       case 'SALE':
-        return '💰'
+        return <TrendingUp size={18} className="text-green-600" />
       case 'PURCHASE':
-        return '🛒'
+        return <ShoppingCart size={18} className="text-blue-600" />
       case 'EXPENSE':
-        return '💸'
+        return <ArrowDownRight size={18} className="text-red-600" />
       default:
-        return '📝'
+        return <FileText size={18} className="text-gray-600" />
     }
   }
 
@@ -110,15 +111,17 @@ export function RecentTransactions({ limit = 10 }: { limit?: number }) {
         <h3 className="text-lg font-semibold">Transaksi Terbaru</h3>
         <Link
           href="/transactions"
-          className="text-sm text-green-600 hover:text-green-700 font-medium"
+          className="text-sm text-green-600 hover:text-green-700 font-medium inline-flex items-center gap-1"
         >
-          Lihat Semua →
+          Lihat Semua <ArrowRight size={14} />
         </Link>
       </div>
 
       {transactions.length === 0 ? (
         <div className="text-center py-8 text-gray-500">
-          <div className="text-4xl mb-2">📝</div>
+          <div className="w-14 h-14 rounded-2xl bg-gray-100 text-gray-400 mx-auto mb-3 flex items-center justify-center">
+            <FileText size={26} />
+          </div>
           <p>Belum ada transaksi</p>
         </div>
       ) : (
@@ -128,7 +131,9 @@ export function RecentTransactions({ limit = 10 }: { limit?: number }) {
               key={tx.id}
               className="flex items-center gap-3 p-3 hover:bg-gray-50 rounded-lg transition"
             >
-              <div className="text-2xl">{getTypeIcon(tx.type)}</div>
+              <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-gray-50 border border-gray-100 shrink-0">
+                {renderTypeIcon(tx.type)}
+              </div>
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 mb-1">
                   <span className="font-medium text-gray-900 truncate">

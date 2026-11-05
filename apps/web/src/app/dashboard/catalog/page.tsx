@@ -6,6 +6,8 @@ import { supabase, type ProductCatalog } from '@/lib/supabase'
 import { useAuth } from '@/lib/auth'
 import { ProtectedRoute } from '@/components/ProtectedRoute'
 import Link from 'next/link'
+import { Logo } from '@/components/ui/logo'
+import { Package, Plus, X, Trash2, ArrowLeft } from 'lucide-react'
 
 function CatalogPageContent() {
   const { user } = useAuth()
@@ -122,14 +124,14 @@ function CatalogPageContent() {
         <div className="max-w-7xl mx-auto px-4 py-4">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
             <div className="flex items-center gap-4">
-              <Link href="/dashboard" className="text-xl sm:text-2xl font-bold font-display text-forest">
-                🗣️ Suara Niaga
+              <Link href="/dashboard" className="flex items-center">
+                <Logo size="sm" />
               </Link>
               <span className="text-muted/70 hidden sm:inline">|</span>
               <span className="text-muted hidden sm:inline">Katalog Produk</span>
             </div>
-            <Link href="/dashboard" className="text-sm text-terra hover:text-terra-dark transition">
-              ← Kembali ke Dashboard
+            <Link href="/dashboard" className="text-sm text-terra hover:text-terra-dark transition flex items-center gap-1">
+              <ArrowLeft size={14} /> Kembali ke Dashboard
             </Link>
           </div>
         </div>
@@ -138,12 +140,22 @@ function CatalogPageContent() {
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 py-4 sm:py-8">
         <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 mb-6">
-          <h1 className="text-xl sm:text-3xl font-bold font-display text-charcoal">📦 Katalog Produk</h1>
+          <h1 className="text-xl sm:text-3xl font-bold font-display text-charcoal flex items-center gap-2">
+            <Package className="text-forest" size={26} /> Katalog Produk
+          </h1>
           <button
             onClick={() => setShowAddForm(!showAddForm)}
-            className="bg-forest text-white px-4 sm:px-6 py-2 rounded-2xl hover:bg-forest-dark transition w-full sm:w-auto"
+            className="bg-forest text-white px-4 sm:px-6 py-2 rounded-2xl hover:bg-forest-dark transition w-full sm:w-auto flex items-center justify-center gap-2"
           >
-            {showAddForm ? '✕ Batal' : '+ Tambah Produk'}
+            {showAddForm ? (
+              <>
+                <X size={16} /> Batal
+              </>
+            ) : (
+              <>
+                <Plus size={16} /> Tambah Produk
+              </>
+            )}
           </button>
         </div>
 
@@ -238,8 +250,11 @@ function CatalogPageContent() {
         ) : products.length === 0 ? (
           <Card>
             <CardContent className="py-12 text-center">
-              <p className="text-muted text-lg mb-4">📦 Katalog masih kosong</p>
-              <p className="text-muted/70">Klik "Tambah Produk" untuk mulai menambahkan produk</p>
+              <div className="w-16 h-16 rounded-2xl bg-forest/10 flex items-center justify-center text-forest mx-auto mb-4">
+                <Package size={32} />
+              </div>
+              <p className="text-charcoal font-semibold text-lg mb-2">Katalog masih kosong</p>
+              <p className="text-muted/70 text-sm">Klik "Tambah Produk" untuk mulai menambahkan produk</p>
             </CardContent>
           </Card>
         ) : (
@@ -257,9 +272,10 @@ function CatalogPageContent() {
                           <h3 className="font-semibold text-lg">{product.product_name}</h3>
                           <button
                             onClick={() => handleDelete(product.id)}
-                            className="text-red-500 hover:text-red-700 text-sm"
+                            className="text-muted hover:text-red-600 p-1 rounded-lg hover:bg-red-50 transition"
+                            title="Hapus produk"
                           >
-                            🗑️
+                            <Trash2 size={16} />
                           </button>
                         </div>
                         {product.description && (

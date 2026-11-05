@@ -3,6 +3,8 @@
 import { useState } from 'react'
 import { supabase } from '@/lib/supabase'
 import Link from 'next/link'
+import { Logo } from '@/components/ui/logo'
+import { Mail, ArrowLeft } from 'lucide-react'
 
 export default function ForgotPasswordPage() {
   const [loading, setLoading] = useState(false)
@@ -34,7 +36,9 @@ export default function ForgotPasswordPage() {
     return (
       <div className="page-bg flex items-center justify-center p-4">
         <div className="max-w-md w-full card-warm p-8 text-center">
-          <div className="text-6xl mb-4">📧</div>
+          <div className="w-16 h-16 rounded-2xl bg-forest/10 flex items-center justify-center text-forest mx-auto mb-4">
+            <Mail size={32} />
+          </div>
           <h2 className="text-2xl font-bold font-display text-charcoal mb-4">Email Terkirim!</h2>
           <p className="text-muted mb-6">
             Kami telah mengirim link reset password ke email Anda. Silakan cek inbox atau folder spam.
@@ -54,13 +58,11 @@ export default function ForgotPasswordPage() {
     <div className="page-bg flex items-center justify-center p-4">
       <div className="max-w-md w-full">
         {/* Logo & Title */}
-        <div className="text-center mb-8">
+        <div className="text-center mb-8 flex flex-col items-center">
           <Link href="/" className="inline-block">
-            <h1 className="text-2xl sm:text-4xl font-bold font-display text-terra-dark mb-2">
-              🗣️ Suara Niaga
-            </h1>
+            <Logo size="md" />
           </Link>
-          <p className="text-muted">Reset Password</p>
+          <p className="text-muted mt-2 text-sm">Reset Password</p>
         </div>
 
         {/* Reset Card */}
@@ -102,8 +104,8 @@ export default function ForgotPasswordPage() {
 
           {/* Back to Login */}
           <p className="mt-6 text-center text-sm text-muted">
-            <Link href="/login" className="text-terra font-semibold transition">
-              ← Kembali ke Login
+            <Link href="/login" className="text-terra font-semibold transition inline-flex items-center gap-1">
+              <ArrowLeft size={14} /> Kembali ke Login
             </Link>
           </p>
         </div>

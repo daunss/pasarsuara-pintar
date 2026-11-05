@@ -2,6 +2,21 @@
 
 import { useState } from 'react'
 import { useAuth } from '@/lib/auth'
+import {
+  ShoppingCart,
+  Search,
+  Store,
+  MapPin,
+  Package,
+  Users,
+  Star,
+  DownloadCloud,
+  CheckCircle2,
+  AlertCircle,
+  ArrowRight,
+  ArrowLeft,
+  X,
+} from 'lucide-react'
 
 interface ShopeeShopInfo {
   shop_id: number
@@ -120,13 +135,17 @@ export function ShopeeImport({ onComplete, onClose }: ShopeeImportProps) {
         {/* Header */}
         <div className="bg-gradient-to-r from-orange-500 to-red-500 text-white px-6 py-4 rounded-t-2xl flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <span className="text-3xl">🛒</span>
+            <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center">
+              <ShoppingCart size={22} />
+            </div>
             <div>
               <h2 className="text-xl font-bold">Import dari Shopee</h2>
               <p className="text-orange-100 text-sm">Masukkan nama toko Shopee untuk import produk</p>
             </div>
           </div>
-          <button onClick={onClose} className="text-white hover:text-orange-200 text-2xl">&times;</button>
+          <button onClick={onClose} className="text-white/80 hover:text-white p-1 rounded-lg hover:bg-white/10 transition">
+            <X size={20} />
+          </button>
         </div>
 
         <div className="p-6">
@@ -156,7 +175,9 @@ export function ShopeeImport({ onComplete, onClose }: ShopeeImportProps) {
                       Mencari...
                     </>
                   ) : (
-                    <>🔍 Cari</>
+                    <>
+                      <Search size={16} /> Cari
+                    </>
                   )}
                 </button>
               </div>
@@ -172,17 +193,25 @@ export function ShopeeImport({ onComplete, onClose }: ShopeeImportProps) {
               {/* Shop Info Card */}
               <div className="bg-orange-50 border border-orange-200 rounded-xl p-4 mb-6">
                 <div className="flex items-center gap-4">
-                  <div className="w-16 h-16 bg-orange-200 rounded-full flex items-center justify-center text-2xl">
-                    🏪
+                  <div className="w-16 h-16 bg-orange-200 rounded-full flex items-center justify-center text-orange-600">
+                    <Store size={28} />
                   </div>
                   <div className="flex-1">
                     <h3 className="text-lg font-bold text-gray-900">{shopInfo.shop_name}</h3>
                     <div className="flex flex-wrap gap-3 text-sm text-gray-600 mt-1">
-                      <span>📍 {shopInfo.shop_location || 'Indonesia'}</span>
-                      <span>📦 {shopInfo.item_count} produk</span>
-                      <span>👥 {shopInfo.follow_count?.toLocaleString()} pengikut</span>
+                      <span className="flex items-center gap-1">
+                        <MapPin size={13} className="text-orange-500" /> {shopInfo.shop_location || 'Indonesia'}
+                      </span>
+                      <span className="flex items-center gap-1">
+                        <Package size={13} className="text-orange-500" /> {shopInfo.item_count} produk
+                      </span>
+                      <span className="flex items-center gap-1">
+                        <Users size={13} className="text-orange-500" /> {shopInfo.follow_count?.toLocaleString()} pengikut
+                      </span>
                       {shopInfo.rating_star > 0 && (
-                        <span>⭐ {shopInfo.rating_star.toFixed(1)}</span>
+                        <span className="flex items-center gap-1">
+                          <Star size={13} className="text-amber-500 fill-amber-500" /> {shopInfo.rating_star.toFixed(1)}
+                        </span>
                       )}
                     </div>
                   </div>
@@ -235,9 +264,9 @@ export function ShopeeImport({ onComplete, onClose }: ShopeeImportProps) {
                     setShopInfo(null)
                     setPreview([])
                   }}
-                  className="flex-1 border-2 border-gray-300 text-gray-700 px-4 py-3 rounded-lg font-semibold hover:bg-gray-50 transition"
+                  className="flex-1 border-2 border-gray-300 text-gray-700 px-4 py-3 rounded-lg font-semibold hover:bg-gray-50 transition flex items-center justify-center gap-1.5"
                 >
-                  ← Cari Lagi
+                  <ArrowLeft size={16} /> Cari Lagi
                 </button>
                 <button
                   onClick={handleImport}
@@ -250,7 +279,9 @@ export function ShopeeImport({ onComplete, onClose }: ShopeeImportProps) {
                       Mengimport {shopInfo.item_count} produk...
                     </>
                   ) : (
-                    <>📥 Import Semua ({shopInfo.item_count} produk)</>
+                    <>
+                      <DownloadCloud size={18} /> Import Semua ({shopInfo.item_count} produk)
+                    </>
                   )}
                 </button>
               </div>
@@ -260,7 +291,9 @@ export function ShopeeImport({ onComplete, onClose }: ShopeeImportProps) {
           {/* Step 3: Result */}
           {step === 'result' && importResult && (
             <div className="text-center">
-              <div className="text-6xl mb-4">✅</div>
+              <div className="w-16 h-16 rounded-full bg-green-100 flex items-center justify-center text-green-600 mx-auto mb-4">
+                <CheckCircle2 size={36} />
+              </div>
               <h3 className="text-xl font-bold text-gray-900 mb-2">Import Berhasil!</h3>
               <p className="text-gray-600 mb-6">{importResult.message}</p>
 
@@ -297,17 +330,19 @@ export function ShopeeImport({ onComplete, onClose }: ShopeeImportProps) {
                   onComplete()
                   onClose()
                 }}
-                className="bg-green-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-green-700 transition"
+                className="bg-green-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-green-700 transition flex items-center justify-center gap-2 mx-auto"
               >
-                Lihat Inventory →
+                <span>Lihat Inventory</span>
+                <ArrowRight size={16} />
               </button>
             </div>
           )}
 
           {/* Error */}
           {error && (
-            <div className="mt-4 bg-red-50 border border-red-200 rounded-lg p-4">
-              <p className="text-red-700 text-sm">❌ {error}</p>
+            <div className="mt-4 bg-red-50 border border-red-200 rounded-lg p-4 flex items-center gap-2">
+              <AlertCircle size={16} className="text-red-600 shrink-0" />
+              <p className="text-red-700 text-sm">{error}</p>
             </div>
           )}
         </div>

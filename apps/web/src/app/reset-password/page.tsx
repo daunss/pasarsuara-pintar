@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { supabase } from '@/lib/supabase'
 import Link from 'next/link'
+import { Mail, KeyRound, ArrowLeft } from 'lucide-react'
 
 export default function ResetPasswordPage() {
   const [email, setEmail] = useState('')
@@ -34,7 +35,9 @@ export default function ResetPasswordPage() {
     return (
       <div className="page-bg flex items-center justify-center p-4">
         <div className="max-w-md w-full card-warm p-8 text-center">
-          <div className="text-6xl mb-4">📧</div>
+          <div className="w-16 h-16 rounded-2xl bg-forest/10 flex items-center justify-center text-forest mx-auto mb-4">
+            <Mail size={32} />
+          </div>
           <h2 className="text-2xl font-bold font-display text-charcoal mb-2">
             Email Terkirim!
           </h2>
@@ -60,7 +63,9 @@ export default function ResetPasswordPage() {
       <div className="max-w-md w-full">
         {/* Logo & Title */}
         <div className="text-center mb-8">
-          <div className="text-5xl mb-4">🔐</div>
+          <div className="w-16 h-16 rounded-2xl bg-terra/10 flex items-center justify-center text-terra mx-auto mb-4">
+            <KeyRound size={32} />
+          </div>
           <h1 className="text-3xl font-bold font-display text-charcoal mb-2">
             Reset Password
           </h1>
@@ -106,9 +111,9 @@ export default function ResetPasswordPage() {
           <div className="mt-6 text-center">
             <Link
               href="/login"
-              className="text-sm text-terra hover:text-terra-dark"
+              className="text-sm text-terra hover:text-terra-dark inline-flex items-center gap-1 font-medium"
             >
-              ← Kembali ke Login
+              <ArrowLeft size={14} /> Kembali ke Login
             </Link>
           </div>
         </div>

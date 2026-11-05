@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
 import { supabase } from '@/lib/supabase'
 import { useAuth } from '@/lib/auth'
+import { TrendingUp } from 'lucide-react'
 
 interface SalesTrendData {
   date: string
@@ -100,7 +101,9 @@ export function SalesTrendChart({ dateRange }: SalesTrendChartProps) {
     return (
       <div className="h-64 flex items-center justify-center text-gray-500">
         <div className="text-center">
-          <div className="text-4xl mb-2">📈</div>
+          <div className="w-12 h-12 rounded-xl bg-gray-100 flex items-center justify-center text-gray-400 mx-auto mb-2">
+            <TrendingUp size={24} />
+          </div>
           <p>Tidak ada data penjualan</p>
         </div>
       </div>

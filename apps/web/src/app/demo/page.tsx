@@ -5,7 +5,7 @@ import VoiceProcessingDemo from '@/components/dashboard/VoiceProcessingDemo';
 import NegotiationChatDemo from '@/components/dashboard/NegotiationChatDemo';
 import { MetricsShowcase } from '@/components/demo/MetricsShowcase';
 import { DemoScriptCard } from '@/components/demo/DemoScriptCard';
-import { Sparkles, MessageCircle, Mic, TrendingUp, BookOpen } from 'lucide-react';
+import { Sparkles, MessageCircle, Mic, TrendingUp, BookOpen, Zap, Bot, DollarSign, BarChart3 } from 'lucide-react';
 
 export default function DemoPage() {
   const [activeTab, setActiveTab] = useState<'voice' | 'negotiation' | 'script'>('voice');
@@ -26,15 +26,21 @@ export default function DemoPage() {
             </p>
             <div className="flex flex-wrap justify-center gap-4 sm:gap-8 text-center">
               <div>
-                <div className="text-xl sm:text-3xl font-bold">⚡ 3s</div>
+                <div className="text-xl sm:text-3xl font-bold flex items-center justify-center gap-1">
+                  <Zap className="text-amber-300" size={24} /> 3s
+                </div>
                 <div className="text-cream-light text-sm sm:text-base">Voice Processing</div>
               </div>
               <div>
-                <div className="text-xl sm:text-3xl font-bold">🤖 95%</div>
+                <div className="text-xl sm:text-3xl font-bold flex items-center justify-center gap-1">
+                  <Bot className="text-cream-light" size={24} /> 95%
+                </div>
                 <div className="text-cream-light text-sm sm:text-base">Intent Accuracy</div>
               </div>
               <div>
-                <div className="text-xl sm:text-3xl font-bold">💰 30%</div>
+                <div className="text-xl sm:text-3xl font-bold flex items-center justify-center gap-1">
+                  <DollarSign className="text-emerald-300" size={24} /> 30%
+                </div>
                 <div className="text-cream-light text-sm sm:text-base">Cost Reduction</div>
               </div>
             </div>
@@ -95,21 +101,27 @@ export default function DemoPage() {
         {/* Features Highlight */}
         <div className="mt-12 grid md:grid-cols-3 gap-6">
           <div className="card-warm p-6 text-center hover:shadow-warm transition-shadow">
-            <div className="text-4xl mb-3">🎤</div>
+            <div className="w-14 h-14 rounded-2xl bg-forest/10 flex items-center justify-center text-forest mx-auto mb-3">
+              <Mic size={26} />
+            </div>
             <h3 className="font-bold text-lg mb-2">Voice-First</h3>
             <p className="text-muted">
               No typing needed. Just speak in Bahasa Indonesia or local dialect.
             </p>
           </div>
           <div className="card-warm p-6 text-center hover:shadow-warm transition-shadow">
-            <div className="text-4xl mb-3">🤖</div>
+            <div className="w-14 h-14 rounded-2xl bg-terra/10 flex items-center justify-center text-terra mx-auto mb-3">
+              <Bot size={26} />
+            </div>
             <h3 className="font-bold text-lg mb-2">AI Negotiation</h3>
             <p className="text-muted">
               Multi-agent system negotiates best prices automatically.
             </p>
           </div>
           <div className="card-warm p-6 text-center hover:shadow-warm transition-shadow">
-            <div className="text-4xl mb-3">📊</div>
+            <div className="w-14 h-14 rounded-2xl bg-amber-500/10 flex items-center justify-center text-amber-600 mx-auto mb-3">
+              <BarChart3 size={26} />
+            </div>
             <h3 className="font-bold text-lg mb-2">Real-time Analytics</h3>
             <p className="text-muted">
               Instant insights on sales, expenses, and inventory.

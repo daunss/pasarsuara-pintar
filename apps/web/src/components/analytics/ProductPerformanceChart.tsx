@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
 import { supabase } from '@/lib/supabase'
 import { useAuth } from '@/lib/auth'
+import { Trophy } from 'lucide-react'
 
 interface ProductPerformance {
   product_name: string
@@ -92,7 +93,9 @@ export function ProductPerformanceChart({ limit, dateRange }: ProductPerformance
     return (
       <div className="h-64 flex items-center justify-center text-gray-500">
         <div className="text-center">
-          <div className="text-4xl mb-2">🏆</div>
+          <div className="w-12 h-12 rounded-xl bg-gray-100 flex items-center justify-center text-gray-400 mx-auto mb-2">
+            <Trophy size={24} />
+          </div>
           <p>Tidak ada data produk</p>
         </div>
       </div>

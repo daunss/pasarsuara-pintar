@@ -1,6 +1,7 @@
 'use client'
 
 import { NegotiationLog } from '@/lib/supabase'
+import { ShoppingCart, Store, Cpu, ArrowRight } from 'lucide-react'
 
 interface NegotiationChatProps {
   negotiation: NegotiationLog
@@ -57,11 +58,23 @@ export function NegotiationChat({ negotiation }: NegotiationChatProps) {
   const getRoleLabel = (role: string) => {
     switch (role) {
       case 'buyer_agent':
-        return '🛒 Buyer Agent'
+        return (
+          <span className="inline-flex items-center gap-1">
+            <ShoppingCart size={13} className="inline" /> Buyer Agent
+          </span>
+        )
       case 'seller_agent':
-        return '🏪 Seller Agent'
+        return (
+          <span className="inline-flex items-center gap-1">
+            <Store size={13} className="inline" /> Seller Agent
+          </span>
+        )
       case 'system':
-        return '⚙️ System'
+        return (
+          <span className="inline-flex items-center gap-1">
+            <Cpu size={13} className="inline" /> System
+          </span>
+        )
       default:
         return role
     }
@@ -74,10 +87,12 @@ export function NegotiationChat({ negotiation }: NegotiationChatProps) {
         <div className="flex items-center justify-between">
           <div>
             <h3 className="font-semibold">{negotiation.product_name}</h3>
-            <p className="text-sm text-gray-500">
+            <p className="text-sm text-gray-500 flex items-center gap-1 flex-wrap">
               Penawaran awal: {formatCurrency(negotiation.initial_offer)}
               {negotiation.final_price && (
-                <> → Final: {formatCurrency(negotiation.final_price)}</>
+                <>
+                  <ArrowRight size={13} className="text-gray-400" /> Final: {formatCurrency(negotiation.final_price)}
+                </>
               )}
             </p>
           </div>

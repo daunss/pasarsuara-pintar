@@ -14,6 +14,28 @@ import { useRouter } from 'next/navigation'
 import { useAuth } from '@/lib/auth'
 import { supabase, type Transaction, type Inventory, type NegotiationLog } from '@/lib/supabase'
 import { Logo } from '@/components/ui/logo'
+import {
+  FileText,
+  BarChart3,
+  Bot,
+  Package,
+  Users,
+  Settings,
+  ShoppingCart,
+  FileSpreadsheet,
+  Camera,
+  PenLine,
+  MessageCircle,
+  Lightbulb,
+  Mic,
+  Receipt,
+  Smartphone,
+  LogOut,
+  Sparkles,
+  TrendingUp,
+  Clock,
+  Handshake,
+} from 'lucide-react'
 
 export default function DashboardPage() {
   const router = useRouter()
@@ -233,7 +255,9 @@ export default function DashboardPage() {
                     href="/setup-whatsapp"
                     className="flex items-center gap-3 px-4 py-2 text-sm text-charcoal hover:bg-cream-light transition"
                   >
-                    <span className="text-lg">📱</span>
+                    <div className="w-8 h-8 rounded-lg bg-forest/10 flex items-center justify-center text-forest">
+                      <Smartphone size={16} />
+                    </div>
                     <div>
                       <p className="font-medium">Setup WhatsApp</p>
                       <p className="text-xs text-muted">Tambah/ubah nomor WA</p>
@@ -244,7 +268,9 @@ export default function DashboardPage() {
                     href="/dashboard/settings"
                     className="flex items-center gap-3 px-4 py-2 text-sm text-charcoal hover:bg-cream-light transition"
                   >
-                    <span className="text-lg">⚙️</span>
+                    <div className="w-8 h-8 rounded-lg bg-terra/10 flex items-center justify-center text-terra">
+                      <Settings size={16} />
+                    </div>
                     <div>
                       <p className="font-medium">Pengaturan</p>
                       <p className="text-xs text-muted">Preferensi akun</p>
@@ -258,7 +284,9 @@ export default function DashboardPage() {
                     }}
                     className="w-full flex items-center gap-3 px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition"
                   >
-                    <span className="text-lg">🚪</span>
+                    <div className="w-8 h-8 rounded-lg bg-red-100 flex items-center justify-center text-red-600">
+                      <LogOut size={16} />
+                    </div>
                     <div className="text-left">
                       <p className="font-medium">Logout</p>
                       <p className="text-xs text-red-500">Keluar dari akun</p>
@@ -288,44 +316,60 @@ export default function DashboardPage() {
       <main className="max-w-7xl mx-auto px-4 py-4 sm:py-8">
         {/* Quick Links Grid */}
         <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3 sm:gap-4 mb-8">
-          <Link href="/transactions" className="card-warm p-4 hover:shadow-warm transition text-center">
-            <div className="text-3xl mb-2">📝</div>
+          <Link href="/transactions" className="card-warm p-4 hover:shadow-warm transition text-center group">
+            <div className="w-10 h-10 mx-auto mb-2 rounded-xl bg-terra/10 flex items-center justify-center text-terra group-hover:scale-105 transition-transform">
+              <FileText size={20} strokeWidth={2} />
+            </div>
             <div className="font-semibold text-sm">Transaksi</div>
           </Link>
-          <Link href="/analytics" className="bg-terra text-white p-4 rounded-2xl shadow-soft hover:shadow-warm transition text-center">
-            <div className="text-3xl mb-2">📊</div>
+          <Link href="/analytics" className="bg-terra text-white p-4 rounded-2xl shadow-soft hover:shadow-warm transition text-center group">
+            <div className="w-10 h-10 mx-auto mb-2 rounded-xl bg-white/15 flex items-center justify-center text-white group-hover:scale-105 transition-transform">
+              <BarChart3 size={20} strokeWidth={2} />
+            </div>
             <div className="font-semibold text-sm">Analytics</div>
           </Link>
-          <Link href="/automation" className="bg-forest text-white p-4 rounded-2xl shadow-soft hover:shadow-warm transition text-center">
-            <div className="text-3xl mb-2">🤖</div>
+          <Link href="/automation" className="bg-forest text-white p-4 rounded-2xl shadow-soft hover:shadow-warm transition text-center group">
+            <div className="w-10 h-10 mx-auto mb-2 rounded-xl bg-white/15 flex items-center justify-center text-white group-hover:scale-105 transition-transform">
+              <Bot size={20} strokeWidth={2} />
+            </div>
             <div className="font-semibold text-sm">Automation</div>
           </Link>
-          <Link href="/inventory" className="card-warm p-4 hover:shadow-warm transition text-center">
-            <div className="text-3xl mb-2">📦</div>
+          <Link href="/inventory" className="card-warm p-4 hover:shadow-warm transition text-center group">
+            <div className="w-10 h-10 mx-auto mb-2 rounded-xl bg-forest/10 flex items-center justify-center text-forest group-hover:scale-105 transition-transform">
+              <Package size={20} strokeWidth={2} />
+            </div>
             <div className="font-semibold text-sm">Inventory</div>
           </Link>
-          <Link href="/dashboard/contacts" className="card-warm p-4 hover:shadow-warm transition text-center">
-            <div className="text-3xl mb-2">👥</div>
+          <Link href="/dashboard/contacts" className="card-warm p-4 hover:shadow-warm transition text-center group">
+            <div className="w-10 h-10 mx-auto mb-2 rounded-xl bg-amber-500/10 flex items-center justify-center text-amber-600 group-hover:scale-105 transition-transform">
+              <Users size={20} strokeWidth={2} />
+            </div>
             <div className="font-semibold text-sm">Kontak</div>
           </Link>
-          <Link href="/dashboard/settings" className="card-warm p-4 hover:shadow-warm transition text-center">
-            <div className="text-3xl mb-2">⚙️</div>
+          <Link href="/dashboard/settings" className="card-warm p-4 hover:shadow-warm transition text-center group">
+            <div className="w-10 h-10 mx-auto mb-2 rounded-xl bg-charcoal/5 flex items-center justify-center text-charcoal group-hover:scale-105 transition-transform">
+              <Settings size={20} strokeWidth={2} />
+            </div>
             <div className="font-semibold text-sm">Pengaturan</div>
           </Link>
         </div>
 
         {/* Onboarding - Mulai Dari Mana? */}
         <div className="mb-8">
-          <h2 className="text-xl font-bold font-display text-charcoal mb-1">Selamat Datang! 👋</h2>
+          <h2 className="text-xl font-bold font-display text-charcoal mb-1 flex items-center gap-2">
+            Selamat Datang! <Sparkles size={20} className="text-terra" />
+          </h2>
           <p className="text-muted mb-6">Mulai kelola bisnis Anda. Pilih cara untuk menambahkan produk &amp; transaksi:</p>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-5 gap-4">
             {/* Import Shopee */}
             <button
               onClick={() => setShowShopeeImport(true)}
-              className="bg-white border-2 border-dashed border-terra/30 hover:border-terra hover:bg-terra/5 rounded-[20px] p-6 text-left transition group"
+              className="bg-white border-2 border-dashed border-terra/30 hover:border-terra hover:bg-terra/5 rounded-[20px] p-6 text-left transition group shadow-sm hover:shadow-md"
             >
-              <div className="text-4xl mb-3">🛒</div>
+              <div className="w-12 h-12 rounded-2xl bg-orange-50 border border-orange-200/60 flex items-center justify-center text-orange-600 mb-4 group-hover:scale-105 transition-transform">
+                <ShoppingCart size={24} strokeWidth={2.2} />
+              </div>
               <h3 className="font-bold font-display text-charcoal group-hover:text-terra mb-1">Import dari Shopee</h3>
               <p className="text-xs text-muted">Scrape produk langsung dari toko Shopee Anda</p>
             </button>
@@ -333,9 +377,11 @@ export default function DashboardPage() {
             {/* Import Excel/CSV */}
             <button
               onClick={() => setShowBulkImport(true)}
-              className="bg-white border-2 border-dashed border-forest/30 hover:border-forest hover:bg-forest/5 rounded-[20px] p-6 text-left transition group"
+              className="bg-white border-2 border-dashed border-forest/30 hover:border-forest hover:bg-forest/5 rounded-[20px] p-6 text-left transition group shadow-sm hover:shadow-md"
             >
-              <div className="text-4xl mb-3">📄</div>
+              <div className="w-12 h-12 rounded-2xl bg-emerald-50 border border-emerald-200/60 flex items-center justify-center text-forest mb-4 group-hover:scale-105 transition-transform">
+                <FileSpreadsheet size={24} strokeWidth={2.2} />
+              </div>
               <h3 className="font-bold font-display text-charcoal group-hover:text-forest mb-1">Upload Excel / CSV</h3>
               <p className="text-xs text-muted">Import daftar produk dari file spreadsheet</p>
             </button>
@@ -343,9 +389,11 @@ export default function DashboardPage() {
             {/* Import Foto Nota */}
             <button
               onClick={() => setShowPhotoImport(true)}
-              className="bg-white border-2 border-dashed border-terra-dark/30 hover:border-terra-dark hover:bg-terra-dark/5 rounded-[20px] p-6 text-left transition group"
+              className="bg-white border-2 border-dashed border-terra-dark/30 hover:border-terra-dark hover:bg-terra-dark/5 rounded-[20px] p-6 text-left transition group shadow-sm hover:shadow-md"
             >
-              <div className="text-4xl mb-3">📸</div>
+              <div className="w-12 h-12 rounded-2xl bg-terra/10 border border-terra/20 flex items-center justify-center text-terra-dark mb-4 group-hover:scale-105 transition-transform">
+                <Camera size={24} strokeWidth={2.2} />
+              </div>
               <h3 className="font-bold font-display text-charcoal group-hover:text-terra-dark mb-1">Foto Nota / Struk</h3>
               <p className="text-xs text-muted">Upload foto nota, AI otomatis baca &amp; catat item</p>
             </button>
@@ -353,9 +401,11 @@ export default function DashboardPage() {
             {/* Manual Entry */}
             <Link
               href="/inventory"
-              className="bg-white border-2 border-dashed border-forest/30 hover:border-forest hover:bg-forest/5 rounded-[20px] p-6 text-left transition group"
+              className="bg-white border-2 border-dashed border-forest/30 hover:border-forest hover:bg-forest/5 rounded-[20px] p-6 text-left transition group shadow-sm hover:shadow-md block"
             >
-              <div className="text-4xl mb-3">✏️</div>
+              <div className="w-12 h-12 rounded-2xl bg-amber-50 border border-amber-200/60 flex items-center justify-center text-amber-700 mb-4 group-hover:scale-105 transition-transform">
+                <PenLine size={24} strokeWidth={2.2} />
+              </div>
               <h3 className="font-bold font-display text-charcoal group-hover:text-forest mb-1">Tambah Manual</h3>
               <p className="text-xs text-muted">Input produk satu per satu di halaman Inventory</p>
             </Link>
@@ -363,9 +413,11 @@ export default function DashboardPage() {
             {/* WhatsApp */}
             <Link
               href="/setup-whatsapp"
-              className="bg-white border-2 border-dashed border-forest/30 hover:border-forest hover:bg-forest/5 rounded-[20px] p-6 text-left transition group"
+              className="bg-white border-2 border-dashed border-forest/30 hover:border-forest hover:bg-forest/5 rounded-[20px] p-6 text-left transition group shadow-sm hover:shadow-md block"
             >
-              <div className="text-4xl mb-3">💬</div>
+              <div className="w-12 h-12 rounded-2xl bg-green-50 border border-green-200/60 flex items-center justify-center text-green-600 mb-4 group-hover:scale-105 transition-transform">
+                <MessageCircle size={24} strokeWidth={2.2} />
+              </div>
               <h3 className="font-bold font-display text-charcoal group-hover:text-forest mb-1">Via WhatsApp</h3>
               <p className="text-xs text-muted">Kirim voice note atau foto nota untuk catat transaksi otomatis</p>
             </Link>
@@ -373,19 +425,25 @@ export default function DashboardPage() {
         </div>
 
         {/* Tips WA */}
-        <div className="bg-forest/5 border border-forest/20 rounded-2xl p-6 max-w-lg">
-          <p className="text-sm font-semibold text-charcoal mb-3">💡 Tips: Catat transaksi via WhatsApp</p>
+        <div className="bg-forest/5 border border-forest/20 rounded-2xl p-6 max-w-lg shadow-sm">
+          <p className="text-sm font-semibold text-charcoal mb-3 flex items-center gap-2">
+            <Lightbulb size={18} className="text-amber-500" /> Tips: Catat transaksi via WhatsApp
+          </p>
           
           <div className="space-y-3">
             <div>
-              <p className="text-xs font-medium text-forest mb-1">🎤 Voice Note:</p>
-              <p className="font-mono text-sm bg-white p-3 rounded border">
+              <p className="text-xs font-semibold text-forest mb-1.5 flex items-center gap-1.5">
+                <Mic size={14} className="text-forest" /> Voice Note:
+              </p>
+              <p className="font-mono text-sm bg-white p-3 rounded-xl border border-cream-dark/30 text-charcoal shadow-sm">
                 &quot;Tadi laku nasi goreng 10 porsi harga 15 ribu&quot;
               </p>
             </div>
             <div>
-              <p className="text-xs font-medium text-forest mb-1">📸 Foto Nota/Struk:</p>
-              <p className="text-sm bg-white p-3 rounded border text-muted">
+              <p className="text-xs font-semibold text-forest mb-1.5 flex items-center gap-1.5">
+                <Camera size={14} className="text-forest" /> Foto Nota / Struk:
+              </p>
+              <p className="text-sm bg-white p-3 rounded-xl border border-cream-dark/30 text-muted shadow-sm">
                 Kirim foto nota belanja / struk penjualan, AI akan membaca &amp; mencatat semua item otomatis
               </p>
             </div>
@@ -436,29 +494,41 @@ export default function DashboardPage() {
       <main className="max-w-7xl mx-auto px-4 py-4 sm:py-8">
         {/* Quick Links */}
         <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3 sm:gap-4 mb-8">
-          <Link href="/transactions" className="card-warm p-4 hover:shadow-warm transition text-center">
-            <div className="text-3xl mb-2">📝</div>
-            <div className="font-semibold">Transaksi</div>
+          <Link href="/transactions" className="card-warm p-4 hover:shadow-warm transition text-center group">
+            <div className="w-10 h-10 mx-auto mb-2 rounded-xl bg-terra/10 flex items-center justify-center text-terra group-hover:scale-105 transition-transform">
+              <FileText size={20} strokeWidth={2} />
+            </div>
+            <div className="font-semibold text-sm">Transaksi</div>
           </Link>
-          <Link href="/analytics" className="bg-terra text-white p-4 rounded-2xl shadow-soft hover:shadow-warm transition text-center">
-            <div className="text-3xl mb-2">📊</div>
-            <div className="font-semibold">Analytics</div>
+          <Link href="/analytics" className="bg-terra text-white p-4 rounded-2xl shadow-soft hover:shadow-warm transition text-center group">
+            <div className="w-10 h-10 mx-auto mb-2 rounded-xl bg-white/15 flex items-center justify-center text-white group-hover:scale-105 transition-transform">
+              <BarChart3 size={20} strokeWidth={2} />
+            </div>
+            <div className="font-semibold text-sm">Analytics</div>
           </Link>
-          <Link href="/automation" className="bg-forest text-white p-4 rounded-2xl shadow-soft hover:shadow-warm transition text-center">
-            <div className="text-3xl mb-2">🤖</div>
-            <div className="font-semibold">Automation</div>
+          <Link href="/automation" className="bg-forest text-white p-4 rounded-2xl shadow-soft hover:shadow-warm transition text-center group">
+            <div className="w-10 h-10 mx-auto mb-2 rounded-xl bg-white/15 flex items-center justify-center text-white group-hover:scale-105 transition-transform">
+              <Bot size={20} strokeWidth={2} />
+            </div>
+            <div className="font-semibold text-sm">Automation</div>
           </Link>
-          <Link href="/inventory" className="card-warm p-4 hover:shadow-warm transition text-center">
-            <div className="text-3xl mb-2">📦</div>
-            <div className="font-semibold">Inventory</div>
+          <Link href="/inventory" className="card-warm p-4 hover:shadow-warm transition text-center group">
+            <div className="w-10 h-10 mx-auto mb-2 rounded-xl bg-forest/10 flex items-center justify-center text-forest group-hover:scale-105 transition-transform">
+              <Package size={20} strokeWidth={2} />
+            </div>
+            <div className="font-semibold text-sm">Inventory</div>
           </Link>
-          <Link href="/dashboard/contacts" className="card-warm p-4 hover:shadow-warm transition text-center">
-            <div className="text-3xl mb-2">👥</div>
-            <div className="font-semibold">Kontak</div>
+          <Link href="/dashboard/contacts" className="card-warm p-4 hover:shadow-warm transition text-center group">
+            <div className="w-10 h-10 mx-auto mb-2 rounded-xl bg-amber-500/10 flex items-center justify-center text-amber-600 group-hover:scale-105 transition-transform">
+              <Users size={20} strokeWidth={2} />
+            </div>
+            <div className="font-semibold text-sm">Kontak</div>
           </Link>
-          <Link href="/dashboard/settings" className="card-warm p-4 hover:shadow-warm transition text-center">
-            <div className="text-3xl mb-2">⚙️</div>
-            <div className="font-semibold">Pengaturan</div>
+          <Link href="/dashboard/settings" className="card-warm p-4 hover:shadow-warm transition text-center group">
+            <div className="w-10 h-10 mx-auto mb-2 rounded-xl bg-charcoal/5 flex items-center justify-center text-charcoal group-hover:scale-105 transition-transform">
+              <Settings size={20} strokeWidth={2} />
+            </div>
+            <div className="font-semibold text-sm">Pengaturan</div>
           </Link>
         </div>
 
@@ -467,7 +537,7 @@ export default function DashboardPage() {
           <StatsCard
             title="Penjualan Hari Ini"
             value={formatCurrency(totalSales)}
-            icon={<span className="text-2xl">💰</span>}
+            icon={<TrendingUp size={22} className="text-forest" />}
             trend="up"
             trendValue="+12%"
             description="dari kemarin"
@@ -475,17 +545,17 @@ export default function DashboardPage() {
           <StatsCard
             title="Pembelian"
             value={formatCurrency(totalPurchases)}
-            icon={<span className="text-2xl">📦</span>}
+            icon={<Package size={22} className="text-terra" />}
           />
           <StatsCard
             title="Pengeluaran"
             value={formatCurrency(totalExpenses)}
-            icon={<span className="text-2xl">💸</span>}
+            icon={<Receipt size={22} className="text-amber-600" />}
           />
           <StatsCard
             title="Laba Kotor"
             value={formatCurrency(grossProfit)}
-            icon={<span className="text-2xl">📈</span>}
+            icon={<BarChart3 size={22} className="text-forest" />}
             trend={grossProfit >= 0 ? 'up' : 'down'}
           />
         </div>
@@ -496,7 +566,7 @@ export default function DashboardPage() {
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <span>📋</span> Transaksi Terbaru
+                <Clock size={18} className="text-terra" /> Transaksi Terbaru
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -510,7 +580,7 @@ export default function DashboardPage() {
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <span>🤝</span> Log Negosiasi Terakhir
+                <Handshake size={18} className="text-forest" /> Log Negosiasi Terakhir
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -531,7 +601,7 @@ export default function DashboardPage() {
         <Card className="mt-8">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <span>📦</span> Inventory
+              <Package size={18} className="text-charcoal" /> Inventory
             </CardTitle>
           </CardHeader>
           <CardContent>

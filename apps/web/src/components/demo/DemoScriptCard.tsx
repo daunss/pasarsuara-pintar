@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Clock, CheckCircle2, ChevronDown, ChevronUp } from 'lucide-react';
+import { Clock, CheckCircle2, ChevronDown, ChevronUp, FileText, Lightbulb } from 'lucide-react';
 
 const demoScript = [
   {
@@ -65,7 +65,9 @@ export function DemoScriptCard() {
   return (
     <div className="bg-white rounded-lg shadow-lg p-6 max-w-2xl">
       <div className="flex items-center justify-between mb-6">
-        <h3 className="text-2xl font-bold text-gray-900">📋 Demo Script</h3>
+        <h3 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
+          <FileText className="w-6 h-6 text-green-600" /> Demo Script
+        </h3>
         <div className="flex items-center gap-2 text-green-600">
           <Clock className="w-5 h-5" />
           <span className="font-semibold">{totalDuration.toFixed(1)} min total</span>
@@ -120,7 +122,9 @@ export function DemoScriptCard() {
 
       <div className="mt-6 p-4 bg-green-50 rounded-lg border-2 border-green-500">
         <div className="flex items-start gap-3">
-          <div className="text-2xl">💡</div>
+          <div className="w-8 h-8 rounded-lg bg-green-200/60 flex items-center justify-center text-green-700 shrink-0 mt-0.5">
+            <Lightbulb className="w-5 h-5" />
+          </div>
           <div>
             <div className="font-semibold text-green-900 mb-1">Pro Tips:</div>
             <ul className="text-sm text-green-800 space-y-1">

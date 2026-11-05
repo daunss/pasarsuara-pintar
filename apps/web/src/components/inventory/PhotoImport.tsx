@@ -3,6 +3,18 @@
 import { useState, useRef, useCallback } from 'react'
 import { supabase } from '@/lib/supabase'
 import { useAuth } from '@/lib/auth'
+import {
+  Camera,
+  ClipboardList,
+  CheckCircle2,
+  AlertTriangle,
+  XCircle,
+  FileText,
+  Save,
+  RotateCcw,
+  Trash2,
+  X,
+} from 'lucide-react'
 
 interface PhotoImportProps {
   onComplete: () => void
@@ -221,12 +233,14 @@ export function PhotoImport({ onComplete, onClose }: PhotoImportProps) {
         <div className="p-6">
           {/* Header */}
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-xl font-bold">📸 Import dari Foto Nota/Struk</h2>
+            <h2 className="text-xl font-bold flex items-center gap-2">
+              <Camera className="text-purple-600" size={24} /> Import dari Foto Nota/Struk
+            </h2>
             <button
               onClick={onClose}
-              className="text-gray-400 hover:text-gray-600 text-2xl"
+              className="text-gray-400 hover:text-gray-600 p-1 rounded-lg hover:bg-gray-100 transition"
             >
-              ×
+              <X size={20} />
             </button>
           </div>
 
@@ -234,7 +248,9 @@ export function PhotoImport({ onComplete, onClose }: PhotoImportProps) {
           {step === 'upload' && (
             <div className="space-y-4">
               <div className="bg-purple-50 border border-purple-200 rounded-lg p-4">
-                <h3 className="font-semibold text-purple-900 mb-2">📋 Cara kerja:</h3>
+                <h3 className="font-semibold text-purple-900 mb-2 flex items-center gap-1.5">
+                  <ClipboardList size={18} /> Cara kerja:
+                </h3>
                 <ol className="list-decimal list-inside space-y-1 text-sm text-purple-800">
                   <li>Upload foto nota, struk, atau catatan keuangan</li>
                   <li>AI akan menganalisis dan mengekstrak item dari foto</li>
@@ -255,7 +271,9 @@ export function PhotoImport({ onComplete, onClose }: PhotoImportProps) {
                     : 'border-gray-300 hover:border-purple-400 hover:bg-purple-50'
                 }`}
               >
-                <div className="text-5xl mb-4">📷</div>
+                <div className="w-16 h-16 rounded-2xl bg-purple-100 flex items-center justify-center text-purple-600 mx-auto mb-4">
+                  <Camera size={32} />
+                </div>
                 <p className="font-semibold text-gray-700 mb-1">
                   Klik atau drag &amp; drop foto di sini
                 </p>
@@ -278,8 +296,8 @@ export function PhotoImport({ onComplete, onClose }: PhotoImportProps) {
               )}
 
               {error && (
-                <div className="bg-red-50 border border-red-200 rounded-lg p-4 text-red-700 text-sm">
-                  ❌ {error}
+                <div className="bg-red-50 border border-red-200 rounded-lg p-4 text-red-700 text-sm flex items-center gap-2">
+                  <AlertTriangle size={16} /> {error}
                 </div>
               )}
             </div>
@@ -301,8 +319,8 @@ export function PhotoImport({ onComplete, onClose }: PhotoImportProps) {
           {step === 'review' && (
             <div className="space-y-4">
               {summary && (
-                <div className="bg-green-50 border border-green-200 rounded-lg p-3 text-sm text-green-800">
-                  📝 {summary}
+                <div className="bg-green-50 border border-green-200 rounded-lg p-3 text-sm text-green-800 flex items-center gap-2">
+                  <FileText size={16} /> {summary}
                 </div>
               )}
 
@@ -327,9 +345,9 @@ export function PhotoImport({ onComplete, onClose }: PhotoImportProps) {
                         </span>
                         <button
                           onClick={() => removeItem(index)}
-                          className="text-red-400 hover:text-red-600 text-sm"
+                          className="text-red-400 hover:text-red-600 text-sm flex items-center gap-1"
                         >
-                          ✕ Hapus
+                          <Trash2 size={13} /> Hapus
                         </button>
                       </div>
                       <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
@@ -386,16 +404,16 @@ export function PhotoImport({ onComplete, onClose }: PhotoImportProps) {
                     setPreview(null)
                     setSummary('')
                   }}
-                  className="flex-1 bg-gray-200 text-gray-700 py-2 rounded-lg font-semibold hover:bg-gray-300 transition"
+                  className="flex-1 bg-gray-200 text-gray-700 py-2 rounded-lg font-semibold hover:bg-gray-300 transition flex items-center justify-center gap-1.5"
                 >
-                  ← Upload Ulang
+                  <RotateCcw size={16} /> Upload Ulang
                 </button>
                 <button
                   onClick={handleSave}
                   disabled={items.length === 0}
-                  className="flex-1 bg-purple-600 text-white py-2 rounded-lg font-semibold hover:bg-purple-700 transition disabled:opacity-50"
+                  className="flex-1 bg-purple-600 text-white py-2 rounded-lg font-semibold hover:bg-purple-700 transition disabled:opacity-50 flex items-center justify-center gap-1.5"
                 >
-                  💾 Simpan {items.length} Item
+                  <Save size={16} /> Simpan {items.length} Item
                 </button>
               </div>
             </div>
@@ -415,18 +433,26 @@ export function PhotoImport({ onComplete, onClose }: PhotoImportProps) {
               <div className={`border rounded-lg p-6 text-center ${
                 saveResult.failed === 0 ? 'bg-green-50 border-green-200' : 'bg-yellow-50 border-yellow-200'
               }`}>
-                <div className="text-5xl mb-3">
-                  {saveResult.failed === 0 ? '✅' : '⚠️'}
+                <div className="mb-3 flex justify-center">
+                  {saveResult.failed === 0 ? (
+                    <div className="w-16 h-16 rounded-full bg-green-100 flex items-center justify-center text-green-600">
+                      <CheckCircle2 size={36} />
+                    </div>
+                  ) : (
+                    <div className="w-16 h-16 rounded-full bg-yellow-100 flex items-center justify-center text-yellow-600">
+                      <AlertTriangle size={36} />
+                    </div>
+                  )}
                 </div>
                 <h3 className="text-lg font-bold mb-2">
                   {saveResult.failed === 0 ? 'Import Berhasil!' : 'Import Selesai'}
                 </h3>
-                <p className="text-green-700">
-                  ✅ {saveResult.success} item berhasil disimpan
+                <p className="text-green-700 flex items-center justify-center gap-1.5">
+                  <CheckCircle2 size={16} /> {saveResult.success} item berhasil disimpan
                 </p>
                 {saveResult.failed > 0 && (
-                  <p className="text-red-700 mt-1">
-                    ❌ {saveResult.failed} item gagal
+                  <p className="text-red-700 mt-1 flex items-center justify-center gap-1.5">
+                    <XCircle size={16} /> {saveResult.failed} item gagal
                   </p>
                 )}
               </div>

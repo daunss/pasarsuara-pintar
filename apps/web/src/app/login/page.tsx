@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 import Link from 'next/link'
 import { Logo } from '@/components/ui/logo'
+import { Check } from 'lucide-react'
 
 export default function LoginPage() {
   const router = useRouter()
@@ -180,15 +181,15 @@ export default function LoginPage() {
           <p className="text-sm text-muted mb-4 font-body">Kenapa Suara Niaga Pintar?</p>
           <div className="flex justify-center gap-6 text-xs text-muted font-mono">
             <div className="flex items-center gap-1">
-              <span className="text-forest">✓</span>
+              <Check size={14} className="text-forest" />
               <span>Voice-First</span>
             </div>
             <div className="flex items-center gap-1">
-              <span className="text-forest">✓</span>
+              <Check size={14} className="text-forest" />
               <span>AI-Powered</span>
             </div>
             <div className="flex items-center gap-1">
-              <span className="text-forest">✓</span>
+              <Check size={14} className="text-forest" />
               <span>Gratis</span>
             </div>
           </div>

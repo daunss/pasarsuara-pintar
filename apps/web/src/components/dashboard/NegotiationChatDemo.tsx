@@ -28,7 +28,7 @@ const demoNegotiations: NegotiationDemo[] = [
       { role: 'seller_agent', content: '[Pak Joyo] Stok ada 500 kg. Harga normal 12.500/kg, tapi untuk 25 kg bisa 12.200/kg' },
       { role: 'buyer_agent', content: 'Bisa 11.800/kg? Saya langganan tetap' },
       { role: 'seller_agent', content: '[Pak Joyo] Deal 11.800/kg untuk langganan. Total 295.000 untuk 25 kg' },
-      { role: 'system', content: '✅ Negosiasi berhasil! Deal: Rp 11.800/kg' }
+      { role: 'system', content: 'Negosiasi berhasil! Deal: Rp 11.800/kg' }
     ]
   },
   {
@@ -41,7 +41,7 @@ const demoNegotiations: NegotiationDemo[] = [
       { role: 'seller_agent', content: '[Bu Sari] Harga 17.500/liter untuk eceran' },
       { role: 'buyer_agent', content: 'Kalau ambil 15 liter bisa 16.000/liter?' },
       { role: 'seller_agent', content: '[Bu Sari] OK deal! 16.000/liter untuk 15 liter. Total 240.000' },
-      { role: 'system', content: '✅ Deal closed! Hemat Rp 22.500' }
+      { role: 'system', content: 'Deal closed! Hemat Rp 22.500' }
     ]
   },
   {
@@ -54,7 +54,7 @@ const demoNegotiations: NegotiationDemo[] = [
       { role: 'seller_agent', content: '[Pak Budi] Ayam segar hari ini 38.000/ekor' },
       { role: 'buyer_agent', content: 'Bisa 35.000/ekor untuk 20 ekor?' },
       { role: 'seller_agent', content: '[Pak Budi] Oke deh, 35.000/ekor. Total 700.000 untuk 20 ekor' },
-      { role: 'system', content: '✅ Negosiasi sukses! Hemat Rp 60.000' }
+      { role: 'system', content: 'Negosiasi sukses! Hemat Rp 60.000' }
     ]
   }
 ];
@@ -189,7 +189,9 @@ export default function NegotiationChatDemo() {
                 </div>
                 <div className="flex-1">
                   <div className="bg-blue-100 rounded-lg p-3 inline-block max-w-md">
-                    <div className="text-xs text-blue-600 font-semibold mb-1">Buyer Agent 🤖</div>
+                    <div className="text-xs text-blue-600 font-semibold mb-1 flex items-center gap-1">
+                      <span>Buyer Agent</span> <Bot size={12} />
+                    </div>
                     <div className="text-gray-800">{message.content}</div>
                   </div>
                 </div>
@@ -200,7 +202,9 @@ export default function NegotiationChatDemo() {
               <div className="flex items-start gap-3 justify-end">
                 <div className="flex-1 text-right">
                   <div className="bg-green-100 rounded-lg p-3 inline-block max-w-md">
-                    <div className="text-xs text-green-600 font-semibold mb-1">Seller Agent 👨‍🌾</div>
+                    <div className="text-xs text-green-600 font-semibold mb-1 flex items-center justify-end gap-1">
+                      <span>Seller Agent</span> <User size={12} />
+                    </div>
                     <div className="text-gray-800">{message.content}</div>
                   </div>
                 </div>

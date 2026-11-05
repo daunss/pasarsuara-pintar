@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/lib/auth'
 import { supabase } from '@/lib/supabase'
+import { CheckCircle2, Smartphone, Lightbulb, Check, ShieldCheck } from 'lucide-react'
 
 export default function SetupWhatsAppPage() {
   const router = useRouter()
@@ -105,7 +106,9 @@ export default function SetupWhatsAppPage() {
     return (
       <div className="page-bg flex items-center justify-center p-4">
         <div className="max-w-md w-full card-warm p-8 text-center">
-          <div className="text-6xl mb-4">✅</div>
+          <div className="w-16 h-16 rounded-full bg-forest/10 flex items-center justify-center text-forest mx-auto mb-4">
+            <CheckCircle2 size={36} />
+          </div>
           <h2 className="text-2xl font-bold font-display text-charcoal mb-4">
             Nomor WhatsApp Sudah Terdaftar
           </h2>
@@ -128,7 +131,9 @@ export default function SetupWhatsAppPage() {
       <div className="max-w-md w-full">
         {/* Header */}
         <div className="text-center mb-8">
-          <div className="text-6xl mb-4">📱</div>
+          <div className="w-16 h-16 rounded-2xl bg-forest/10 flex items-center justify-center text-forest mx-auto mb-4">
+            <Smartphone size={32} />
+          </div>
           <h1 className="text-3xl font-bold font-display text-charcoal mb-2">
             Setup WhatsApp
           </h1>
@@ -151,10 +156,13 @@ export default function SetupWhatsAppPage() {
 
           {/* Info Box */}
           <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-            <p className="text-sm text-blue-800">
-              💡 <strong>Kenapa perlu WhatsApp?</strong>
-              <br />
-              Anda bisa catat transaksi dengan voice note via WhatsApp. Lebih cepat dan mudah!
+            <p className="text-sm text-blue-800 flex items-start gap-2">
+              <Lightbulb size={16} className="text-blue-600 shrink-0 mt-0.5" />
+              <span>
+                <strong>Kenapa perlu WhatsApp?</strong>
+                <br />
+                Anda bisa catat transaksi dengan voice note via WhatsApp. Lebih cepat dan mudah!
+              </span>
             </p>
           </div>
 
@@ -200,19 +208,19 @@ export default function SetupWhatsAppPage() {
             </p>
             <ul className="space-y-2 text-sm text-muted">
               <li className="flex items-start gap-2">
-                <span className="text-terra">✓</span>
+                <Check size={14} className="text-terra shrink-0 mt-0.5" />
                 <span>Catat transaksi dengan voice note</span>
               </li>
               <li className="flex items-start gap-2">
-                <span className="text-terra">✓</span>
+                <Check size={14} className="text-terra shrink-0 mt-0.5" />
                 <span>Terima notifikasi stock menipis</span>
               </li>
               <li className="flex items-start gap-2">
-                <span className="text-terra">✓</span>
+                <Check size={14} className="text-terra shrink-0 mt-0.5" />
                 <span>Laporan harian otomatis</span>
               </li>
               <li className="flex items-start gap-2">
-                <span className="text-terra">✓</span>
+                <Check size={14} className="text-terra shrink-0 mt-0.5" />
                 <span>Negosiasi dengan supplier</span>
               </li>
             </ul>
@@ -220,8 +228,8 @@ export default function SetupWhatsAppPage() {
         </div>
 
         {/* Privacy Note */}
-        <p className="mt-6 text-center text-xs text-muted">
-          🔒 Nomor WhatsApp Anda aman dan tidak akan dibagikan ke pihak ketiga
+        <p className="mt-6 text-center text-xs text-muted flex items-center justify-center gap-1.5">
+          <ShieldCheck size={14} className="text-muted" /> Nomor WhatsApp Anda aman dan tidak akan dibagikan ke pihak ketiga
         </p>
       </div>
     </div>

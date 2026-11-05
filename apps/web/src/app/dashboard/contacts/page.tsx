@@ -6,6 +6,21 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { supabase, type Contact } from '@/lib/supabase'
 import { useAuth } from '@/lib/auth'
 import Link from 'next/link'
+import { Logo } from '@/components/ui/logo'
+import {
+  Building2,
+  Users,
+  Star,
+  Trash2,
+  Phone,
+  Mail,
+  MapPin,
+  Home,
+  Lightbulb,
+  Plus,
+  X,
+  ArrowLeft,
+} from 'lucide-react'
 
 export default function ContactsPage() {
   const router = useRouter()
@@ -117,9 +132,19 @@ export default function ContactsPage() {
   }
 
   const renderStars = (rating: number | null) => {
-    if (!rating) return <span className="text-muted/70">Belum ada rating</span>
-    const stars = '⭐'.repeat(Math.round(rating))
-    return <span>{stars} {rating.toFixed(1)}</span>
+    if (!rating) return <span className="text-muted/70 text-xs">Belum ada rating</span>
+    return (
+      <div className="flex items-center gap-1 text-amber-500">
+        {Array.from({ length: 5 }).map((_, i) => (
+          <Star
+            key={i}
+            size={13}
+            className={i < Math.round(rating) ? 'fill-amber-400 text-amber-400' : 'text-gray-300'}
+          />
+        ))}
+        <span className="text-xs text-charcoal font-medium ml-1">{rating.toFixed(1)}</span>
+      </div>
+    )
   }
 
   return (
@@ -129,14 +154,14 @@ export default function ContactsPage() {
         <div className="max-w-7xl mx-auto px-4 py-4">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
             <div className="flex items-center gap-4">
-              <Link href="/dashboard" className="text-xl sm:text-2xl font-bold font-display text-forest">
-                🗣️ Suara Niaga
+              <Link href="/dashboard" className="flex items-center">
+                <Logo size="sm" />
               </Link>
               <span className="text-muted/70 hidden sm:inline">|</span>
               <span className="text-muted hidden sm:inline">Kontak</span>
             </div>
-            <Link href="/dashboard" className="text-sm text-terra hover:text-terra-dark transition">
-              ← Kembali ke Dashboard
+            <Link href="/dashboard" className="text-sm text-terra hover:text-terra-dark transition flex items-center gap-1">
+              <ArrowLeft size={14} /> Kembali ke Dashboard
             </Link>
           </div>
         </div>
@@ -145,15 +170,31 @@ export default function ContactsPage() {
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 py-4 sm:py-8">
         <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 mb-6">
-          <h1 className="text-xl sm:text-3xl font-bold font-display text-charcoal">
-            {activeTab === 'SUPPLIER' ? '🏭 Supplier' : '👥 Pelanggan'}
+          <h1 className="text-xl sm:text-3xl font-bold font-display text-charcoal flex items-center gap-2">
+            {activeTab === 'SUPPLIER' ? (
+              <>
+                <Building2 className="text-forest" size={26} /> Supplier
+              </>
+            ) : (
+              <>
+                <Users className="text-terra" size={26} /> Pelanggan
+              </>
+            )}
           </h1>
           {activeTab === 'CUSTOMER' && (
             <button
               onClick={() => setShowAddForm(!showAddForm)}
-              className="bg-forest text-white px-4 sm:px-6 py-2 rounded-2xl hover:bg-forest-dark transition w-full sm:w-auto"
+              className="bg-forest text-white px-4 sm:px-6 py-2 rounded-2xl hover:bg-forest-dark transition w-full sm:w-auto flex items-center justify-center gap-2"
             >
-              {showAddForm ? '✕ Batal' : '+ Tambah Pelanggan'}
+              {showAddForm ? (
+                <>
+                  <X size={16} /> Batal
+                </>
+              ) : (
+                <>
+                  <Plus size={16} /> Tambah Pelanggan
+                </>
+              )}
             </button>
           )}
         </div>
@@ -165,26 +206,26 @@ export default function ContactsPage() {
               setActiveTab('SUPPLIER')
               setShowAddForm(false)
             }}
-            className={`px-4 sm:px-6 py-2 rounded-2xl font-medium transition whitespace-nowrap ${
+            className={`px-4 sm:px-6 py-2 rounded-2xl font-medium transition whitespace-nowrap flex items-center gap-2 ${
               activeTab === 'SUPPLIER'
                 ? 'bg-forest text-white'
                 : 'bg-white text-muted hover:bg-cream'
             }`}
           >
-            🏭 Supplier
+            <Building2 size={16} /> Supplier
           </button>
           <button
             onClick={() => {
               setActiveTab('CUSTOMER')
               setShowAddForm(false)
             }}
-            className={`px-6 py-2 rounded-2xl font-medium transition ${
+            className={`px-6 py-2 rounded-2xl font-medium transition flex items-center gap-2 ${
               activeTab === 'CUSTOMER'
                 ? 'bg-forest text-white'
                 : 'bg-white text-muted hover:bg-cream'
             }`}
           >
-            👥 Pelanggan
+            <Users size={16} /> Pelanggan
           </button>
         </div>
 
@@ -279,10 +320,13 @@ export default function ContactsPage() {
         ) : contacts.length === 0 ? (
           <Card>
             <CardContent className="py-12 text-center">
-              <p className="text-muted text-lg mb-4">
-                {activeTab === 'SUPPLIER' ? '🏭 Belum ada supplier' : '👥 Belum ada pelanggan'}
+              <div className="w-16 h-16 rounded-2xl bg-forest/10 flex items-center justify-center text-forest mx-auto mb-4">
+                {activeTab === 'SUPPLIER' ? <Building2 size={32} /> : <Users size={32} />}
+              </div>
+              <p className="text-charcoal font-semibold text-lg mb-2">
+                {activeTab === 'SUPPLIER' ? 'Belum ada supplier' : 'Belum ada pelanggan'}
               </p>
-              <p className="text-muted/70">
+              <p className="text-muted/70 text-sm">
                 {activeTab === 'SUPPLIER'
                   ? 'Supplier ditambahkan oleh admin melalui database'
                   : 'Klik "Tambah Pelanggan" untuk mulai menambahkan kontak'}
@@ -299,9 +343,10 @@ export default function ContactsPage() {
                     {activeTab === 'CUSTOMER' && (
                       <button
                         onClick={() => handleDelete(contact.id)}
-                        className="text-red-500 hover:text-red-700 text-sm"
+                        className="text-muted hover:text-red-600 p-1 rounded-lg hover:bg-red-50 transition"
+                        title="Hapus kontak"
                       >
-                        🗑️
+                        <Trash2 size={16} />
                       </button>
                     )}
                   </div>
@@ -309,7 +354,7 @@ export default function ContactsPage() {
                   <div className="space-y-2 text-sm">
                     {contact.phone && (
                       <p className="flex items-center gap-2">
-                        <span>📱</span>
+                        <Phone size={14} className="text-muted" />
                         <a href={`tel:${contact.phone}`} className="text-terra hover:text-terra-dark transition">
                           {contact.phone}
                         </a>
@@ -317,7 +362,7 @@ export default function ContactsPage() {
                     )}
                     {contact.email && (
                       <p className="flex items-center gap-2">
-                        <span>📧</span>
+                        <Mail size={14} className="text-muted" />
                         <a href={`mailto:${contact.email}`} className="text-terra hover:text-terra-dark transition">
                           {contact.email}
                         </a>
@@ -325,13 +370,13 @@ export default function ContactsPage() {
                     )}
                     {contact.city && (
                       <p className="flex items-center gap-2">
-                        <span>📍</span>
+                        <MapPin size={14} className="text-muted" />
                         <span className="text-muted">{contact.city}</span>
                       </p>
                     )}
                     {contact.address && (
                       <p className="flex items-start gap-2">
-                        <span>🏠</span>
+                        <Home size={14} className="text-muted mt-0.5" />
                         <span className="text-muted text-xs">{contact.address}</span>
                       </p>
                     )}
@@ -342,15 +387,16 @@ export default function ContactsPage() {
                       <div>
                         {renderStars(contact.rating)}
                       </div>
-                      <div className="text-muted">
+                      <div className="text-muted text-xs">
                         {contact.total_transactions || 0} transaksi
                       </div>
                     </div>
                   </div>
 
                   {contact.notes && (
-                    <div className="mt-3 p-2 bg-amber-50 rounded text-xs text-muted">
-                      💡 {contact.notes}
+                    <div className="mt-3 p-2 bg-amber-50 rounded text-xs text-muted flex items-start gap-1.5">
+                      <Lightbulb size={14} className="text-amber-600 shrink-0 mt-0.5" />
+                      <span>{contact.notes}</span>
                     </div>
                   )}
                 </CardContent>

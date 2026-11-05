@@ -11,6 +11,19 @@ import {
   generateSmartNotifications
 } from '@/lib/automation'
 import Link from 'next/link'
+import {
+  Bot,
+  RefreshCw,
+  Bell,
+  LineChart,
+  Lightbulb,
+  AlertTriangle,
+  CheckCircle2,
+  TrendingUp,
+  TrendingDown,
+  ArrowRight,
+  ArrowLeft,
+} from 'lucide-react'
 
 function AutomationContent() {
   const router = useRouter()
@@ -78,9 +91,9 @@ function AutomationContent() {
   }
 
   const getTrendIcon = (trend: string) => {
-    if (trend === 'UP') return '📈'
-    if (trend === 'DOWN') return '📉'
-    return '➡️'
+    if (trend === 'UP') return <TrendingUp className="inline text-forest" size={24} />
+    if (trend === 'DOWN') return <TrendingDown className="inline text-red-500" size={24} />
+    return <ArrowRight className="inline text-muted" size={24} />
   }
 
   const handleNotificationAction = (action?: string) => {
@@ -134,21 +147,23 @@ function AutomationContent() {
         <div className="max-w-7xl mx-auto px-4 py-4">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
             <div>
-              <h1 className="text-xl sm:text-2xl font-bold font-display text-charcoal">🤖 Smart Automation</h1>
+              <h1 className="text-xl sm:text-2xl font-bold font-display text-charcoal flex items-center gap-2">
+                <Bot className="text-forest" size={24} /> Smart Automation
+              </h1>
               <p className="text-sm sm:text-base text-muted">AI-powered business automation & insights</p>
             </div>
             <div className="flex flex-wrap gap-2 sm:gap-3">
               <Link
                 href="/dashboard"
-                className="bg-white border-2 border-forest text-forest px-3 sm:px-4 py-2 rounded-2xl text-sm sm:text-base font-semibold hover:bg-cream-light transition"
+                className="bg-white border-2 border-forest text-forest px-3 sm:px-4 py-2 rounded-2xl text-sm sm:text-base font-semibold hover:bg-cream-light transition flex items-center gap-1.5"
               >
-                ← Dashboard
+                <ArrowLeft size={16} /> Dashboard
               </Link>
               <button
                 onClick={loadAutomationData}
-                className="bg-forest text-white px-3 sm:px-4 py-2 rounded-2xl text-sm sm:text-base font-semibold hover:bg-forest-dark transition"
+                className="bg-forest text-white px-3 sm:px-4 py-2 rounded-2xl text-sm sm:text-base font-semibold hover:bg-forest-dark transition flex items-center gap-1.5"
               >
-                🔄 Refresh
+                <RefreshCw size={16} /> Refresh
               </button>
             </div>
           </div>
@@ -159,7 +174,9 @@ function AutomationContent() {
       <div className="max-w-7xl mx-auto px-4 py-4 sm:py-8">
         {/* Smart Notifications */}
         <div className="mb-8">
-          <h2 className="text-xl font-bold font-display mb-4">🔔 Smart Notifications</h2>
+          <h2 className="text-xl font-bold font-display mb-4 flex items-center gap-2">
+            <Bell className="text-terra" size={20} /> Smart Notifications
+          </h2>
           <div className="space-y-3">
             {notifications.length === 0 ? (
               <div className="card-warm p-6 text-center text-muted">
@@ -193,7 +210,9 @@ function AutomationContent() {
 
         {/* Sales Prediction */}
         <div className="card-warm p-6 mb-8">
-          <h2 className="text-xl font-bold font-display mb-4">📊 Sales Prediction (7 Days)</h2>
+          <h2 className="text-xl font-bold font-display mb-4 flex items-center gap-2">
+            <LineChart className="text-forest" size={20} /> Sales Prediction (7 Days)
+          </h2>
           <div className="grid md:grid-cols-3 gap-6">
             <div>
               <p className="text-muted text-sm mb-2">Predicted Revenue</p>
@@ -209,17 +228,20 @@ function AutomationContent() {
             </div>
             <div>
               <p className="text-muted text-sm mb-2">Trend</p>
-              <p className="text-3xl font-bold">
-                {getTrendIcon(salesPrediction.trend)} {salesPrediction.trend}
+              <p className="text-3xl font-bold flex items-center gap-2">
+                {getTrendIcon(salesPrediction.trend)} <span>{salesPrediction.trend}</span>
               </p>
             </div>
           </div>
           <div className="mt-4 p-4 bg-cream-light rounded-2xl">
-            <p className="text-sm text-terra-dark">
-              💡 <strong>Insight:</strong>{' '}
-              {salesPrediction.trend === 'UP' && 'Penjualan meningkat! Pastikan stock mencukupi.'}
-              {salesPrediction.trend === 'DOWN' && 'Penjualan menurun. Pertimbangkan promosi atau diskon.'}
-              {salesPrediction.trend === 'STABLE' && 'Penjualan stabil. Pertahankan strategi saat ini.'}
+            <p className="text-sm text-terra-dark flex items-center gap-2">
+              <Lightbulb size={16} className="text-amber-600 shrink-0" />
+              <span>
+                <strong>Insight:</strong>{' '}
+                {salesPrediction.trend === 'UP' && 'Penjualan meningkat! Pastikan stock mencukupi.'}
+                {salesPrediction.trend === 'DOWN' && 'Penjualan menurun. Pertimbangkan promosi atau diskon.'}
+                {salesPrediction.trend === 'STABLE' && 'Penjualan stabil. Pertahankan strategi saat ini.'}
+              </span>
             </p>
           </div>
         </div>
@@ -227,11 +249,13 @@ function AutomationContent() {
         {/* Low Stock Alerts */}
         <div className="card-warm mb-8">
           <div className="p-6 border-b border-cream-dark/40">
-            <h2 className="text-xl font-bold font-display">⚠️ Low Stock Alerts</h2>
+            <h2 className="text-xl font-bold font-display flex items-center gap-2">
+              <AlertTriangle className="text-amber-600" size={20} /> Low Stock Alerts
+            </h2>
           </div>
           {lowStockAlerts.length === 0 ? (
-            <div className="p-6 text-center text-muted">
-              ✅ Semua produk stock aman
+            <div className="p-6 text-center text-muted flex items-center justify-center gap-2">
+              <CheckCircle2 size={18} className="text-forest" /> Semua produk stock aman
             </div>
           ) : (
             <div className="overflow-x-auto">
@@ -280,11 +304,13 @@ function AutomationContent() {
         {/* Auto Reorder Suggestions */}
         <div id="reorder-suggestions" className="card-warm">
           <div className="p-6 border-b border-cream-dark/40">
-            <h2 className="text-xl font-bold font-display">🔄 Auto Reorder Suggestions</h2>
+            <h2 className="text-xl font-bold font-display flex items-center gap-2">
+              <RefreshCw className="text-terra" size={20} /> Auto Reorder Suggestions
+            </h2>
           </div>
           {reorderSuggestions.length === 0 ? (
-            <div className="p-6 text-center text-muted">
-              ✅ Tidak ada reorder yang diperlukan saat ini
+            <div className="p-6 text-center text-muted flex items-center justify-center gap-2">
+              <CheckCircle2 size={18} className="text-forest" /> Tidak ada reorder yang diperlukan saat ini
             </div>
           ) : (
             <div className="overflow-x-auto">

@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { useAuth } from '@/lib/auth'
 import { supabase } from '@/lib/supabase'
 import Link from 'next/link'
+import { Users, ArrowLeft } from 'lucide-react'
 
 interface Customer {
   id: string
@@ -104,11 +105,13 @@ export default function CustomersPage() {
       <header className="page-header">
         <div className="max-w-7xl mx-auto px-4 py-4">
           <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
-            <Link href="/dashboard" className="text-terra hover:text-forest">
-              ← Dashboard
+            <Link href="/dashboard" className="text-terra hover:text-forest flex items-center gap-1 text-sm font-medium">
+              <ArrowLeft size={14} /> Dashboard
             </Link>
             <span className="text-muted/70 hidden sm:inline">|</span>
-            <h1 className="text-lg sm:text-xl font-bold font-display text-charcoal">👥 Manajemen Pelanggan</h1>
+            <h1 className="text-lg sm:text-xl font-bold font-display text-charcoal flex items-center gap-2">
+              <Users className="text-terra" size={20} /> Manajemen Pelanggan
+            </h1>
           </div>
         </div>
       </header>
@@ -172,7 +175,9 @@ export default function CustomersPage() {
         <div className="card-warm overflow-hidden">
           {filteredCustomers.length === 0 ? (
             <div className="text-center py-12">
-              <span className="text-6xl mb-4 block">👥</span>
+              <div className="w-16 h-16 rounded-2xl bg-terra/10 flex items-center justify-center text-terra mx-auto mb-4">
+                <Users size={32} />
+              </div>
               <p className="text-muted">
                 {searchQuery ? 'Tidak ada pelanggan yang cocok' : 'Belum ada pelanggan'}
               </p>

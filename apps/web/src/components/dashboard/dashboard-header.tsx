@@ -5,6 +5,8 @@ import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 import { WhatsAppStatusBadge } from './whatsapp-status'
 import { NotificationCenter } from './notification-center'
+import { Logo } from '@/components/ui/logo'
+import { Sparkles, Smartphone, Users, Settings, LogOut } from 'lucide-react'
 
 interface DashboardHeaderProps {
   userEmail?: string
@@ -18,11 +20,9 @@ export function DashboardHeader({ userEmail }: DashboardHeaderProps) {
       <div className="max-w-7xl mx-auto px-4 py-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <Link href="/" className="text-xl sm:text-2xl font-bold text-green-700">
-              🗣️ Suara Niaga
-            </Link>
+            <Logo size="md" />
             <span className="text-gray-400 hidden sm:inline">|</span>
-            <span className="text-gray-600 hidden sm:inline">Dashboard</span>
+            <span className="text-gray-600 hidden sm:inline font-medium">Dashboard</span>
           </div>
           <div className="flex items-center gap-4">
             {/* WhatsApp Status */}
@@ -57,7 +57,9 @@ export function DashboardHeader({ userEmail }: DashboardHeaderProps) {
                     href="/demo"
                     className="flex items-center gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-green-50 transition bg-gradient-to-r from-green-50 to-blue-50"
                   >
-                    <span className="text-lg">🎯</span>
+                    <div className="w-8 h-8 rounded-lg bg-green-100 flex items-center justify-center text-green-700">
+                      <Sparkles size={16} />
+                    </div>
                     <div>
                       <p className="font-medium">Hackathon Demo</p>
                       <p className="text-xs text-gray-500">Voice & AI Negotiation</p>
@@ -68,7 +70,9 @@ export function DashboardHeader({ userEmail }: DashboardHeaderProps) {
                     href="/setup-whatsapp"
                     className="flex items-center gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-green-50 transition"
                   >
-                    <span className="text-lg">📱</span>
+                    <div className="w-8 h-8 rounded-lg bg-emerald-100 flex items-center justify-center text-emerald-700">
+                      <Smartphone size={16} />
+                    </div>
                     <div>
                       <p className="font-medium">Setup WhatsApp</p>
                       <p className="text-xs text-gray-500">Tambah/ubah nomor WA</p>
@@ -79,7 +83,9 @@ export function DashboardHeader({ userEmail }: DashboardHeaderProps) {
                     href="/dashboard/customers"
                     className="flex items-center gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-green-50 transition"
                   >
-                    <span className="text-lg">👥</span>
+                    <div className="w-8 h-8 rounded-lg bg-amber-100 flex items-center justify-center text-amber-700">
+                      <Users size={16} />
+                    </div>
                     <div>
                       <p className="font-medium">Pelanggan</p>
                       <p className="text-xs text-gray-500">Manajemen pelanggan</p>
@@ -90,7 +96,9 @@ export function DashboardHeader({ userEmail }: DashboardHeaderProps) {
                     href="/dashboard/settings"
                     className="flex items-center gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-green-50 transition"
                   >
-                    <span className="text-lg">⚙️</span>
+                    <div className="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center text-gray-700">
+                      <Settings size={16} />
+                    </div>
                     <div>
                       <p className="font-medium">Pengaturan</p>
                       <p className="text-xs text-gray-500">Preferensi akun</p>
@@ -104,7 +112,9 @@ export function DashboardHeader({ userEmail }: DashboardHeaderProps) {
                     }}
                     className="w-full flex items-center gap-3 px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition"
                   >
-                    <span className="text-lg">🚪</span>
+                    <div className="w-8 h-8 rounded-lg bg-red-100 flex items-center justify-center text-red-600">
+                      <LogOut size={16} />
+                    </div>
                     <div className="text-left">
                       <p className="font-medium">Logout</p>
                       <p className="text-xs text-red-500">Keluar dari akun</p>

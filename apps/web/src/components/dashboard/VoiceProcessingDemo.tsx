@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Mic, Loader2, CheckCircle2, Brain, Database, Sparkles } from 'lucide-react';
+import { Mic, Loader2, CheckCircle2, Brain, Database, Sparkles, PartyPopper } from 'lucide-react';
 
 type ProcessingStep = {
   id: string;
@@ -34,7 +34,7 @@ export default function VoiceProcessingDemo() {
     // Step 1: Recording (2s)
     updateStep('record', 'processing', 'Listening...');
     await sleep(2000);
-    updateStep('record', 'complete', '✓ Voice captured');
+    updateStep('record', 'complete', 'Voice captured');
 
     // Step 2: Transcribing (2s)
     updateStep('transcribe', 'processing', 'Converting speech to text...');
@@ -42,7 +42,7 @@ export default function VoiceProcessingDemo() {
     const demoText = 'Laku nasi goreng 15 porsi harga 15 ribu';
     setTranscription(demoText);
     await sleep(1000);
-    updateStep('transcribe', 'complete', `✓ "${demoText}"`);
+    updateStep('transcribe', 'complete', `"${demoText}"`);
 
     // Step 3: Understanding Intent (2s)
     updateStep('understand', 'processing', 'Extracting transaction details...');
@@ -56,15 +56,15 @@ export default function VoiceProcessingDemo() {
     };
     setExtractedData(extracted);
     await sleep(1000);
-    updateStep('understand', 'complete', '✓ Intent: SALE transaction');
+    updateStep('understand', 'complete', 'Intent: SALE transaction');
 
     // Step 4: Saving (1s)
     updateStep('save', 'processing', 'Recording to database...');
     await sleep(1000);
-    updateStep('save', 'complete', '✓ Transaction saved');
+    updateStep('save', 'complete', 'Transaction saved');
 
     // Step 5: Done!
-    updateStep('done', 'complete', '🎉 Success!');
+    updateStep('done', 'complete', 'Success!');
     setIsRecording(false);
   };
 
@@ -79,7 +79,9 @@ export default function VoiceProcessingDemo() {
   return (
     <div className="bg-white rounded-lg shadow-lg p-6 max-w-2xl mx-auto">
       <div className="flex items-center justify-between mb-6">
-        <h2 className="text-2xl font-bold text-gray-900">🎤 Voice Processing Demo</h2>
+        <h2 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
+          <Mic className="w-6 h-6 text-forest" /> Voice Processing Demo
+        </h2>
         <button
           onClick={simulateVoiceProcessing}
           disabled={isRecording}
@@ -193,7 +195,9 @@ export default function VoiceProcessingDemo() {
       {/* Success Confetti */}
       {steps[4].status === 'complete' && (
         <div className="mt-6 text-center animate-bounce">
-          <div className="text-4xl">🎉</div>
+          <div className="w-12 h-12 rounded-full bg-forest/10 flex items-center justify-center text-forest mx-auto">
+            <PartyPopper size={28} />
+          </div>
           <div className="text-lg font-bold text-green-600 mt-2">
             Transaction Recorded Successfully!
           </div>

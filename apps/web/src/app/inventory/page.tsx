@@ -8,6 +8,7 @@ import { InventoryForm } from '@/components/inventory/InventoryForm'
 import { BulkImport } from '@/components/inventory/BulkImport'
 import { ShopeeImport } from '@/components/inventory/ShopeeImport'
 import { PhotoImport } from '@/components/inventory/PhotoImport'
+import { Package, ShoppingCart, Camera, UploadCloud, Plus } from 'lucide-react'
 
 interface InventoryItem {
   id: string
@@ -145,27 +146,32 @@ function InventoryContent() {
         <div className="max-w-7xl mx-auto px-4 py-4">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
-              <h1 className="text-xl sm:text-2xl font-bold font-display text-charcoal">📦 Inventory Management</h1>
+              <h1 className="text-xl sm:text-2xl font-bold font-display text-charcoal flex items-center gap-2">
+                <Package className="text-terra" size={24} /> Inventory Management
+              </h1>
               <p className="text-sm sm:text-base text-muted">Kelola stok produk Anda</p>
             </div>
             <div className="flex flex-wrap gap-2 sm:gap-3">
               <button
                 onClick={() => setShowShopeeImport(true)}
-                className="bg-terra text-white px-3 sm:px-4 py-2 rounded-2xl text-sm sm:text-base font-semibold hover:bg-terra-dark transition flex items-center gap-1"
+                className="bg-terra text-white px-3 sm:px-4 py-2 rounded-2xl text-sm sm:text-base font-semibold hover:bg-terra-dark transition flex items-center gap-2"
               >
-                🛒 Import Shopee
+                <ShoppingCart size={18} />
+                <span>Import Shopee</span>
               </button>
               <button
                 onClick={() => setShowPhotoImport(true)}
-                className="bg-terra-dark text-white px-3 sm:px-4 py-2 rounded-2xl text-sm sm:text-base font-semibold hover:bg-terra transition flex items-center gap-1"
+                className="bg-terra-dark text-white px-3 sm:px-4 py-2 rounded-2xl text-sm sm:text-base font-semibold hover:bg-terra transition flex items-center gap-2"
               >
-                📸 Foto Nota
+                <Camera size={18} />
+                <span>Foto Nota</span>
               </button>
               <button
                 onClick={() => setShowBulkImport(true)}
-                className="bg-white border-2 border-terra text-terra px-3 sm:px-4 py-2 rounded-2xl text-sm sm:text-base font-semibold hover:bg-cream-light transition"
+                className="bg-white border-2 border-terra text-terra px-3 sm:px-4 py-2 rounded-2xl text-sm sm:text-base font-semibold hover:bg-cream-light transition flex items-center gap-2"
               >
-                📥 Bulk Import
+                <UploadCloud size={18} />
+                <span>Bulk Import</span>
               </button>
               <button
                 onClick={() => {
@@ -173,9 +179,10 @@ function InventoryContent() {
                   setFormMode('create')
                   setShowForm(true)
                 }}
-                className="bg-forest text-white px-3 sm:px-4 py-2 rounded-2xl text-sm sm:text-base font-semibold hover:bg-forest-dark transition"
+                className="bg-forest text-white px-3 sm:px-4 py-2 rounded-2xl text-sm sm:text-base font-semibold hover:bg-forest-dark transition flex items-center gap-2"
               >
-                + Tambah Produk
+                <Plus size={18} />
+                <span>Tambah Produk</span>
               </button>
             </div>
           </div>
@@ -215,7 +222,9 @@ function InventoryContent() {
           </div>
         ) : filteredInventory.length === 0 ? (
           <div className="card-warm p-12 text-center">
-            <div className="text-6xl mb-4">📦</div>
+            <div className="w-16 h-16 rounded-2xl bg-amber-500/10 flex items-center justify-center text-amber-700 mx-auto mb-4">
+              <Package size={36} />
+            </div>
             <h3 className="text-xl font-semibold mb-2">Tidak ada produk</h3>
             <p className="text-muted mb-4">
               {searchTerm
