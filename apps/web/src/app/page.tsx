@@ -3,6 +3,16 @@
 import Link from "next/link"
 import { useEffect } from "react"
 import { Logo } from "@/components/ui/logo"
+import {
+  Mic,
+  Bot,
+  BarChart3,
+  MessageSquare,
+  BrainCircuit,
+  Handshake,
+  CheckCircle2,
+  Trophy,
+} from "lucide-react"
 
 export default function Home() {
   useEffect(() => {
@@ -123,17 +133,23 @@ export default function Home() {
         <div className="container">
           <div className="feature-grid">
             <article className="feature-card reveal" data-delay="0">
-              <div className="feature-icon">🎤</div>
+              <div className="feature-icon-box voice" aria-hidden="true">
+                <Mic size={26} strokeWidth={2.2} />
+              </div>
               <h3>Voice-First</h3>
               <p>Cukup kirim voice note di WhatsApp. Tidak perlu ketik atau klik menu rumit.</p>
             </article>
             <article className="feature-card reveal" data-delay="120">
-              <div className="feature-icon">🤖</div>
+              <div className="feature-icon-box agents" aria-hidden="true">
+                <Bot size={26} strokeWidth={2.2} />
+              </div>
               <h3>AI Agents</h3>
               <p>Agen AI yang bernegosiasi otomatis dengan supplier untuk mendapatkan harga terbaik.</p>
             </article>
             <article className="feature-card reveal" data-delay="240">
-              <div className="feature-icon">📊</div>
+              <div className="feature-icon-box finance" aria-hidden="true">
+                <BarChart3 size={26} strokeWidth={2.2} />
+              </div>
               <h3>Pembukuan Otomatis</h3>
               <p>Semua transaksi tercatat otomatis. Lihat laporan kapan saja di dashboard.</p>
             </article>
@@ -148,23 +164,31 @@ export default function Home() {
           </div>
           <div className="how-grid">
             <div className="how-step reveal" data-delay="0">
-              <div className="step-badge">1️⃣</div>
-              <h4>Kirim Pesan</h4>
+              <div className="how-step-icon" aria-hidden="true">
+                <MessageSquare size={24} strokeWidth={2} />
+              </div>
+              <h4>1. Kirim Pesan</h4>
               <p>&quot;Cari beras 25 kg maksimal 12 ribu&quot;</p>
             </div>
             <div className="how-step reveal" data-delay="120">
-              <div className="step-badge">2️⃣</div>
-              <h4>AI Memahami</h4>
+              <div className="how-step-icon" aria-hidden="true">
+                <BrainCircuit size={24} strokeWidth={2} />
+              </div>
+              <h4>2. AI Memahami</h4>
               <p>Intent & entitas diekstrak otomatis</p>
             </div>
             <div className="how-step reveal" data-delay="240">
-              <div className="step-badge">3️⃣</div>
-              <h4>Agent Bekerja</h4>
+              <div className="how-step-icon" aria-hidden="true">
+                <Handshake size={24} strokeWidth={2} />
+              </div>
+              <h4>3. Agent Bekerja</h4>
               <p>Negosiasi otomatis dengan supplier</p>
             </div>
             <div className="how-step reveal" data-delay="360">
-              <div className="step-badge">4️⃣</div>
-              <h4>Deal!</h4>
+              <div className="how-step-icon" aria-hidden="true">
+                <CheckCircle2 size={24} strokeWidth={2} />
+              </div>
+              <h4>4. Deal!</h4>
               <p>Transaksi tercatat, stok terupdate</p>
             </div>
           </div>
@@ -173,7 +197,9 @@ export default function Home() {
 
       <footer className="footer">
         <div className="container footer-inner">
-          <p>🏆 IMPHNEN x KOLOSAL Hackathon 2025</p>
+          <p style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", gap: "8px" }}>
+            <Trophy size={16} color="var(--accent)" /> IMPHNEN x KOLOSAL Hackathon 2025
+          </p>
           <p>Built with Next.js, Go, Supabase, and Kolosal AI</p>
         </div>
       </footer>
@@ -420,9 +446,38 @@ export default function Home() {
           box-shadow: 0 24px 60px rgba(27, 27, 27, 0.12);
         }
 
-        .feature-icon {
-          font-size: 2.5rem;
-          margin-bottom: 16px;
+        .feature-icon-box {
+          width: 56px;
+          height: 56px;
+          border-radius: 16px;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          margin-bottom: 20px;
+          transition: transform 0.25s ease, box-shadow 0.25s ease;
+        }
+
+        .feature-card:hover .feature-icon-box {
+          transform: translateY(-3px) scale(1.08);
+          box-shadow: 0 10px 24px rgba(0, 0, 0, 0.08);
+        }
+
+        .feature-icon-box.voice {
+          background: rgba(195, 91, 60, 0.12);
+          color: var(--accent);
+          border: 1px solid rgba(195, 91, 60, 0.22);
+        }
+
+        .feature-icon-box.agents {
+          background: rgba(31, 91, 59, 0.12);
+          color: var(--green);
+          border: 1px solid rgba(31, 91, 59, 0.22);
+        }
+
+        .feature-icon-box.finance {
+          background: rgba(195, 91, 60, 0.12);
+          color: var(--accent-dark);
+          border: 1px solid rgba(195, 91, 60, 0.22);
         }
 
         .feature-card h3 {
@@ -453,20 +508,33 @@ export default function Home() {
         .how-step {
           background: #fff;
           border-radius: var(--radius);
-          padding: 22px;
+          padding: 24px 22px;
           box-shadow: var(--shadow);
           text-align: center;
+          transition: transform 0.25s ease, box-shadow 0.25s ease;
         }
 
-        .step-badge {
+        .how-step:hover {
+          transform: translateY(-4px);
+          box-shadow: 0 24px 50px rgba(27, 27, 27, 0.1);
+        }
+
+        .how-step-icon {
           width: 54px;
           height: 54px;
           border-radius: 50%;
           display: grid;
           place-items: center;
-          background: rgba(31, 91, 59, 0.12);
+          background: rgba(31, 91, 59, 0.1);
+          color: var(--green);
           margin: 0 auto 16px;
-          font-size: 1.6rem;
+          border: 1px solid rgba(31, 91, 59, 0.2);
+          transition: transform 0.25s ease, background 0.25s ease;
+        }
+
+        .how-step:hover .how-step-icon {
+          transform: scale(1.08);
+          background: rgba(31, 91, 59, 0.16);
         }
 
         .how-step h4 {
