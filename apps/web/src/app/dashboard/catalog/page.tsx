@@ -26,8 +26,10 @@ function CatalogPageContent() {
   const userId = user?.id || '11111111-1111-1111-1111-111111111111'
 
   useEffect(() => {
-    fetchProducts()
-  }, [])
+    if (user) {
+      fetchProducts()
+    }
+  }, [user])
 
   const fetchProducts = async () => {
     try {
